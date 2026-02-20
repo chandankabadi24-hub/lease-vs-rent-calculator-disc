@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent – Refined Engine</title>
+<title>Lease vs Rent – Aladdin v2</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -33,12 +33,7 @@ box-shadow:0 25px 60px rgba(0,0,0,.35);
 }
 
 .controlRow{margin-bottom:16px;}
-
-.controlFlex{
-display:flex;
-gap:10px;
-align-items:center;
-}
+.controlFlex{display:flex;gap:10px;align-items:center;}
 
 input[type=text]{
 width:120px;
@@ -51,14 +46,10 @@ color:#fff;
 
 input[type=range]{flex:1;}
 
-.metricValue{
-font-size:30px;
-font-weight:700;
-margin-top:6px;
-}
+.metricValue{font-size:32px;font-weight:700;margin-top:6px;}
 
 .confidenceBar{
-height:12px;
+height:14px;
 border-radius:20px;
 background:#1a2a3a;
 overflow:hidden;
@@ -70,6 +61,12 @@ height:100%;
 width:0%;
 background:linear-gradient(90deg,#ff4d4d,#f1c40f,#2ecc71);
 transition:.4s;
+box-shadow:0 0 12px rgba(0,255,150,.6);
+}
+
+.biasTag{
+margin-top:10px;
+font-weight:600;
 }
 
 .chartStack{
@@ -137,12 +134,14 @@ min-height:320px;
 <div class="panel">
 <div id="results"></div>
 <div class="confidenceBar"><div id="confidenceFill" class="confidenceFill"></div></div>
+<div id="biasTag" class="biasTag"></div>
 </div>
 
 <div class="chartStack">
 <div class="chartCard"><canvas id="comparisonChart"></canvas></div>
 <div class="chartCard"><canvas id="radarChart"></canvas></div>
-<div class="chartCard"><canvas id="projectionChart"></canvas></div>
+<div class="chartCard"><canvas id="npvChart"></canvas></div>
+<div class="chartCard"><canvas id="monteChart"></canvas></div>
 <div class="chartCard"><canvas id="compositionChart"></canvas></div>
 </div>
 
@@ -150,8 +149,6 @@ min-height:320px;
 </div>
 
 <script>
-
-/* ===== INPUT SYNC ===== */
 
 const $=id=>document.getElementById(id);
 
@@ -163,18 +160,9 @@ const slider=$(id);
 const input=$(id+"Input");
 input.value=slider.value;
 
-slider.addEventListener("input",()=>{
-input.value=slider.value;
-calculate();
+slider.addEventListener("input",()=>{input.value=slider.value;calculate();});
+input.addEventListener("input",()=>{slider.value=clean(input.value);calculate();});
 });
-
-input.addEventListener("input",()=>{
-let val=clean(input.value);
-if(!isNaN(val)){slider.value=val;calculate();}
-});
-});
-
-/* ===== UNICORN FINANCIAL ENGINE (LOGIC KEPT PURE) ===== */
 
 function num(id){return parseFloat($(id).value)||0;}
 function INR(n){return "₹ "+Math.round(n||0).toLocaleString("en-IN");}
@@ -189,7 +177,7 @@ if(rate===0)return pmt*n;
 return pmt*((Math.pow(1+rate,n)-1)/rate);
 }
 
-let comparisonChart,radarChart,projectionChart,compositionChart;
+let comparisonChart,radarChart,npvChart,compositionChart,monteChart;
 
 function calculate(){
 
@@ -199,7 +187,6 @@ const OWN_FUNDS=Math.max(0,LEASE_AMOUNT-LOAN_AMOUNT);
 
 const LOAN_INTEREST_RATE=(num("loanRate")/100)/12;
 
-/* defaults preserved because UI does not expose them */
 const LOAN_TENURE=120;
 const LEASE_TENURE=24;
 const WITHHOLDING=0;
@@ -210,8 +197,6 @@ const MARKET_RENT=num("marketRent");
 
 const OPP_RATE=(num("oppRate")/100)/12;
 const RISK_PREMIUM=(num("riskPremium")/100);
-
-/* ===== ORIGINAL UNICORN ENGINE ===== */
 
 const EMI=emi(LOAN_AMOUNT,LOAN_INTEREST_RATE,LOAN_TENURE);
 const totalInterest=EMI*LOAN_TENURE-LOAN_AMOUNT;
@@ -230,6 +215,7 @@ emiOpp=futureValue(monthlyExtra,OPP_RATE,LEASE_TENURE)-(monthlyExtra*LEASE_TENUR
 }
 
 const delayCost=refund*OPP_RATE*REFUND_DELAY;
+
 const capitalLoss=totalInterest+withholdingLoss;
 
 const totalEconomic=
@@ -244,14 +230,19 @@ const monthlySavings=MARKET_RENT-riskRent;
 let score=MARKET_RENT>0?(monthlySavings/MARKET_RENT)*100:0;
 score=Math.max(0,Math.min(100,score));
 
-/* ===== UI OUTPUT ===== */
+/* ===== VISUAL FEEDBACK ===== */
 
 $("confidenceFill").style.width=score+"%";
+
+let bias="🟡 Emotional Comfort Zone";
+if(score>25) bias="🟢 Financially Optimal";
+if(score<5) bias="🔴 Emotionally Safer To Rent";
+$("biasTag").innerText=bias;
 
 $("results").innerHTML=`
 <div class="metricValue">${INR(monthlySavings)}</div>
 <div>Monthly Savings</div>
-<div style="margin-top:10px;">EMI: ${INR(EMI)}</div>
+<div>EMI: ${INR(EMI)}</div>
 <div>Risk Rent: ${INR(riskRent)}</div>
 `;
 
@@ -267,18 +258,36 @@ datasets:[{data:[MARKET_RENT,riskRent,monthlyLeaseCost]}]}
 if(radarChart)radarChart.destroy();
 radarChart=new Chart($("radarChart"),{
 type:"radar",
-data:{labels:["Savings Strength","Risk Load","Efficiency"],
+data:{labels:["Financial Edge","Risk Load","Efficiency"],
 datasets:[{data:[score,(riskRent/MARKET_RENT)*100,score]}]}
 });
 
-let proj=[];
-let step=(monthlySavings*LEASE_TENURE)/LEASE_TENURE;
-for(let i=1;i<=LEASE_TENURE;i++){proj.push(step*i);}
+/* NPV CURVE */
 
-if(projectionChart)projectionChart.destroy();
-projectionChart=new Chart($("projectionChart"),{
+let npv=[];
+for(let i=1;i<=LEASE_TENURE;i++){
+npv.push((monthlySavings*i)/Math.pow(1+OPP_RATE,i));
+}
+
+if(npvChart)npvChart.destroy();
+npvChart=new Chart($("npvChart"),{
 type:"line",
-data:{labels:proj.map((_,i)=>i+1),datasets:[{data:proj}]}
+data:{labels:npv.map((_,i)=>i+1),datasets:[{label:"NPV Curve",data:npv}]}
+});
+
+/* MONTE CARLO */
+
+let mc=[];
+for(let i=0;i<60;i++){
+let randRisk=(Math.random()*0.1);
+let rr=(totalEconomic/LEASE_TENURE)*(1+randRisk);
+mc.push(MARKET_RENT-rr);
+}
+
+if(monteChart)monteChart.destroy();
+monteChart=new Chart($("monteChart"),{
+type:"bar",
+data:{labels:mc.map((_,i)=>i+1),datasets:[{label:"Monte Carlo Savings",data:mc}]}
 });
 
 if(compositionChart)compositionChart.destroy();
