@@ -19,21 +19,11 @@ padding:24px;
 
 .container{max-width:1200px;margin:auto;}
 
-.hero{
-text-align:center;
-margin-bottom:24px;
-}
+.hero{text-align:center;margin-bottom:24px;}
 
-.hero h1{
-font-size:30px;
-margin-bottom:8px;
-}
+.hero h1{font-size:30px;margin-bottom:8px;}
 
-.hero p{
-color:#6c7a89;
-max-width:720px;
-margin:auto;
-}
+.hero p{color:#6c7a89;max-width:720px;margin:auto;}
 
 .card{
 background:#fff;
@@ -54,6 +44,7 @@ padding:12px;
 border-radius:10px;
 border:1px solid #ccc;
 width:100%;
+font-size:14px;
 }
 
 button{
@@ -67,32 +58,12 @@ margin-top:12px;
 cursor:pointer;
 }
 
-/* ===== METRIC SYSTEM ===== */
+.metricLabel{font-size:13px;color:#6c7a89;margin-top:14px;}
+.metricValue{font-size:22px;font-weight:700;margin-top:4px;}
 
-.metricLabel{
-font-size:13px;
-color:#6c7a89;
-margin-top:14px;
-}
+.verdict{font-size:22px;font-weight:700;text-align:center;margin-top:16px;}
 
-.metricValue{
-font-size:22px;
-font-weight:700;
-margin-top:4px;
-}
-
-.verdict{
-font-size:22px;
-font-weight:700;
-text-align:center;
-margin-top:16px;
-}
-
-.chartStack{
-display:flex;
-flex-direction:column;
-gap:24px;
-}
+.chartStack{display:flex;flex-direction:column;gap:24px;}
 
 .chartCard{
 background:#fff;
@@ -101,11 +72,7 @@ border-radius:14px;
 box-shadow:0 8px 18px rgba(0,0,0,.06);
 }
 
-.chartTitle{
-font-size:16px;
-font-weight:600;
-margin-bottom:12px;
-}
+.chartTitle{font-size:16px;font-weight:600;margin-bottom:12px;}
 
 </style>
 </head>
@@ -116,10 +83,8 @@ margin-bottom:12px;
 
 <div class="hero">
 <h1>Lease vs Rent Financial Decision Engine</h1>
-<p>
-Compare a loan-funded lease against market rent using opportunity cost,
-risk-adjusted rent and capital efficiency analytics.
-</p>
+<p>Compare a loan-funded lease against market rent using opportunity cost,
+risk-adjusted rent and capital efficiency analytics.</p>
 </div>
 
 <div class="card">
@@ -128,7 +93,6 @@ risk-adjusted rent and capital efficiency analytics.
 <div class="grid">
 <input id="leaseAmount" class="currency" placeholder="Lease Amount">
 <input id="loanAmount" class="currency" placeholder="Loan Amount">
-<input id="ownFunds" class="currency" placeholder="Own Funds">
 <input id="loanRate" class="percent" placeholder="Loan Interest %">
 <input id="loanTenure" placeholder="Loan Tenure Months">
 <input id="leaseTenure" placeholder="Lease Tenure Months">
@@ -151,7 +115,6 @@ risk-adjusted rent and capital efficiency analytics.
 </div>
 
 <div class="chartStack">
-
 <div class="chartCard">
 <div class="chartTitle">Monthly Cost Comparison</div>
 <canvas id="comparisonChart"></canvas>
@@ -166,7 +129,6 @@ risk-adjusted rent and capital efficiency analytics.
 <div class="chartTitle">Economic Cost Composition</div>
 <canvas id="compositionChart"></canvas>
 </div>
-
 </div>
 
 </div>
@@ -174,10 +136,9 @@ risk-adjusted rent and capital efficiency analytics.
 <script>
 
 const $=id=>document.getElementById(id);
-
 let comparisonChart,projectionChart,compositionChart;
 
-/* ===== REAL-TIME FINTECH FORMAT ENGINE ===== */
+/* ===== BLOOMBERG-GRADE FORMAT ENGINE ===== */
 
 function cleanNumber(v){
 return parseFloat((v||"").replace(/[,%\s,]/g,""))||0;
@@ -188,30 +149,27 @@ return cleanNumber($(id).value);
 }
 
 function formatINR(n){
-return " "+Math.round(n||0).toLocaleString("en-IN");
+return " "+Number(n).toLocaleString("en-IN",{maximumFractionDigits:0});
 }
 
 function formatPercent(n){
-return (n||0).toFixed(2)+"%";
+return Number(n).toFixed(2)+"%";
 }
 
-/* REAL TIME CURRENCY */
-document.querySelectorAll(".currency").forEach(el=>{
+function attachSmartFormatter(selector,formatter){
+document.querySelectorAll(selector).forEach(el=>{
 el.addEventListener("input",()=>{
-let v=cleanNumber(el.value);
-if(!v){el.value="";return;}
-el.value=formatINR(v);
+let cursor=el.selectionStart;
+let raw=cleanNumber(el.value);
+if(!raw){el.value="";return;}
+el.value=formatter(raw);
+el.setSelectionRange(cursor,cursor);
 });
 });
+}
 
-/* REAL TIME PERCENT */
-document.querySelectorAll(".percent").forEach(el=>{
-el.addEventListener("input",()=>{
-let v=cleanNumber(el.value);
-if(!v){el.value="";return;}
-el.value=formatPercent(v);
-});
-});
+attachSmartFormatter(".currency",formatINR);
+attachSmartFormatter(".percent",formatPercent);
 
 function INR(n){return " "+Math.round(n||0).toLocaleString("en-IN");}
 
@@ -229,7 +187,9 @@ function calculate(){
 
 const LEASE_AMOUNT=num("leaseAmount");
 const LOAN_AMOUNT=num("loanAmount");
-const OWN_FUNDS=num("ownFunds");
+
+/* OWN FUNDS AUTO-CALCULATED — LOGIC SAME */
+const OWN_FUNDS=Math.max(0,LEASE_AMOUNT-LOAN_AMOUNT);
 
 const LOAN_INTEREST_RATE=(num("loanRate")/100)/12;
 const LOAN_TENURE=num("loanTenure");
@@ -285,10 +245,7 @@ score=Math.max(0,Math.min(100,score));
 
 const extraCash=(Math.max(monthlyExtra,0)*LEASE_TENURE)+OWN_FUNDS;
 
-/* ===== OUTPUT (UPDATED UI ONLY) ===== */
-
 $("results").innerHTML=`
-
 <div class="metricLabel">EMI</div>
 <div class="metricValue">${INR(EMI)}</div>
 
