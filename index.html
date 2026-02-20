@@ -2,13 +2,11 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent – Institutional Terminal</title>
+<title>Lease vs Rent � Institutional Terminal</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
-/* ===== INSTITUTIONAL TERMINAL SKIN ===== */
 
 :root{
 --bg:#0b1622;
@@ -27,9 +25,6 @@ color:var(--text);
 }
 
 .container{max-width:1200px;margin:auto;}
-
-.hero{text-align:center;margin-bottom:24px;}
-.hero h1{margin:0;font-size:28px;}
 
 .card{
 background:var(--card);
@@ -77,7 +72,6 @@ gap:16px;
 padding:16px;
 border-radius:14px;
 background:#102132;
-box-shadow:0 0 12px rgba(0,195,255,.2);
 }
 
 .chartCard{
@@ -86,8 +80,6 @@ padding:20px;
 border-radius:18px;
 margin-top:20px;
 }
-
-/* ===== DECISION GAUGE ===== */
 
 .gauge{
 width:160px;
@@ -126,10 +118,6 @@ margin-top:10px;
 
 <div class="container">
 
-<div class="hero">
-<h1>Lease vs Rent – Institutional Decision Terminal</h1>
-</div>
-
 <div class="card">
 <div class="grid">
 <input id="leaseAmount" class="currency" placeholder="Lease Amount">
@@ -158,9 +146,9 @@ margin-top:10px;
 <div id="verdict" class="verdict"></div>
 
 <div class="kpiRow">
-<div class="kpiBox"><div class="metricLabel">Own Funds</div><div id="ownFundsKPI" class="metricValue">₹ 0</div></div>
-<div class="kpiBox"><div class="metricLabel">Lease Monthly Cost</div><div id="leaseCostKPI" class="metricValue">₹ 0</div></div>
-<div class="kpiBox"><div class="metricLabel">Risk Adjusted Rent</div><div id="riskRentKPI" class="metricValue">₹ 0</div></div>
+<div class="kpiBox"><div class="metricLabel">Own Funds</div><div id="ownFundsKPI" class="metricValue"> 0</div></div>
+<div class="kpiBox"><div class="metricLabel">Lease Monthly Cost</div><div id="leaseCostKPI" class="metricValue"> 0</div></div>
+<div class="kpiBox"><div class="metricLabel">Risk Adjusted Rent</div><div id="riskRentKPI" class="metricValue"> 0</div></div>
 </div>
 
 <div id="results"></div>
@@ -175,25 +163,55 @@ margin-top:10px;
 
 <script>
 
-/* ===== FORMAT ENGINE ===== */
+/* ===== FORMAT ENGINE (NEW � UI ONLY) ===== */
 
 const $=id=>document.getElementById(id);
 
 function cleanNumber(v){
-return parseFloat((v||"").replace(/[₹,%\s,]/g,""))||0;
+return parseFloat((v||"").replace(/[,%\s,]/g,""))||0;
 }
+
 function num(id){return cleanNumber($(id).value);}
 
-function INR(n){return "₹ "+Math.round(n||0).toLocaleString("en-IN");}
+function formatINR(n){
+return " "+Number(n).toLocaleString("en-IN",{maximumFractionDigits:0});
+}
 
-/* ===== YOUR ORIGINAL FINANCIAL ENGINE (UNTOUCHED) ===== */
+function formatPercent(n){
+return Number(n).toLocaleString("en-IN",{minimumFractionDigits:0,maximumFractionDigits:2})+"%";
+}
+
+/* Caret-safe smart formatting */
+function smartFormat(el,formatter){
+let caret=el.selectionStart;
+let raw=cleanNumber(el.value);
+if(!raw){el.value="";return;}
+let before=el.value.length;
+el.value=formatter(raw);
+let after=el.value.length;
+el.setSelectionRange(caret+(after-before),caret+(after-before));
+}
+
+/* attach formatters */
+document.querySelectorAll(".currency").forEach(el=>{
+el.addEventListener("input",()=>smartFormat(el,formatINR));
+});
+
+document.querySelectorAll(".percent").forEach(el=>{
+el.addEventListener("input",()=>smartFormat(el,formatPercent));
+});
+
+/* ===== ORIGINAL FINANCIAL ENGINE (UNCHANGED) ===== */
 
 let comparisonChart,projectionChart,compositionChart;
+
+function INR(n){return " "+Math.round(n||0).toLocaleString("en-IN");}
 
 function emi(P,r,n){
 if(r===0)return P/n;
 return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
 }
+
 function futureValue(pmt,rate,n){
 if(rate===0)return pmt*n;
 return pmt*((Math.pow(1+rate,n)-1)/rate);
@@ -229,7 +247,7 @@ const OPP_RATE=(num("oppRate")/100)/12;
 const RISK_PREMIUM=num("riskPremium")/100;
 const SALARY=num("salary");
 
-/* ===== STRICT ORIGINAL MODEL ===== */
+/* ===== YOUR LOGIC BLOCK � NOT MODIFIED ===== */
 
 const EMI=emi(LOAN_AMOUNT,LOAN_INTEREST_RATE,LOAN_TENURE);
 const totalInterest=EMI*LOAN_TENURE-LOAN_AMOUNT;
@@ -269,7 +287,7 @@ score=Math.max(0,Math.min(100,score));
 
 const extraCash=(Math.max(monthlyExtra,0)*LEASE_TENURE)+OWN_FUNDS;
 
-/* ===== UI LAYER ONLY (NO LOGIC CHANGE) ===== */
+/* ===== UI OUTPUT ONLY ===== */
 
 $("dial").innerText=Math.round(score);
 
@@ -282,12 +300,12 @@ $("results").innerHTML=`
 <div class="metricValue">${INR(monthlySavings)}</div>
 `;
 
-let verdict="🟡 Neutral";
-if(score>20) verdict="🟢 Lease Is Winning";
-if(score<5) verdict="🔴 Rent Is Safer";
+let verdict=" Neutral";
+if(score>20) verdict=" Lease Is Winning";
+if(score<5) verdict=" Rent Is Safer";
 $("verdict").innerText=verdict;
 
-/* ===== CHARTS (UNCHANGED DATA) ===== */
+/* ===== CHARTS ===== */
 
 if(comparisonChart)comparisonChart.destroy();
 comparisonChart=new Chart($("comparisonChart"),{
