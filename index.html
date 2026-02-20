@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lease vs Rent Analyzer PRO+</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{
+font-family:Arial, sans-serif;
+background:#f4f6f9;
+margin:0;
+padding:15px;
+}
+
+.container{max-width:1100px;margin:auto;}
+
+h1{text-align:center;color:#1f4e79;}
+
+.card{
+background:#fff;
+padding:18px;
+margin-bottom:20px;
+border-radius:12px;
+box-shadow:0 6px 14px rgba(0,0,0,.06);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+padding:12px;
+margin-top:8px;
+width:100%;
+background:#1f4e79;
+color:#fff;
+border:none;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.score{
+font-size:24px;
+font-weight:bold;
+margin-top:12px;
+}
+
+.good{color:green}
+.warning{color:orange}
+.bad{color:red}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Lease vs Rent Analyzer PRO+</h1>
+
+<div class="card">
+<h3>Inputs</h3>
+
+<div class="grid">
+<input id="leaseAmount" placeholder="Lease Amount">
+<input id="loanAmount" placeholder="Loan Amount">
+<input id="ownFunds" placeholder="Own Funds">
+<input id="loanRate" placeholder="Loan Interest % Annual">
+<input id="loanTenure" placeholder="Loan Tenure Months">
+<input id="leaseTenure" placeholder="Lease Tenure Months">
+<input id="withholding" placeholder="Lease Withholding %">
+<input id="refundDelay" placeholder="Refund Delay Months">
+<input id="maintenance" placeholder="Monthly Maintenance">
+<input id="marketRent" placeholder="Market Rent">
+<input id="oppRate" placeholder="Opportunity Cost % Annual">
+<input id="riskPremium" placeholder="Risk Premium %">
+<input id="salary" placeholder="Take Home Salary (Optional)">
+</div>
+
+<button onclick="calculate()">Run Analysis</button>
+<button onclick="downloadPDF()">Download PDF</button>
+
+</div>
+
+<div class="card">
+<h3>Results</h3>
+<div id="results"></div>
+</div>
+
+<div class="card">
+<canvas id="chart"></canvas>
+</div>
+
+</div>
+
+<script>
+
+let chartInstance;
+
+const $ = id => document.getElementById(id);
+
+function num(id){
+return parseFloat($(id).value) || 0;
+}
+
+function formatCurrency(n){
+return "₹ " + Math.round(n||0).toLocaleString("en-IN");
+}
+
+function emiCalc(P,r,n){
+if(r===0) return P/n;
+return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+}
+
+function futureValue(pmt,rate,n){
+if(rate===0) return pmt*n;
+return pmt*((Math.pow(1+rate,n)-1)/rate);
+}
+
+function calculate(){
+
+const leaseAmount=num("leaseAmount");
+const loanAmount=num("loanAmount");
+const ownFunds=num("ownFunds");
+
+const loanRate=(num("loanRate")/100)/12;
+const loanTenure=num("loanTenure");
+const leaseTenure=num("leaseTenure");
+
+const withholding=num("withholding")/100;
+const refundDelay=num("refundDelay");
+const maintenance=num("maintenance");
+const marketRent=num("marketRent");
+
+const oppRate=(num("oppRate")/100)/12;
+const riskPremium=num("riskPremium")/100;
+const salary=num("salary");
+
+if(!loanAmount || !loanTenure){
+alert("Enter loan amount and tenure.");
+return;
+}
+
+const emi = emiCalc(loanAmount,loanRate,loanTenure);
+const totalInterest = emi*loanTenure-loanAmount;
+
+const monthlyLeaseCost = emi + maintenance;
+const monthlyExtra = monthlyLeaseCost - marketRent;
+
+const refund = leaseAmount*(1-withholding);
+const withholdingLoss = leaseAmount*withholding;
+
+const ownOpp = ownFunds*(Math.pow(1+oppRate,leaseTenure)-1);
+
+let emiOpp=0;
+if(monthlyExtra>0){
+emiOpp = futureValue(monthlyExtra,oppRate,leaseTenure) - (monthlyExtra*leaseTenure);
+}
+
+const delayCost = refund*oppRate*refundDelay;
+
+const capitalLoss = totalInterest + withholdingLoss;
+
+const totalEconomic = capitalLoss + ownOpp + emiOpp + delayCost;
+
+const riskRent = (totalEconomic/leaseTenure)*(1+riskPremium);
+
+let savings = marketRent-riskRent;
+let score = marketRent>0 ? (savings/marketRent)*100 : 0;
+score = Math.max(0,Math.min(100,score));
+
+let stress="";
+if(salary){
+let ratio=monthlyLeaseCost/salary;
+if(ratio<0.35) stress="<span class='good'>Low Stress</span>";
+else if(ratio<0.55) stress="<span class='warning'>Moderate Stress</span>";
+else stress="<span class='bad'>High Stress</span>";
+}
+
+$("results").innerHTML=`
+
+EMI: ${formatCurrency(emi)} <br>
+Total Interest Paid: ${formatCurrency(totalInterest)} <br>
+Monthly Lease Cost: ${formatCurrency(monthlyLeaseCost)} <br>
+Risk Adjusted Notional Rent: ${formatCurrency(riskRent)} <br>
+Break Even Rent: ${formatCurrency(riskRent)} <br>
+
+<div class="score">
+Lease Efficiency Score: ${score.toFixed(0)} / 100
+</div>
+
+Cash Flow Stress: ${stress}
+
+`;
+
+if(chartInstance) chartInstance.destroy();
+
+chartInstance=new Chart($("chart"),{
+type:"bar",
+data:{
+labels:["Market Rent","Risk Adjusted Lease Rent"],
+datasets:[{
+label:"Monthly Cost Comparison",
+data:[marketRent,riskRent]
+}]
+}
+});
+
+}
+
+async function downloadPDF(){
+const { jsPDF } = window.jspdf;
+const doc=new jsPDF();
+
+doc.setFontSize(16);
+doc.text("Lease vs Rent Financial Report",20,20);
+
+doc.setFontSize(11);
+doc.text($("results").innerText,20,35);
+
+doc.save("Lease_vs_Rent_Report.pdf");
+}
+
+</script>
+</body>
+</html>
