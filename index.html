@@ -9,7 +9,7 @@
 
 <style>
 
-/* ---------- THEME VARIABLES ---------- */
+/* ---------- TYPOGRAPHY SYSTEM ---------- */
 
 :root{
 --bg:#f4f7fb;
@@ -17,11 +17,12 @@
 --text:#0b1622;
 --accent:#1f4e79;
 --muted:#6c7a89;
+--radius:14px;
 }
 
 body.dark{
 --bg:#0b1622;
---card:rgba(255,255,255,0.05);
+--card:#111e2c;
 --text:#e6eef7;
 --accent:#00d4ff;
 --muted:#9fb3c8;
@@ -32,40 +33,41 @@ margin:0;
 font-family:Inter,Arial;
 background:var(--bg);
 color:var(--text);
-padding:20px;
-transition:.4s;
+padding:24px;
+transition:.35s;
 }
 
 .container{max-width:1100px;margin:auto;}
 
-h1{
-text-align:center;
-margin-bottom:20px;
-}
+h1{font-size:28px;text-align:center;margin-bottom:10px;}
+h3{font-size:18px;margin-bottom:12px;}
 
 .card{
 background:var(--card);
-border-radius:14px;
-padding:22px;
-margin-bottom:22px;
-box-shadow:0 8px 20px rgba(0,0,0,.06);
-backdrop-filter:blur(10px);
+border-radius:var(--radius);
+padding:24px;
+margin-bottom:24px;
+box-shadow:0 8px 18px rgba(0,0,0,.06);
 }
+
+/* ---------- INPUT GRID ---------- */
 
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:12px;
+gap:14px;
 }
 
 input{
 padding:12px;
 border-radius:10px;
 border:1px solid #ccc;
-width:100%;
 background:transparent;
 color:var(--text);
+font-size:14px;
 }
+
+/* ---------- BUTTONS ---------- */
 
 button{
 background:var(--accent);
@@ -73,62 +75,64 @@ color:white;
 border:none;
 padding:12px;
 border-radius:10px;
-font-weight:bold;
+font-weight:600;
 cursor:pointer;
-transition:.3s;
-}
-
-button:hover{transform:scale(1.03)}
-
-.rowSpace{margin-top:14px;}
-
-.verdict{
-font-size:24px;
-font-weight:700;
 margin-top:10px;
-text-align:center;
 }
 
-.metric{
-margin-top:8px;
-font-size:16px;
+/* ---------- METRICS ---------- */
+
+.metricLabel{
+font-size:13px;
 color:var(--muted);
+margin-top:14px;
 }
 
-.bigNumber{
+.metricValue{
 font-size:22px;
 font-weight:700;
-margin-top:12px;
+margin-top:4px;
 }
+
+/* ---------- TOGGLE ---------- */
 
 .toggleWrap{
 display:flex;
 justify-content:flex-end;
-margin-bottom:10px;
+margin-bottom:14px;
 }
 
-.switch{
-cursor:pointer;
+.toggleBtn{
 background:var(--accent);
 color:white;
 padding:8px 14px;
 border-radius:20px;
-font-size:14px;
+font-size:13px;
+cursor:pointer;
 }
 
-.confidenceBar{
-height:16px;
+/* ---------- CONFIDENCE BAR ---------- */
+
+.bar{
+height:14px;
 background:#ddd;
 border-radius:10px;
-margin-top:10px;
 overflow:hidden;
+margin-top:12px;
 }
 
-.confidenceFill{
+.fill{
 height:100%;
 width:0%;
 background:linear-gradient(90deg,#ff4d4d,#f1c40f,#2ecc71);
 transition:width 1s ease;
+}
+
+.verdict{
+font-size:20px;
+font-weight:700;
+text-align:center;
+margin-top:14px;
 }
 
 </style>
@@ -139,7 +143,7 @@ transition:width 1s ease;
 <div class="container">
 
 <div class="toggleWrap">
-<div class="switch" onclick="toggleTheme()"> /  Toggle Theme</div>
+<div class="toggleBtn" onclick="toggleTheme()"> Dark Mode |  Light Mode</div>
 </div>
 
 <h1>Lease vs Rent Fintech Decision Engine</h1>
@@ -159,49 +163,39 @@ transition:width 1s ease;
 <input id="riskPremium" class="percent" placeholder="Risk Premium %">
 </div>
 
-<div class="rowSpace">
-<button onclick="runScenario('best')">Best</button>
-<button onclick="runScenario('realistic')">Realistic</button>
-<button onclick="runScenario('worst')">Worst</button>
-</div>
+<button onclick="runScenario('best')">Best Case</button>
+<button onclick="runScenario('realistic')">Realistic Case</button>
+<button onclick="runScenario('worst')">Worst Case</button>
 
-<div class="rowSpace">
 <button onclick="downloadPDF()">Download Professional Report</button>
-</div>
 
 </div>
 
 <div class="card">
+
 <div id="results"></div>
+
 <div id="verdict" class="verdict"></div>
 
-<div class="metric">Confidence Score</div>
-<div class="confidenceBar">
-<div id="confidenceFill" class="confidenceFill"></div>
-</div>
+<div class="metricLabel">Confidence Score</div>
+<div class="bar"><div id="confidenceFill" class="fill"></div></div>
 
-</div>
-
-<div class="card">
-<canvas id="projectionChart"></canvas>
 </div>
 
 </div>
 
 <script>
 
-let projectionChart;
+const $=id=>document.getElementById(id);
 let lastResults={};
 
-const $=id=>document.getElementById(id);
-
-/* ---------- THEME TOGGLE ---------- */
+/* ---------- THEME ---------- */
 
 function toggleTheme(){
 document.body.classList.toggle("dark");
 }
 
-/* ---------- FORMAT ENGINE ---------- */
+/* ---------- FORMAT ---------- */
 
 function clean(v){return parseFloat((v||"").replace(/[,%\s,]/g,""))||0;}
 function INR(n){return " "+Math.round(n||0).toLocaleString("en-IN");}
@@ -214,7 +208,7 @@ document.querySelectorAll(".percent").forEach(i=>{
 i.addEventListener("blur",()=>{let v=clean(i.value);if(v)i.value=PCT(v);});
 });
 
-/* ---------- FINANCIAL ENGINE ---------- */
+/* ---------- ENGINE ---------- */
 
 function emi(P,r,n){
 if(r===0)return P/n;
@@ -224,6 +218,7 @@ return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
 function runScenario(type){
 
 let riskAdj=1,oppAdj=1;
+
 if(type==="best"){riskAdj=.6;oppAdj=.8;}
 if(type==="worst"){riskAdj=1.5;oppAdj=1.2;}
 
@@ -264,22 +259,22 @@ if(score<5) verdict=" Rent Is Safer";
 
 $("results").innerHTML=`
 
-<div class="metric">Own Funds Used</div>
-<div class="bigNumber">${INR(ownFunds)}</div>
+<div class="metricLabel">Own Funds Used</div>
+<div class="metricValue">${INR(ownFunds)}</div>
 
-<div class="metric">EMI</div>
+<div class="metricLabel">EMI</div>
 <div>${INR(EMI)}</div>
 
-<div class="metric">Risk Adjusted Rent</div>
+<div class="metricLabel">Risk Adjusted Rent</div>
 <div>${INR(riskRent)}</div>
 
-<div class="metric">Monthly Savings</div>
-<div class="bigNumber">${INR(monthlySavings)}</div>
+<div class="metricLabel">Monthly Savings</div>
+<div class="metricValue">${INR(monthlySavings)}</div>
 
-<div class="metric">Yearly Savings</div>
+<div class="metricLabel">Yearly Savings</div>
 <div>${INR(yearlySavings)}</div>
 
-<div class="metric">Lease Term Savings</div>
+<div class="metricLabel">Lease Term Savings</div>
 <div>${INR(termSavings)}</div>
 `;
 
@@ -288,34 +283,9 @@ $("confidenceFill").style.width=score+"%";
 
 lastResults={EMI,riskRent,monthlySavings,yearlySavings,termSavings,label,verdict};
 
-renderProjection(termSavings,leaseTenure);
-
 }
 
-/* ---------- ADVANCED ANALYTICS CHART ---------- */
-
-function renderProjection(termSavings,months){
-
-let data=[];
-let step=termSavings/months;
-
-for(let i=1;i<=months;i++){
-data.push(step*i);
-}
-
-if(projectionChart)projectionChart.destroy();
-
-projectionChart=new Chart($("projectionChart"),{
-type:"line",
-data:{
-labels:data.map((_,i)=>i+1),
-datasets:[{label:"Projected Savings Growth",data:data}]
-}
-});
-
-}
-
-/* ---------- PROFESSIONAL PDF REPORT ---------- */
+/* ---------- PROFESSIONAL REPORT ---------- */
 
 async function downloadPDF(){
 
@@ -342,10 +312,10 @@ doc.text("Risk Adjusted Rent: "+INR(lastResults.riskRent),20,100);
 doc.text("Savings Analysis",20,120);
 doc.text("Monthly Savings: "+INR(lastResults.monthlySavings),20,130);
 doc.text("Yearly Savings: "+INR(lastResults.yearlySavings),20,140);
-doc.text("Total Lease Term Savings: "+INR(lastResults.termSavings),20,150);
+doc.text("Lease Term Savings: "+INR(lastResults.termSavings),20,150);
 
-doc.setFontSize(10);
-doc.text("Generated by Lease vs Rent Fintech Decision Engine.",20,180);
+doc.text("Interpretation",20,170);
+doc.text("Best, Realistic and Worst cases simulate different risk and opportunity assumptions to help you understand financial resilience.",20,180,{maxWidth:170});
 
 doc.save("Lease_vs_Rent_Professional_Report.pdf");
 }
