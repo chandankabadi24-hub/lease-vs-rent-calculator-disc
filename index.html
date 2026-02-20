@@ -2,30 +2,30 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent Elite Fintech Dashboard</title>
+<title>Lease vs Rent – Unicorn Fintech UI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
-/* ===== ELITE FINTECH DESIGN SYSTEM ===== */
+/* ===== UNICORN FINTECH DESIGN SYSTEM ===== */
 
 :root{
 --bg:#f4f7fb;
---card:rgba(255,255,255,0.75);
+--card:rgba(255,255,255,.75);
 --text:#0b1622;
 --muted:#6c7a89;
 --accent:#1f4e79;
---shadow:0 20px 40px rgba(0,0,0,.08);
+--shadow:0 25px 50px rgba(0,0,0,.08);
 }
 
 body.dark{
 --bg:#0b1622;
---card:rgba(18,30,44,.65);
+--card:rgba(18,30,44,.7);
 --text:#e8f1fb;
 --muted:#8ea2b5;
 --accent:#00c3ff;
---shadow:0 20px 40px rgba(0,0,0,.35);
+--shadow:0 25px 50px rgba(0,0,0,.35);
 }
 
 body{
@@ -45,7 +45,7 @@ transition:.35s;
 
 .card{
 background:var(--card);
-backdrop-filter:blur(14px);
+backdrop-filter:blur(16px);
 padding:24px;
 margin-bottom:24px;
 border-radius:18px;
@@ -63,7 +63,6 @@ input{
 padding:12px;
 border-radius:12px;
 border:1px solid rgba(0,0,0,.08);
-font-size:14px;
 background:transparent;
 color:var(--text);
 }
@@ -82,29 +81,46 @@ transition:.25s;
 button:hover{transform:translateY(-2px);}
 
 .metricLabel{font-size:13px;color:var(--muted);margin-top:14px;}
-.metricValue{font-size:24px;font-weight:700;margin-top:4px;}
+.metricValue{font-size:26px;font-weight:700;margin-top:4px;}
 
-.verdict{
-font-size:24px;
-font-weight:700;
-text-align:center;
-margin-top:18px;
+.verdict{font-size:24px;font-weight:700;text-align:center;margin-top:18px;}
+
+.kpiRow{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:16px;
+margin-top:10px;
+}
+
+.kpiBox{
+padding:14px;
+border-radius:14px;
+background:rgba(255,255,255,.35);
+}
+
+.riskBar{
+height:12px;
+background:#ddd;
+border-radius:20px;
+overflow:hidden;
+margin-top:8px;
+}
+
+.riskFill{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#ff4d4d,#f1c40f,#2ecc71);
+transition:width 1s ease;
 }
 
 .chartStack{display:flex;flex-direction:column;gap:24px;}
 
 .chartCard{
 background:var(--card);
-backdrop-filter:blur(14px);
+backdrop-filter:blur(16px);
 padding:24px;
 border-radius:18px;
 box-shadow:var(--shadow);
-}
-
-.chartTitle{
-font-size:16px;
-font-weight:600;
-margin-bottom:14px;
 }
 
 .toggle{
@@ -119,28 +135,21 @@ cursor:pointer;
 font-size:13px;
 }
 
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(10px);}
-to{opacity:1;transform:translateY(0);}
-}
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(16px);}
-to{opacity:1;transform:translateY(0);}
-}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;}}
 
 </style>
 </head>
 
 <body>
 
-<div class="toggle" onclick="toggleTheme()"> Toggle Theme</div>
+<div class="toggle" onclick="toggleTheme()">🌙 Theme</div>
 
 <div class="container">
 
 <div class="hero">
 <h1>Lease vs Rent Financial Decision Engine</h1>
-<p>Opportunity-cost driven lease vs rent analysis with analyst-grade insights.</p>
+<p>Unicorn-level analytics with opportunity-cost intelligence.</p>
 </div>
 
 <div class="card">
@@ -165,56 +174,50 @@ to{opacity:1;transform:translateY(0);}
 </div>
 
 <div class="card">
+<h3>Live Derived Analytics</h3>
+<div class="kpiRow">
+<div class="kpiBox"><div class="metricLabel">Own Funds</div><div id="ownFundsKPI" class="metricValue">₹ 0</div></div>
+<div class="kpiBox"><div class="metricLabel">Lease Monthly Cost</div><div id="leaseCostKPI" class="metricValue">₹ 0</div></div>
+<div class="kpiBox"><div class="metricLabel">Risk Adjusted Rent</div><div id="riskRentKPI" class="metricValue">₹ 0</div></div>
+</div>
+</div>
+
+<div class="card">
 <h3>Key Financial Metrics</h3>
 <div id="results"></div>
+
+<div class="metricLabel">Lease Efficiency Heat</div>
+<div class="riskBar"><div id="riskFill" class="riskFill"></div></div>
+
 <div id="verdict" class="verdict"></div>
 </div>
 
 <div class="chartStack">
-
-<div class="chartCard">
-<div class="chartTitle">Monthly Cost Comparison</div>
-<canvas id="comparisonChart"></canvas>
-</div>
-
-<div class="chartCard">
-<div class="chartTitle">Cumulative Savings Projection</div>
-<canvas id="projectionChart"></canvas>
-</div>
-
-<div class="chartCard">
-<div class="chartTitle">Economic Cost Composition</div>
-<canvas id="compositionChart"></canvas>
-</div>
-
+<div class="chartCard"><canvas id="comparisonChart"></canvas></div>
+<div class="chartCard"><canvas id="projectionChart"></canvas></div>
+<div class="chartCard"><canvas id="compositionChart"></canvas></div>
 </div>
 
 </div>
 
 <script>
 
-/* ===== THEME TOGGLE ===== */
-function toggleTheme(){
-document.body.classList.toggle("dark");
-}
-
-/* ===== BLOOMBERG FORMAT ENGINE ===== */
+/* ===== THEME ===== */
+function toggleTheme(){document.body.classList.toggle("dark");}
 
 const $=id=>document.getElementById(id);
 
-function cleanNumber(v){
-return parseFloat((v||"").replace(/[,%\s,]/g,""))||0;
-}
+/* ===== BLOOMBERG FORMAT ENGINE ===== */
 
+function cleanNumber(v){
+return parseFloat((v||"").replace(/[₹,%\s,]/g,""))||0;
+}
 function num(id){return cleanNumber($(id).value);}
 
 function formatINR(n){
-return " "+Number(n).toLocaleString("en-IN",{maximumFractionDigits:0});
+return "₹ "+Number(n).toLocaleString("en-IN",{maximumFractionDigits:0});
 }
-
-function formatPercent(n){
-return Number(n).toFixed(2)+"%";
-}
+function formatPercent(n){return Number(n).toFixed(2)+"%";}
 
 function smartFormat(el,formatter){
 let caret=el.selectionStart;
@@ -230,7 +233,6 @@ el.setSelectionRange(newCaret,newCaret);
 document.querySelectorAll(".currency").forEach(el=>{
 el.addEventListener("input",()=>smartFormat(el,formatINR));
 });
-
 document.querySelectorAll(".percent").forEach(el=>{
 el.addEventListener("input",()=>smartFormat(el,formatPercent));
 });
@@ -239,16 +241,31 @@ el.addEventListener("input",()=>smartFormat(el,formatPercent));
 
 let comparisonChart,projectionChart,compositionChart;
 
-function INR(n){return " "+Math.round(n||0).toLocaleString("en-IN");}
+function INR(n){return "₹ "+Math.round(n||0).toLocaleString("en-IN");}
 
 function emi(P,r,n){
 if(r===0)return P/n;
 return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
 }
-
 function futureValue(pmt,rate,n){
 if(rate===0)return pmt*n;
 return pmt*((Math.pow(1+rate,n)-1)/rate);
+}
+
+/* ===== COUNTER ANIMATION ===== */
+
+function animateValue(el,end){
+let start=0;
+let duration=600;
+let stepTime=20;
+let steps=duration/stepTime;
+let increment=end/steps;
+let val=0;
+let timer=setInterval(()=>{
+val+=increment;
+if(val>=end){val=end;clearInterval(timer);}
+el.innerText=INR(val);
+},stepTime);
 }
 
 function calculate(){
@@ -311,16 +328,15 @@ score=Math.max(0,Math.min(100,score));
 
 const extraCash=(Math.max(monthlyExtra,0)*LEASE_TENURE)+OWN_FUNDS;
 
+/* ===== KPI PANEL ===== */
+
+animateValue($("ownFundsKPI"),OWN_FUNDS);
+animateValue($("leaseCostKPI"),monthlyLeaseCost);
+animateValue($("riskRentKPI"),riskRent);
+
+$("riskFill").style.width=score+"%";
+
 $("results").innerHTML=`
-<div class="metricLabel">EMI</div>
-<div class="metricValue">${INR(EMI)}</div>
-
-<div class="metricLabel">Risk Adjusted Rent</div>
-<div>${INR(riskRent)}</div>
-
-<div class="metricLabel">Break Even Rent</div>
-<div>${INR(breakEven)}</div>
-
 <div class="metricLabel">Monthly Savings</div>
 <div class="metricValue">${INR(monthlySavings)}</div>
 
@@ -329,33 +345,20 @@ $("results").innerHTML=`
 
 <div class="metricLabel">Lease Term Savings</div>
 <div>${INR(termSavings)}</div>
-
-<div class="metricLabel">Total Extra Cash</div>
-<div>${INR(extraCash)}</div>
-
-<div class="metricLabel">Lease Efficiency Score</div>
-<div>${score.toFixed(0)} / 100</div>
 `;
 
-let verdict=" Neutral";
-if(score>20) verdict=" Lease Is Winning";
-if(score<5) verdict=" Rent Is Safer";
-
+let verdict="🟡 Neutral";
+if(score>20) verdict="🟢 Lease Is Winning";
+if(score<5) verdict="🔴 Rent Is Safer";
 $("verdict").innerText=verdict;
 
 /* ===== CHARTS ===== */
 
 if(comparisonChart)comparisonChart.destroy();
-
 comparisonChart=new Chart($("comparisonChart"),{
 type:"bar",
-data:{
-labels:["Market Rent","Risk Rent","Lease Monthly Cost"],
-datasets:[{
-label:"Monthly Comparison",
-data:[MARKET_RENT,riskRent,monthlyLeaseCost]
-}]
-}
+data:{labels:["Market Rent","Risk Rent","Lease Monthly Cost"],
+datasets:[{data:[MARKET_RENT,riskRent,monthlyLeaseCost]}]}
 });
 
 let proj=[];
@@ -363,37 +366,17 @@ let step=termSavings/LEASE_TENURE;
 for(let i=1;i<=LEASE_TENURE;i++){proj.push(step*i);}
 
 if(projectionChart)projectionChart.destroy();
-
 projectionChart=new Chart($("projectionChart"),{
 type:"line",
-data:{
-labels:proj.map((_,i)=>i+1),
-datasets:[{label:"Cumulative Savings Projection",data:proj}]
-}
+data:{labels:proj.map((_,i)=>i+1),
+datasets:[{data:proj}]}
 });
 
 if(compositionChart)compositionChart.destroy();
-
 compositionChart=new Chart($("compositionChart"),{
 type:"doughnut",
-data:{
-labels:[
-"Interest Cost",
-"Own Funds Opportunity",
-"EMI Opportunity",
-"Refund Delay",
-"Withholding Loss"
-],
-datasets:[{
-data:[
-totalInterest,
-ownOpp,
-emiOpp,
-delayCost,
-withholdingLoss
-]
-}]
-}
+data:{labels:["Interest","OwnOpp","EmiOpp","Delay","Withholding"],
+datasets:[{data:[totalInterest,ownOpp,emiOpp,delayCost,withholdingLoss]}]}
 });
 
 }
