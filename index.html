@@ -3,91 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent Analyzer PRO+</title>
+<title>Lease vs Rent Analyzer ELITE</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body{
-font-family:Arial, sans-serif;
-background:#f4f6f9;
-margin:0;
-padding:15px;
-}
-
+body{font-family:Arial;background:#f4f6f9;margin:0;padding:15px;}
 .container{max-width:1100px;margin:auto;}
-
 h1{text-align:center;color:#1f4e79;}
-
 .card{
-background:#fff;
-padding:18px;
-margin-bottom:20px;
-border-radius:12px;
-box-shadow:0 6px 14px rgba(0,0,0,.06);
+background:#fff;padding:18px;margin-bottom:20px;
+border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,.06);
 }
-
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:10px;
 }
-
 input{
-width:100%;
-padding:10px;
-border-radius:6px;
-border:1px solid #ccc;
+width:100%;padding:10px;border-radius:6px;border:1px solid #ccc;
 }
-
 button{
-padding:12px;
-margin-top:8px;
-width:100%;
-background:#1f4e79;
-color:#fff;
-border:none;
-border-radius:6px;
-font-weight:bold;
-cursor:pointer;
+padding:12px;margin-top:8px;width:100%;
+background:#1f4e79;color:#fff;border:none;border-radius:6px;font-weight:bold;
 }
-
-.score{
-font-size:24px;
-font-weight:bold;
-margin-top:12px;
-}
-
-.good{color:green}
-.warning{color:orange}
-.bad{color:red}
+.score{font-size:24px;font-weight:bold;margin-top:12px;}
+.good{color:green}.warning{color:orange}.bad{color:red}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
-<h1>Lease vs Rent Analyzer PRO+</h1>
+<h1>Lease vs Rent Analyzer ELITE</h1>
 
 <div class="card">
 <h3>Inputs</h3>
 
 <div class="grid">
-<input id="leaseAmount" placeholder="Lease Amount">
-<input id="loanAmount" placeholder="Loan Amount">
-<input id="ownFunds" placeholder="Own Funds">
-<input id="loanRate" placeholder="Loan Interest % Annual">
+
+<input id="leaseAmount" class="currency" placeholder="Lease Amount">
+<input id="loanAmount" class="currency" placeholder="Loan Amount">
+<input id="loanRate" class="percent" placeholder="Loan Interest %">
 <input id="loanTenure" placeholder="Loan Tenure Months">
 <input id="leaseTenure" placeholder="Lease Tenure Months">
-<input id="withholding" placeholder="Lease Withholding %">
+<input id="withholding" class="percent" placeholder="Lease Withholding %">
 <input id="refundDelay" placeholder="Refund Delay Months">
-<input id="maintenance" placeholder="Monthly Maintenance">
-<input id="marketRent" placeholder="Market Rent">
-<input id="oppRate" placeholder="Opportunity Cost % Annual">
-<input id="riskPremium" placeholder="Risk Premium %">
-<input id="salary" placeholder="Take Home Salary (Optional)">
+<input id="maintenance" class="currency" placeholder="Monthly Maintenance">
+<input id="marketRent" class="currency" placeholder="Market Rent">
+<input id="oppRate" class="percent" placeholder="Opportunity Cost %">
+<input id="riskPremium" class="percent" placeholder="Risk Premium %">
+<input id="salary" class="currency" placeholder="Take Home Salary (Optional)">
+
 </div>
 
 <button onclick="calculate()">Run Analysis</button>
@@ -109,16 +77,43 @@ margin-top:12px;
 <script>
 
 let chartInstance;
-
 const $ = id => document.getElementById(id);
 
-function num(id){
-return parseFloat($(id).value) || 0;
+/* ---------- FORMAT HELPERS ---------- */
+
+function cleanNumber(v){
+return parseFloat((v||"").replace(/[₹,%\s,]/g,"")) || 0;
 }
 
-function formatCurrency(n){
+function formatINR(n){
 return "₹ " + Math.round(n||0).toLocaleString("en-IN");
 }
+
+function formatPercent(n){
+return (n||0).toFixed(2)+"%";
+}
+
+function attachFormatting(){
+
+document.querySelectorAll(".currency").forEach(inp=>{
+inp.addEventListener("blur",()=>{
+let val=cleanNumber(inp.value);
+if(val) inp.value=formatINR(val);
+});
+});
+
+document.querySelectorAll(".percent").forEach(inp=>{
+inp.addEventListener("blur",()=>{
+let val=cleanNumber(inp.value);
+if(val) inp.value=formatPercent(val);
+});
+});
+
+}
+
+attachFormatting();
+
+/* ---------- FINANCIAL CORE ---------- */
 
 function emiCalc(P,r,n){
 if(r===0) return P/n;
@@ -132,55 +127,61 @@ return pmt*((Math.pow(1+rate,n)-1)/rate);
 
 function calculate(){
 
-const leaseAmount=num("leaseAmount");
-const loanAmount=num("loanAmount");
-const ownFunds=num("ownFunds");
+const leaseAmount=cleanNumber($("leaseAmount").value);
+const loanAmount=cleanNumber($("loanAmount").value);
+const ownFunds=Math.max(0,leaseAmount-loanAmount);
 
-const loanRate=(num("loanRate")/100)/12;
-const loanTenure=num("loanTenure");
-const leaseTenure=num("leaseTenure");
+const loanRate=(cleanNumber($("loanRate").value)/100)/12;
+const loanTenure=cleanNumber($("loanTenure").value);
+const leaseTenure=cleanNumber($("leaseTenure").value);
 
-const withholding=num("withholding")/100;
-const refundDelay=num("refundDelay");
-const maintenance=num("maintenance");
-const marketRent=num("marketRent");
+const withholding=cleanNumber($("withholding").value)/100;
+const refundDelay=cleanNumber($("refundDelay").value);
 
-const oppRate=(num("oppRate")/100)/12;
-const riskPremium=num("riskPremium")/100;
-const salary=num("salary");
+const maintenance=cleanNumber($("maintenance").value);
+const marketRent=cleanNumber($("marketRent").value);
+
+const oppRate=(cleanNumber($("oppRate").value)/100)/12;
+const riskPremium=cleanNumber($("riskPremium").value)/100;
+const salary=cleanNumber($("salary").value);
 
 if(!loanAmount || !loanTenure){
 alert("Enter loan amount and tenure.");
 return;
 }
 
-const emi = emiCalc(loanAmount,loanRate,loanTenure);
-const totalInterest = emi*loanTenure-loanAmount;
+const emi=emiCalc(loanAmount,loanRate,loanTenure);
+const totalInterest=emi*loanTenure-loanAmount;
 
-const monthlyLeaseCost = emi + maintenance;
-const monthlyExtra = monthlyLeaseCost - marketRent;
+const monthlyLeaseCost=emi+maintenance;
+const monthlyExtra=monthlyLeaseCost-marketRent;
 
-const refund = leaseAmount*(1-withholding);
-const withholdingLoss = leaseAmount*withholding;
+const refund=leaseAmount*(1-withholding);
+const withholdingLoss=leaseAmount*withholding;
 
-const ownOpp = ownFunds*(Math.pow(1+oppRate,leaseTenure)-1);
+const ownOpp=ownFunds*(Math.pow(1+oppRate,leaseTenure)-1);
 
 let emiOpp=0;
 if(monthlyExtra>0){
-emiOpp = futureValue(monthlyExtra,oppRate,leaseTenure) - (monthlyExtra*leaseTenure);
+emiOpp=futureValue(monthlyExtra,oppRate,leaseTenure)-(monthlyExtra*leaseTenure);
 }
 
-const delayCost = refund*oppRate*refundDelay;
+const delayCost=refund*oppRate*refundDelay;
+const capitalLoss=totalInterest+withholdingLoss;
+const totalEconomic=capitalLoss+ownOpp+emiOpp+delayCost;
 
-const capitalLoss = totalInterest + withholdingLoss;
+const riskRent=(totalEconomic/leaseTenure)*(1+riskPremium);
 
-const totalEconomic = capitalLoss + ownOpp + emiOpp + delayCost;
+/* ---------- NEW SAVINGS ENGINE ---------- */
 
-const riskRent = (totalEconomic/leaseTenure)*(1+riskPremium);
+const monthlySavings=marketRent-riskRent;
+const yearlySavings=monthlySavings*12;
+const termSavings=monthlySavings*leaseTenure;
 
-let savings = marketRent-riskRent;
-let score = marketRent>0 ? (savings/marketRent)*100 : 0;
-score = Math.max(0,Math.min(100,score));
+/* ---------- SCORE ---------- */
+
+let score=marketRent>0?(monthlySavings/marketRent)*100:0;
+score=Math.max(0,Math.min(100,score));
 
 let stress="";
 if(salary){
@@ -190,20 +191,25 @@ else if(ratio<0.55) stress="<span class='warning'>Moderate Stress</span>";
 else stress="<span class='bad'>High Stress</span>";
 }
 
+/* ---------- OUTPUT ---------- */
+
 $("results").innerHTML=`
 
-EMI: ${formatCurrency(emi)} <br>
-Total Interest Paid: ${formatCurrency(totalInterest)} <br>
-Monthly Lease Cost: ${formatCurrency(monthlyLeaseCost)} <br>
-Risk Adjusted Notional Rent: ${formatCurrency(riskRent)} <br>
-Break Even Rent: ${formatCurrency(riskRent)} <br>
+Own Funds Used: ${formatINR(ownFunds)} <br><br>
+
+EMI: ${formatINR(emi)} <br>
+Monthly Lease Cost: ${formatINR(monthlyLeaseCost)} <br>
+Risk Adjusted Notional Rent: ${formatINR(riskRent)} <br><br>
+
+<b>Monthly Savings:</b> ${formatINR(monthlySavings)} <br>
+<b>Yearly Savings:</b> ${formatINR(yearlySavings)} <br>
+<b>Total Lease Term Savings:</b> ${formatINR(termSavings)} <br>
 
 <div class="score">
 Lease Efficiency Score: ${score.toFixed(0)} / 100
 </div>
 
 Cash Flow Stress: ${stress}
-
 `;
 
 if(chartInstance) chartInstance.destroy();
@@ -221,16 +227,15 @@ data:[marketRent,riskRent]
 
 }
 
+/* ---------- PDF ---------- */
+
 async function downloadPDF(){
 const { jsPDF } = window.jspdf;
 const doc=new jsPDF();
-
 doc.setFontSize(16);
 doc.text("Lease vs Rent Financial Report",20,20);
-
 doc.setFontSize(11);
 doc.text($("results").innerText,20,35);
-
 doc.save("Lease_vs_Rent_Report.pdf");
 }
 
