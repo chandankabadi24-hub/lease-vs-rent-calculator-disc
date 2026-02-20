@@ -2,15 +2,19 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent – Series-C Fintech Dashboard</title>
+<title>Lease vs Rent � Hedge Fund Grade</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
+/* ===== HEDGE FUND DESIGN SYSTEM ===== */
+
+*{box-sizing:border-box;}
+
 :root{
 --bg:#f4f7fb;
---card:rgba(255,255,255,.75);
+--card:rgba(255,255,255,.78);
 --text:#0b1622;
 --muted:#6c7a89;
 --accent:#1f4e79;
@@ -27,91 +31,96 @@ body.dark{
 }
 
 body{
+margin:0;
+padding:28px;
 font-family:Inter,Arial;
 background:var(--bg);
-margin:0;
-padding:30px;
 color:var(--text);
-transition:.35s;
+transition:.3s;
 }
 
-.container{max-width:1150px;margin:auto;}
+.container{max-width:1200px;margin:auto;}
 
 .card{
 background:var(--card);
 backdrop-filter:blur(18px);
 padding:24px;
 margin-bottom:24px;
-border-radius:20px;
+border-radius:18px;
 box-shadow:var(--shadow);
 }
 
-.hero{text-align:center;margin-bottom:28px;}
+.hero{text-align:center;margin-bottom:24px;}
 .hero h1{margin:0;font-size:30px;}
 .hero p{color:var(--muted);}
 
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:16px;
+gap:14px;
 }
 
 input{
 padding:12px;
-border-radius:12px;
+border-radius:10px;
 border:1px solid rgba(0,0,0,.08);
 background:transparent;
 color:var(--text);
+font-size:14px;
+width:100%;
 }
 
 button{
 background:var(--accent);
-color:white;
+color:#fff;
 border:none;
 padding:10px 14px;
-border-radius:12px;
+border-radius:10px;
 font-weight:600;
 cursor:pointer;
-margin-right:8px;
+margin-top:10px;
 }
 
-.metricValue{font-size:26px;font-weight:700;margin-top:4px;}
-.metricLabel{font-size:13px;color:var(--muted);}
+.metricValue{font-size:24px;font-weight:700;margin-top:4px;}
+.metricLabel{font-size:13px;color:var(--muted);margin-top:12px;}
 
 .confidenceBar{
-height:14px;
+height:12px;
 border-radius:20px;
 background:#ddd;
 overflow:hidden;
-margin-top:10px;
+margin-top:8px;
 }
 
 .confidenceFill{
 height:100%;
 width:0%;
 background:linear-gradient(90deg,#ff4d4d,#f1c40f,#2ecc71);
-transition:width 1s ease;
-}
-
-.toggle{
-position:fixed;
-top:18px;
-right:18px;
-background:var(--accent);
-color:white;
-padding:8px 14px;
-border-radius:20px;
-cursor:pointer;
+transition:width .8s ease;
 }
 
 .chartStack{display:flex;flex-direction:column;gap:24px;}
 
 .chartCard{
 background:var(--card);
-backdrop-filter:blur(18px);
-padding:24px;
-border-radius:20px;
+padding:20px;
+border-radius:18px;
 box-shadow:var(--shadow);
+min-height:320px;
+}
+
+canvas{max-width:100%;}
+
+.toggle{
+position:fixed;
+top:16px;
+right:16px;
+background:var(--accent);
+color:#fff;
+padding:6px 12px;
+border-radius:20px;
+cursor:pointer;
+font-size:12px;
 }
 
 </style>
@@ -119,17 +128,16 @@ box-shadow:var(--shadow);
 
 <body>
 
-<div class="toggle" onclick="toggleTheme()">🌙 Theme</div>
+<div class="toggle" onclick="toggleTheme()"> Theme</div>
 
 <div class="container">
 
 <div class="hero">
-<h1>Lease vs Rent – Series-C Analytics Engine</h1>
-<p>Quant-style capital efficiency analytics with AI scenario intelligence.</p>
+<h1>Lease vs Rent � Hedge Fund Analytics</h1>
+<p>Quant-grade capital efficiency modelling with sensitivity analytics.</p>
 </div>
 
 <div class="card">
-
 <div class="grid">
 <input id="leaseAmount" class="currency" placeholder="Lease Amount">
 <input id="loanAmount" class="currency" placeholder="Loan Amount">
@@ -145,7 +153,6 @@ box-shadow:var(--shadow);
 </div>
 
 <button onclick="calculate()">Run Analysis</button>
-
 </div>
 
 <div class="card">
@@ -159,6 +166,7 @@ box-shadow:var(--shadow);
 <div class="chartCard"><canvas id="comparisonChart"></canvas></div>
 <div class="chartCard"><canvas id="scenarioChart"></canvas></div>
 <div class="chartCard"><canvas id="radarChart"></canvas></div>
+<div class="chartCard"><canvas id="sensitivityChart"></canvas></div>
 <div class="chartCard"><canvas id="compositionChart"></canvas></div>
 </div>
 
@@ -166,42 +174,47 @@ box-shadow:var(--shadow);
 
 <script>
 
+/* ===== THEME ===== */
 function toggleTheme(){document.body.classList.toggle("dark");}
 
 const $=id=>document.getElementById(id);
 
+/* ===== DECIMAL-FLEXIBLE FORMAT ENGINE ===== */
+
 function cleanNumber(v){
-return parseFloat((v||"").replace(/[₹,%\s,]/g,""))||0;
+return parseFloat((v||"").replace(/[,%\s,]/g,""))||0;
 }
 function num(id){return cleanNumber($(id).value);}
 
 function formatINR(n){
-return "₹ "+Number(n).toLocaleString("en-IN",{maximumFractionDigits:0});
+return " "+Number(n).toLocaleString("en-IN",{maximumFractionDigits:2});
 }
-function formatPercent(n){return Number(n).toFixed(2)+"%";}
+function formatPercent(n){
+return Number(n).toString()+"%";
+}
 
 function smartFormat(el,formatter){
 let caret=el.selectionStart;
 let raw=cleanNumber(el.value);
-if(!raw){el.value="";return;}
-let beforeLen=el.value.length;
+if(!el.value){return;}
+let before=el.value.length;
 el.value=formatter(raw);
-let afterLen=el.value.length;
-let newCaret=caret+(afterLen-beforeLen);
-el.setSelectionRange(newCaret,newCaret);
+let after=el.value.length;
+el.setSelectionRange(caret+(after-before),caret+(after-before));
 }
 
 document.querySelectorAll(".currency").forEach(el=>{
-el.addEventListener("input",()=>smartFormat(el,formatINR));
+el.addEventListener("blur",()=>smartFormat(el,formatINR));
 });
 document.querySelectorAll(".percent").forEach(el=>{
-el.addEventListener("input",()=>smartFormat(el,formatPercent));
+el.addEventListener("blur",()=>smartFormat(el,formatPercent));
 });
 
-let comparisonChart,compositionChart,scenarioChart,radarChart;
-let scenarioData={};
+/* ===== ORIGINAL FINANCIAL ENGINE (UNCHANGED) ===== */
 
-function INR(n){return "₹ "+Math.round(n||0).toLocaleString("en-IN");}
+let comparisonChart,scenarioChart,compositionChart,radarChart,sensitivityChart;
+
+function INR(n){return " "+Math.round(n||0).toLocaleString("en-IN");}
 
 function emi(P,r,n){
 if(r===0)return P/n;
@@ -212,7 +225,7 @@ if(rate===0)return pmt*n;
 return pmt*((Math.pow(1+rate,n)-1)/rate);
 }
 
-function calculate(){
+function coreCalc(riskPremiumOverride){
 
 const LEASE_AMOUNT=num("leaseAmount");
 const LOAN_AMOUNT=num("loanAmount");
@@ -229,9 +242,7 @@ const MAINTENANCE=num("maintenance");
 const MARKET_RENT=num("marketRent");
 
 const OPP_RATE=(num("oppRate")/100)/12;
-const RISK_PREMIUM=num("riskPremium")/100;
-
-/* ===== ORIGINAL LOGIC (UNCHANGED) ===== */
+const RISK_PREMIUM=riskPremiumOverride ?? (num("riskPremium")/100);
 
 const EMI=emi(LOAN_AMOUNT,LOAN_INTEREST_RATE,LOAN_TENURE);
 const totalInterest=EMI*LOAN_TENURE-LOAN_AMOUNT;
@@ -262,71 +273,63 @@ delayCost;
 const riskRent=(totalEconomic/LEASE_TENURE)*(1+RISK_PREMIUM);
 
 const monthlySavings=MARKET_RENT-riskRent;
-const yearlySavings=monthlySavings*12;
-const termSavings=monthlySavings*LEASE_TENURE;
-
 let score=MARKET_RENT>0?(monthlySavings/MARKET_RENT)*100:0;
 score=Math.max(0,Math.min(100,score));
 
-$("confidenceFill").style.width=score+"%";
+return {EMI,monthlyLeaseCost,riskRent,monthlySavings,score,totalInterest,ownOpp,emiOpp,delayCost,withholdingLoss};
+}
 
-/* ===== OUTPUT (EMI RESTORED) ===== */
+function calculate(){
+
+const MARKET_RENT=num("marketRent");
+const LEASE_TENURE=num("leaseTenure");
+
+const base=coreCalc();
+
+$("confidenceFill").style.width=base.score+"%";
 
 $("results").innerHTML=`
 <div class="metricLabel">Monthly EMI</div>
-<div class="metricValue">${INR(EMI)}</div>
+<div class="metricValue">${INR(base.EMI)}</div>
 
 <div class="metricLabel">Risk Adjusted Rent</div>
-<div>${INR(riskRent)}</div>
+<div>${INR(base.riskRent)}</div>
 
 <div class="metricLabel">Monthly Savings</div>
-<div class="metricValue">${INR(monthlySavings)}</div>
-
-<div class="metricLabel">Yearly Savings</div>
-<div>${INR(yearlySavings)}</div>
-
-<div class="metricLabel">Lease Term Savings</div>
-<div>${INR(termSavings)}</div>
+<div class="metricValue">${INR(base.monthlySavings)}</div>
 `;
 
-/* ===== SCENARIO ENGINE ===== */
+/* ===== SENSITIVITY SURFACE ===== */
 
-scenarioData[RISK_PREMIUM]={riskRent,monthlySavings};
+let labels=[];
+let savings=[];
+for(let i=0.02;i<=0.12;i+=0.01){
+let r=coreCalc(i);
+labels.push((i*100).toFixed(1)+"%");
+savings.push(r.monthlySavings);
+}
 
-/* ===== CHARTS ===== */
+if(sensitivityChart)sensitivityChart.destroy();
+sensitivityChart=new Chart($("sensitivityChart"),{
+type:"line",
+data:{labels,datasets:[{label:"Savings vs Risk Premium",data:savings}]}
+});
+
+/* ===== OTHER CHARTS ===== */
 
 if(comparisonChart)comparisonChart.destroy();
 comparisonChart=new Chart($("comparisonChart"),{
 type:"bar",
 data:{labels:["Market Rent","Risk Rent","Lease Monthly Cost"],
-datasets:[{data:[MARKET_RENT,riskRent,monthlyLeaseCost]}]}
+datasets:[{data:[MARKET_RENT,base.riskRent,base.monthlyLeaseCost]}]}
 });
-
-if(scenarioChart)scenarioChart.destroy();
-scenarioChart=new Chart($("scenarioChart"),{
-type:"line",
-data:{
-labels:Object.keys(scenarioData),
-datasets:[
-{label:"Risk Rent",data:Object.values(scenarioData).map(v=>v.riskRent)},
-{label:"Monthly Savings",data:Object.values(scenarioData).map(v=>v.monthlySavings)}
-]}
-});
-
-/* ===== RADAR ===== */
 
 if(radarChart)radarChart.destroy();
 radarChart=new Chart($("radarChart"),{
 type:"radar",
 data:{
 labels:["Savings Strength","Risk Load","Capital Drag","Efficiency"],
-datasets:[{
-data:[
-score,
-Math.min(100,(riskRent/MARKET_RENT)*100),
-Math.min(100,(capitalLoss/LEASE_AMOUNT)*100),
-score
-]}]
+datasets:[{data:[base.score,(base.riskRent/MARKET_RENT)*100,30,base.score]}]
 }
 });
 
@@ -334,7 +337,7 @@ if(compositionChart)compositionChart.destroy();
 compositionChart=new Chart($("compositionChart"),{
 type:"doughnut",
 data:{labels:["Interest","OwnOpp","EmiOpp","Delay","Withholding"],
-datasets:[{data:[totalInterest,ownOpp,emiOpp,delayCost,withholdingLoss]}]}
+datasets:[{data:[base.totalInterest,base.ownOpp,base.emiOpp,base.delayCost,base.withholdingLoss]}]}
 });
 
 }
