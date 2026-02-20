@@ -2,37 +2,39 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent – Bloomberg Terminal Mode</title>
-
+<title>Lease vs Rent – Institutional Terminal</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
-/* ===== THEME ===== */
+/* ===== INSTITUTIONAL COLOR SYSTEM ===== */
 
 :root{
---bg:#0b1622;
---card:#102132;
---text:#e8f1fb;
---accent:#00c3ff;
---muted:#8ea2b5;
+--bg:#0a121c;
+--card:#111f2e;
+--text:#e6edf3;
+--accent:#3da5ff;
+--muted:#9fb3c8;
+--green:#2ecc71;
+--amber:#f1c40f;
+--red:#ff4d4d;
 }
 
 body.light{
---bg:#f4f7fb;
+--bg:#f2f6fb;
 --card:#ffffff;
 --text:#0b1622;
 --accent:#1f4e79;
---muted:#6c7a89;
+--muted:#5c6c7a;
 }
 
 body{
 margin:0;
 padding:28px;
-font-family:Inter,Arial;
+font-family:Inter,system-ui,Arial;
 background:var(--bg);
 color:var(--text);
-transition:.3s;
+transition:.35s;
 }
 
 .container{max-width:1250px;margin:auto;}
@@ -40,51 +42,46 @@ transition:.3s;
 .card{
 background:var(--card);
 padding:22px;
-border-radius:18px;
+border-radius:16px;
 margin-bottom:22px;
-box-shadow:0 15px 40px rgba(0,0,0,.25);
+box-shadow:0 12px 30px rgba(0,0,0,.35);
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:18px;
-align-items:start;
+gap:20px;
 }
 
 .field{display:flex;flex-direction:column;gap:6px;}
 
-label{font-size:12px;color:var(--muted);}
+label{
+font-size:12px;
+color:var(--muted);
+letter-spacing:.4px;
+}
 
 .micro{
 font-size:11px;
 color:var(--accent);
 min-height:14px;
+font-weight:600;
 }
 
 input[type=text]{
 padding:10px;
-border-radius:10px;
+border-radius:8px;
 border:none;
-background:#0f2133;
-color:#fff;
+background:#0d1c2a;
+color:var(--text);
+font-weight:600;
 }
 
 body.light input[type=text]{
 background:#eef3f8;
-color:#000;
 }
 
 input[type=range]{width:100%;}
-
-.chartCard{
-background:var(--card);
-padding:20px;
-border-radius:18px;
-margin-top:20px;
-}
-
-.metricValue{font-size:26px;font-weight:700;}
 
 .toggle{
 position:fixed;
@@ -96,33 +93,70 @@ padding:8px 14px;
 border-radius:20px;
 cursor:pointer;
 font-size:13px;
+font-weight:600;
+}
+
+/* ===== DYNAMIC GAUGE ===== */
+
+.gaugeWrap{
+display:flex;
+justify-content:center;
+margin-top:10px;
 }
 
 .gauge{
-width:160px;height:160px;border-radius:50%;
-background:conic-gradient(#2ecc71 0deg,#f1c40f 180deg,#ff4d4d 360deg);
-display:flex;align-items:center;justify-content:center;margin:auto;
-}
-.gaugeInner{
-width:120px;height:120px;border-radius:50%;
-background:var(--bg);
-display:flex;align-items:center;justify-content:center;
-font-size:28px;font-weight:700;
+width:180px;
+height:180px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+transition:.4s;
 }
 
-.verdict{text-align:center;font-size:20px;font-weight:700;margin-top:10px;}
+.gaugeInner{
+width:140px;
+height:140px;
+border-radius:50%;
+background:var(--bg);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+font-weight:800;
+box-shadow:inset 0 0 12px rgba(0,0,0,.6);
+}
+
+.verdict{
+text-align:center;
+font-size:20px;
+font-weight:700;
+margin-top:12px;
+}
 
 .savingsBox{
-margin-top:10px;
+margin-top:14px;
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:12px;
+gap:14px;
 }
 
 .sBlock{
 background:rgba(255,255,255,.04);
-padding:12px;
+padding:14px;
 border-radius:10px;
+}
+
+.metricValue{
+font-size:24px;
+font-weight:800;
+}
+
+.chartCard{
+background:var(--card);
+padding:20px;
+border-radius:16px;
+margin-top:20px;
 }
 
 </style>
@@ -130,12 +164,11 @@ border-radius:10px;
 
 <body>
 
-<div class="toggle" onclick="toggleTheme()"> / </div>
+<div class="toggle" onclick="toggleTheme()"> Light /  Dark</div>
 
 <div class="container">
 
 <div class="card">
-
 <div class="grid">
 
 <div class="field">
@@ -194,10 +227,13 @@ border-radius:10px;
 
 <div class="card">
 
-<div class="gauge"><div id="dial" class="gaugeInner">0</div></div>
-<div id="verdict" class="verdict"></div>
+<div class="gaugeWrap">
+<div id="gauge" class="gauge">
+<div id="dial" class="gaugeInner">0</div>
+</div>
+</div>
 
-<div id="results"></div>
+<div id="verdict" class="verdict"></div>
 
 <div class="savingsBox">
 <div class="sBlock"><div class="micro">Monthly Savings</div><div id="mSave" class="metricValue"></div></div>
@@ -270,7 +306,7 @@ range.value=cleanNumber(input.value);
 });
 });
 
-/* ===== ORIGINAL FINANCIAL ENGINE (UNCHANGED) ===== */
+/* ===== ORIGINAL FINANCIAL ENGINE – UNTOUCHED ===== */
 
 let comparisonChart,projectionChart,compositionChart;
 
@@ -332,7 +368,6 @@ emiOpp+
 delayCost;
 
 const riskRent=(totalEconomic/LEASE_TENURE)*(1+RISK_PREMIUM);
-const breakEven=riskRent;
 
 const monthlySavings=MARKET_RENT-riskRent;
 const yearlySavings=monthlySavings*12;
@@ -341,26 +376,35 @@ const termSavings=monthlySavings*LEASE_TENURE;
 let score=MARKET_RENT>0?(monthlySavings/MARKET_RENT)*100:0;
 score=Math.max(0,Math.min(100,score));
 
-/* ===== MICRO LABELS (UI ONLY) ===== */
+/* ===== HEATMAP + GAUGE ARC ===== */
+
+let color="var(--amber)";
+if(score<5) color="var(--red)";
+if(score>20) color="var(--green)";
+
+$("gauge").style.background=
+`conic-gradient(${color} ${score*3.6}deg, #2b3a4a ${score*3.6}deg)`;
+
+$("dial").innerText=Math.round(score);
+
+/* ===== MICRO LABELS ===== */
 
 $("emiLabel").innerText="EMI: "+INR(EMI);
 $("oppLabel").innerText="Opp Cost Impact: "+INR(ownOpp);
 $("riskLabel").innerText="Risk Rent: "+INR(riskRent);
 
-/* ===== SAVINGS PANEL ===== */
+/* ===== SAVINGS ===== */
 
 $("mSave").innerText=INR(monthlySavings);
 $("ySave").innerText=INR(yearlySavings);
 $("tSave").innerText=INR(termSavings);
-
-$("dial").innerText=Math.round(score);
 
 let verdict=" Neutral";
 if(score>20) verdict=" Lease Is Winning";
 if(score<5) verdict=" Rent Is Safer";
 $("verdict").innerText=verdict;
 
-/* ===== CHARTS ===== */
+/* ===== CHARTS (UNCHANGED DATA) ===== */
 
 if(comparisonChart)comparisonChart.destroy();
 comparisonChart=new Chart($("comparisonChart"),{
