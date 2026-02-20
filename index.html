@@ -2,28 +2,17 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent – Hedge Fund Grade</title>
+<title>Lease vs Rent – Quant Terminal Mode</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
-/* ===== HEDGE FUND DESIGN SYSTEM ===== */
-
 *{box-sizing:border-box;}
 
 :root{
---bg:#f4f7fb;
---card:rgba(255,255,255,.78);
---text:#0b1622;
---muted:#6c7a89;
---accent:#1f4e79;
---shadow:0 30px 60px rgba(0,0,0,.08);
-}
-
-body.dark{
 --bg:#0b1622;
---card:rgba(18,30,44,.7);
+--card:rgba(18,30,44,.78);
 --text:#e8f1fb;
 --muted:#8ea2b5;
 --accent:#00c3ff;
@@ -32,62 +21,39 @@ body.dark{
 
 body{
 margin:0;
-padding:28px;
+padding:24px;
 font-family:Inter,Arial;
 background:var(--bg);
 color:var(--text);
-transition:.3s;
 }
 
-.container{max-width:1200px;margin:auto;}
+.container{
+display:grid;
+grid-template-columns:320px 1fr;
+gap:24px;
+max-width:1400px;
+margin:auto;
+}
 
-.card{
+.panel{
 background:var(--card);
-backdrop-filter:blur(18px);
-padding:24px;
-margin-bottom:24px;
-border-radius:18px;
+padding:18px;
+border-radius:16px;
 box-shadow:var(--shadow);
 }
 
-.hero{text-align:center;margin-bottom:24px;}
-.hero h1{margin:0;font-size:30px;}
-.hero p{color:var(--muted);}
+.sliderBox{margin-bottom:18px;}
 
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:14px;
-}
+label{font-size:12px;color:var(--muted);}
 
-input{
-padding:12px;
-border-radius:10px;
-border:1px solid rgba(0,0,0,.08);
-background:transparent;
-color:var(--text);
-font-size:14px;
-width:100%;
-}
+input[type=range]{width:100%;}
 
-button{
-background:var(--accent);
-color:#fff;
-border:none;
-padding:10px 14px;
-border-radius:10px;
-font-weight:600;
-cursor:pointer;
-margin-top:10px;
-}
-
-.metricValue{font-size:24px;font-weight:700;margin-top:4px;}
-.metricLabel{font-size:13px;color:var(--muted);margin-top:12px;}
+.metricValue{font-size:26px;font-weight:700;margin-top:6px;}
 
 .confidenceBar{
 height:12px;
 border-radius:20px;
-background:#ddd;
+background:#1a2a3a;
 overflow:hidden;
 margin-top:8px;
 }
@@ -96,31 +62,21 @@ margin-top:8px;
 height:100%;
 width:0%;
 background:linear-gradient(90deg,#ff4d4d,#f1c40f,#2ecc71);
-transition:width .8s ease;
+transition:width .5s ease;
 }
 
-.chartStack{display:flex;flex-direction:column;gap:24px;}
+.chartStack{
+display:flex;
+flex-direction:column;
+gap:22px;
+}
 
 .chartCard{
 background:var(--card);
 padding:20px;
-border-radius:18px;
+border-radius:16px;
 box-shadow:var(--shadow);
-min-height:320px;
-}
-
-canvas{max-width:100%;}
-
-.toggle{
-position:fixed;
-top:16px;
-right:16px;
-background:var(--accent);
-color:#fff;
-padding:6px 12px;
-border-radius:20px;
-cursor:pointer;
-font-size:12px;
+min-height:300px;
 }
 
 </style>
@@ -128,91 +84,102 @@ font-size:12px;
 
 <body>
 
-<div class="toggle" onclick="toggleTheme()"> Theme</div>
-
 <div class="container">
 
-<div class="hero">
-<h1>Lease vs Rent – Hedge Fund Analytics</h1>
-<p>Quant-grade capital efficiency modelling with sensitivity analytics.</p>
+<!-- ===== CONTROL PANEL ===== -->
+
+<div class="panel">
+
+<div class="sliderBox">
+<label>Lease Amount</label>
+<input id="leaseAmount" type="range" min="100000" max="5000000" step="50000" value="1500000">
 </div>
 
-<div class="card">
-<div class="grid">
-<input id="leaseAmount" class="currency" placeholder="Lease Amount">
-<input id="loanAmount" class="currency" placeholder="Loan Amount">
-<input id="loanRate" class="percent" placeholder="Loan Interest %">
-<input id="loanTenure" placeholder="Loan Tenure Months">
-<input id="leaseTenure" placeholder="Lease Tenure Months">
-<input id="withholding" class="percent" placeholder="Withholding %">
-<input id="refundDelay" placeholder="Refund Delay Months">
-<input id="maintenance" class="currency" placeholder="Monthly Maintenance">
-<input id="marketRent" class="currency" placeholder="Market Rent">
-<input id="oppRate" class="percent" placeholder="Opportunity Cost %">
-<input id="riskPremium" class="percent" placeholder="Risk Premium %">
+<div class="sliderBox">
+<label>Loan Amount</label>
+<input id="loanAmount" type="range" min="0" max="3000000" step="50000" value="1000000">
 </div>
 
-<button onclick="calculate()">Run Analysis</button>
+<div class="sliderBox">
+<label>Loan Interest %</label>
+<input id="loanRate" type="range" min="5" max="15" step="0.1" value="9">
 </div>
 
-<div class="card">
+<div class="sliderBox">
+<label>Market Rent</label>
+<input id="marketRent" type="range" min="5000" max="100000" step="1000" value="25000">
+</div>
+
+<div class="sliderBox">
+<label>Maintenance</label>
+<input id="maintenance" type="range" min="0" max="15000" step="500" value="2000">
+</div>
+
+<div class="sliderBox">
+<label>Opportunity Cost %</label>
+<input id="oppRate" type="range" min="3" max="15" step="0.1" value="8">
+</div>
+
+<div class="sliderBox">
+<label>Risk Premium %</label>
+<input id="riskPremium" type="range" min="0" max="15" step="0.1" value="5">
+</div>
+
+<!-- FIXED CONSTANT INPUTS -->
+<input id="loanTenure" type="hidden" value="120">
+<input id="leaseTenure" type="hidden" value="24">
+<input id="withholding" type="hidden" value="0">
+<input id="refundDelay" type="hidden" value="0">
+
+</div>
+
+<!-- ===== MAIN TERMINAL VIEW ===== -->
+
+<div>
+
+<div class="panel">
+
 <div id="results"></div>
 
-<div class="metricLabel">Decision Confidence</div>
-<div class="confidenceBar"><div id="confidenceFill" class="confidenceFill"></div></div>
+<div class="confidenceBar">
+<div id="confidenceFill" class="confidenceFill"></div>
+</div>
+
 </div>
 
 <div class="chartStack">
-<div class="chartCard"><canvas id="comparisonChart"></canvas></div>
-<div class="chartCard"><canvas id="scenarioChart"></canvas></div>
-<div class="chartCard"><canvas id="radarChart"></canvas></div>
-<div class="chartCard"><canvas id="sensitivityChart"></canvas></div>
-<div class="chartCard"><canvas id="compositionChart"></canvas></div>
+
+<div class="chartCard">
+<canvas id="comparisonChart"></canvas>
+</div>
+
+<div class="chartCard">
+<canvas id="radarChart"></canvas>
+</div>
+
+<div class="chartCard">
+<canvas id="sensitivityChart"></canvas>
+</div>
+
+<div class="chartCard">
+<canvas id="compositionChart"></canvas>
+</div>
+
+</div>
+
 </div>
 
 </div>
 
 <script>
 
-/* ===== THEME ===== */
-function toggleTheme(){document.body.classList.toggle("dark");}
+/* ===== QUANT TERMINAL ENGINE ===== */
 
 const $=id=>document.getElementById(id);
 
-/* ===== DECIMAL-FLEXIBLE FORMAT ENGINE ===== */
+function num(id){return parseFloat($(id).value)||0;}
 
-function cleanNumber(v){
-return parseFloat((v||"").replace(/[,%\s,]/g,""))||0;
-}
-function num(id){return cleanNumber($(id).value);}
-
-function formatINR(n){
-return " "+Number(n).toLocaleString("en-IN",{maximumFractionDigits:2});
-}
-function formatPercent(n){
-return Number(n).toString()+"%";
-}
-
-function smartFormat(el,formatter){
-let caret=el.selectionStart;
-let raw=cleanNumber(el.value);
-if(!el.value){return;}
-let before=el.value.length;
-el.value=formatter(raw);
-let after=el.value.length;
-el.setSelectionRange(caret+(after-before),caret+(after-before));
-}
-
-document.querySelectorAll(".currency").forEach(el=>{
-el.addEventListener("blur",()=>smartFormat(el,formatINR));
-});
-document.querySelectorAll(".percent").forEach(el=>{
-el.addEventListener("blur",()=>smartFormat(el,formatPercent));
-});
-
-/* ===== ORIGINAL FINANCIAL ENGINE (UNCHANGED) ===== */
-
-let comparisonChart,scenarioChart,compositionChart,radarChart,sensitivityChart;
+let comparisonChart,radarChart,compositionChart,sensitivityChart;
 
 function INR(n){return " "+Math.round(n||0).toLocaleString("en-IN");}
 
@@ -220,12 +187,13 @@ function emi(P,r,n){
 if(r===0)return P/n;
 return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
 }
+
 function futureValue(pmt,rate,n){
 if(rate===0)return pmt*n;
 return pmt*((Math.pow(1+rate,n)-1)/rate);
 }
 
-function coreCalc(riskPremiumOverride){
+function calculate(){
 
 const LEASE_AMOUNT=num("leaseAmount");
 const LOAN_AMOUNT=num("loanAmount");
@@ -242,7 +210,9 @@ const MAINTENANCE=num("maintenance");
 const MARKET_RENT=num("marketRent");
 
 const OPP_RATE=(num("oppRate")/100)/12;
-const RISK_PREMIUM=riskPremiumOverride ?? (num("riskPremium")/100);
+const RISK_PREMIUM=num("riskPremium")/100;
+
+/* ===== ORIGINAL LOGIC (UNCHANGED) ===== */
 
 const EMI=emi(LOAN_AMOUNT,LOAN_INTEREST_RATE,LOAN_TENURE);
 const totalInterest=EMI*LOAN_TENURE-LOAN_AMOUNT;
@@ -273,55 +243,39 @@ delayCost;
 const riskRent=(totalEconomic/LEASE_TENURE)*(1+RISK_PREMIUM);
 
 const monthlySavings=MARKET_RENT-riskRent;
+
 let score=MARKET_RENT>0?(monthlySavings/MARKET_RENT)*100:0;
 score=Math.max(0,Math.min(100,score));
 
-return {EMI,monthlyLeaseCost,riskRent,monthlySavings,score,totalInterest,ownOpp,emiOpp,delayCost,withholdingLoss};
-}
-
-function calculate(){
-
-const MARKET_RENT=num("marketRent");
-const LEASE_TENURE=num("leaseTenure");
-
-const base=coreCalc();
-
-$("confidenceFill").style.width=base.score+"%";
+$("confidenceFill").style.width=score+"%";
 
 $("results").innerHTML=`
-<div class="metricLabel">Monthly EMI</div>
-<div class="metricValue">${INR(base.EMI)}</div>
-
-<div class="metricLabel">Risk Adjusted Rent</div>
-<div>${INR(base.riskRent)}</div>
-
-<div class="metricLabel">Monthly Savings</div>
-<div class="metricValue">${INR(base.monthlySavings)}</div>
+<div class="metricValue">${INR(monthlySavings)}</div>
+<div>Monthly Savings</div>
+<div style="margin-top:10px;">EMI: ${INR(EMI)}</div>
+<div>Risk Rent: ${INR(riskRent)}</div>
 `;
 
-/* ===== SENSITIVITY SURFACE ===== */
+/* ===== SENSITIVITY CURVE ===== */
 
-let labels=[];
-let savings=[];
-for(let i=0.02;i<=0.12;i+=0.01){
-let r=coreCalc(i);
-labels.push((i*100).toFixed(1)+"%");
-savings.push(r.monthlySavings);
+let labels=[],data=[];
+for(let i=0.01;i<=0.15;i+=0.01){
+let tempRisk=(totalEconomic/LEASE_TENURE)*(1+i);
+labels.push((i*100).toFixed(0)+"%");
+data.push(MARKET_RENT-tempRisk);
 }
 
 if(sensitivityChart)sensitivityChart.destroy();
 sensitivityChart=new Chart($("sensitivityChart"),{
 type:"line",
-data:{labels,datasets:[{label:"Savings vs Risk Premium",data:savings}]}
+data:{labels,datasets:[{label:"Savings Sensitivity",data}]}
 });
-
-/* ===== OTHER CHARTS ===== */
 
 if(comparisonChart)comparisonChart.destroy();
 comparisonChart=new Chart($("comparisonChart"),{
 type:"bar",
-data:{labels:["Market Rent","Risk Rent","Lease Monthly Cost"],
-datasets:[{data:[MARKET_RENT,base.riskRent,base.monthlyLeaseCost]}]}
+data:{labels:["Market Rent","Risk Rent","Lease Cost"],
+datasets:[{data:[MARKET_RENT,riskRent,monthlyLeaseCost]}]}
 });
 
 if(radarChart)radarChart.destroy();
@@ -329,7 +283,7 @@ radarChart=new Chart($("radarChart"),{
 type:"radar",
 data:{
 labels:["Savings Strength","Risk Load","Capital Drag","Efficiency"],
-datasets:[{data:[base.score,(base.riskRent/MARKET_RENT)*100,30,base.score]}]
+datasets:[{data:[score,(riskRent/MARKET_RENT)*100,30,score]}]
 }
 });
 
@@ -337,10 +291,18 @@ if(compositionChart)compositionChart.destroy();
 compositionChart=new Chart($("compositionChart"),{
 type:"doughnut",
 data:{labels:["Interest","OwnOpp","EmiOpp","Delay","Withholding"],
-datasets:[{data:[base.totalInterest,base.ownOpp,base.emiOpp,base.delayCost,base.withholdingLoss]}]}
+datasets:[{data:[totalInterest,ownOpp,emiOpp,delayCost,withholdingLoss]}]}
 });
 
 }
+
+/* ===== LIVE RECALCULATION ===== */
+
+document.querySelectorAll("input[type=range]").forEach(el=>{
+el.addEventListener("input",calculate);
+});
+
+calculate();
 
 </script>
 </body>
