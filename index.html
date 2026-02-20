@@ -2,13 +2,11 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent – Series-A Fintech Dashboard</title>
+<title>Lease vs Rent – Series-C Fintech Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
-/* ===== SERIES-A FINTECH DESIGN SYSTEM ===== */
 
 :root{
 --bg:#f4f7fb;
@@ -16,7 +14,7 @@
 --text:#0b1622;
 --muted:#6c7a89;
 --accent:#1f4e79;
---shadow:0 25px 50px rgba(0,0,0,.08);
+--shadow:0 30px 60px rgba(0,0,0,.08);
 }
 
 body.dark{
@@ -25,7 +23,7 @@ body.dark{
 --text:#e8f1fb;
 --muted:#8ea2b5;
 --accent:#00c3ff;
---shadow:0 25px 50px rgba(0,0,0,.35);
+--shadow:0 30px 60px rgba(0,0,0,.35);
 }
 
 body{
@@ -41,12 +39,11 @@ transition:.35s;
 
 .card{
 background:var(--card);
-backdrop-filter:blur(16px);
+backdrop-filter:blur(18px);
 padding:24px;
 margin-bottom:24px;
-border-radius:18px;
+border-radius:20px;
 box-shadow:var(--shadow);
-animation:fadeUp .5s ease;
 }
 
 .hero{text-align:center;margin-bottom:28px;}
@@ -75,21 +72,11 @@ padding:10px 14px;
 border-radius:12px;
 font-weight:600;
 cursor:pointer;
-transition:.25s;
+margin-right:8px;
 }
-button:hover{transform:translateY(-2px);}
 
-.scenarioBar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-
-.metricLabel{font-size:13px;color:var(--muted);margin-top:14px;}
 .metricValue{font-size:26px;font-weight:700;margin-top:4px;}
-
-.aiBanner{
-padding:14px;
-border-radius:12px;
-margin-bottom:14px;
-font-weight:600;
-}
+.metricLabel{font-size:13px;color:var(--muted);}
 
 .confidenceBar{
 height:14px;
@@ -121,15 +108,10 @@ cursor:pointer;
 
 .chartCard{
 background:var(--card);
-backdrop-filter:blur(16px);
+backdrop-filter:blur(18px);
 padding:24px;
-border-radius:18px;
+border-radius:20px;
 box-shadow:var(--shadow);
-}
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(16px);}
-to{opacity:1;}
 }
 
 </style>
@@ -142,17 +124,11 @@ to{opacity:1;}
 <div class="container">
 
 <div class="hero">
-<h1>Lease vs Rent Financial Decision Engine</h1>
-<p>Series-A level analytics with AI-style decision intelligence.</p>
+<h1>Lease vs Rent – Series-C Analytics Engine</h1>
+<p>Quant-style capital efficiency analytics with AI scenario intelligence.</p>
 </div>
 
 <div class="card">
-
-<div class="scenarioBar">
-<button onclick="setScenario(0.8)">Conservative</button>
-<button onclick="setScenario(1)">Balanced</button>
-<button onclick="setScenario(1.25)">Aggressive</button>
-</div>
 
 <div class="grid">
 <input id="leaseAmount" class="currency" placeholder="Lease Amount">
@@ -166,7 +142,6 @@ to{opacity:1;}
 <input id="marketRent" class="currency" placeholder="Market Rent">
 <input id="oppRate" class="percent" placeholder="Opportunity Cost %">
 <input id="riskPremium" class="percent" placeholder="Risk Premium %">
-<input id="salary" class="currency" placeholder="Take Home Salary Optional">
 </div>
 
 <button onclick="calculate()">Run Analysis</button>
@@ -174,18 +149,16 @@ to{opacity:1;}
 </div>
 
 <div class="card">
-<div id="aiBanner" class="aiBanner"></div>
-
 <div id="results"></div>
 
 <div class="metricLabel">Decision Confidence</div>
 <div class="confidenceBar"><div id="confidenceFill" class="confidenceFill"></div></div>
-
 </div>
 
 <div class="chartStack">
 <div class="chartCard"><canvas id="comparisonChart"></canvas></div>
-<div class="chartCard"><canvas id="projectionChart"></canvas></div>
+<div class="chartCard"><canvas id="scenarioChart"></canvas></div>
+<div class="chartCard"><canvas id="radarChart"></canvas></div>
 <div class="chartCard"><canvas id="compositionChart"></canvas></div>
 </div>
 
@@ -193,10 +166,7 @@ to{opacity:1;}
 
 <script>
 
-/* ===== THEME ===== */
 function toggleTheme(){document.body.classList.toggle("dark");}
-
-/* ===== BLOOMBERG FORMAT ENGINE ===== */
 
 const $=id=>document.getElementById(id);
 
@@ -228,16 +198,8 @@ document.querySelectorAll(".percent").forEach(el=>{
 el.addEventListener("input",()=>smartFormat(el,formatPercent));
 });
 
-/* ===== SCENARIO CONTROL ===== */
-
-function setScenario(mult){
-let val=num("riskPremium")||0;
-$("riskPremium").value=formatPercent(val*mult);
-}
-
-/* ===== ORIGINAL FINANCIAL ENGINE (UNCHANGED) ===== */
-
-let comparisonChart,projectionChart,compositionChart;
+let comparisonChart,compositionChart,scenarioChart,radarChart;
+let scenarioData={};
 
 function INR(n){return "₹ "+Math.round(n||0).toLocaleString("en-IN");}
 
@@ -269,7 +231,7 @@ const MARKET_RENT=num("marketRent");
 const OPP_RATE=(num("oppRate")/100)/12;
 const RISK_PREMIUM=num("riskPremium")/100;
 
-/* ===== ORIGINAL LOGIC ===== */
+/* ===== ORIGINAL LOGIC (UNCHANGED) ===== */
 
 const EMI=emi(LOAN_AMOUNT,LOAN_INTEREST_RATE,LOAN_TENURE);
 const totalInterest=EMI*LOAN_TENURE-LOAN_AMOUNT;
@@ -306,20 +268,17 @@ const termSavings=monthlySavings*LEASE_TENURE;
 let score=MARKET_RENT>0?(monthlySavings/MARKET_RENT)*100:0;
 score=Math.max(0,Math.min(100,score));
 
-/* ===== AI DECISION BANNER ===== */
-
-let msg="Balanced Decision Zone";
-if(score>20) msg="Strong Lease Advantage — capital efficiency beats market rent.";
-if(score<5) msg="Rent Strategy Safer — risk adjusted lease cost is high.";
-
-$("aiBanner").innerText=msg;
-
-/* ===== CONFIDENCE METER ===== */
 $("confidenceFill").style.width=score+"%";
 
-/* ===== METRICS ===== */
+/* ===== OUTPUT (EMI RESTORED) ===== */
 
 $("results").innerHTML=`
+<div class="metricLabel">Monthly EMI</div>
+<div class="metricValue">${INR(EMI)}</div>
+
+<div class="metricLabel">Risk Adjusted Rent</div>
+<div>${INR(riskRent)}</div>
+
 <div class="metricLabel">Monthly Savings</div>
 <div class="metricValue">${INR(monthlySavings)}</div>
 
@@ -330,6 +289,10 @@ $("results").innerHTML=`
 <div>${INR(termSavings)}</div>
 `;
 
+/* ===== SCENARIO ENGINE ===== */
+
+scenarioData[RISK_PREMIUM]={riskRent,monthlySavings};
+
 /* ===== CHARTS ===== */
 
 if(comparisonChart)comparisonChart.destroy();
@@ -339,15 +302,32 @@ data:{labels:["Market Rent","Risk Rent","Lease Monthly Cost"],
 datasets:[{data:[MARKET_RENT,riskRent,monthlyLeaseCost]}]}
 });
 
-let proj=[];
-let step=termSavings/LEASE_TENURE;
-for(let i=1;i<=LEASE_TENURE;i++){proj.push(step*i);}
-
-if(projectionChart)projectionChart.destroy();
-projectionChart=new Chart($("projectionChart"),{
+if(scenarioChart)scenarioChart.destroy();
+scenarioChart=new Chart($("scenarioChart"),{
 type:"line",
-data:{labels:proj.map((_,i)=>i+1),
-datasets:[{data:proj}]}
+data:{
+labels:Object.keys(scenarioData),
+datasets:[
+{label:"Risk Rent",data:Object.values(scenarioData).map(v=>v.riskRent)},
+{label:"Monthly Savings",data:Object.values(scenarioData).map(v=>v.monthlySavings)}
+]}
+});
+
+/* ===== RADAR ===== */
+
+if(radarChart)radarChart.destroy();
+radarChart=new Chart($("radarChart"),{
+type:"radar",
+data:{
+labels:["Savings Strength","Risk Load","Capital Drag","Efficiency"],
+datasets:[{
+data:[
+score,
+Math.min(100,(riskRent/MARKET_RENT)*100),
+Math.min(100,(capitalLoss/LEASE_AMOUNT)*100),
+score
+]}]
+}
 });
 
 if(compositionChart)compositionChart.destroy();
