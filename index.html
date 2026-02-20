@@ -2,89 +2,145 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lease vs Rent Analyst Dashboard</title>
+<title>Lease vs Rent Elite Fintech Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
-/* ===== DESIGN SYSTEM ===== */
+/* ===== ELITE FINTECH DESIGN SYSTEM ===== */
+
+:root{
+--bg:#f4f7fb;
+--card:rgba(255,255,255,0.75);
+--text:#0b1622;
+--muted:#6c7a89;
+--accent:#1f4e79;
+--shadow:0 20px 40px rgba(0,0,0,.08);
+}
+
+body.dark{
+--bg:#0b1622;
+--card:rgba(18,30,44,.65);
+--text:#e8f1fb;
+--muted:#8ea2b5;
+--accent:#00c3ff;
+--shadow:0 20px 40px rgba(0,0,0,.35);
+}
 
 body{
 font-family:Inter,Arial;
-background:#f4f7fb;
+background:var(--bg);
 margin:0;
-padding:24px;
+padding:30px;
+color:var(--text);
+transition:.35s;
 }
 
-.container{max-width:1200px;margin:auto;}
+.container{max-width:1150px;margin:auto;}
 
-.hero{text-align:center;margin-bottom:24px;}
-
-.hero h1{font-size:30px;margin-bottom:8px;}
-
-.hero p{color:#6c7a89;max-width:720px;margin:auto;}
+.hero{text-align:center;margin-bottom:28px;animation:fadeIn .7s ease;}
+.hero h1{font-size:30px;margin:0;}
+.hero p{color:var(--muted);margin-top:8px;}
 
 .card{
-background:#fff;
+background:var(--card);
+backdrop-filter:blur(14px);
 padding:24px;
 margin-bottom:24px;
-border-radius:14px;
-box-shadow:0 8px 18px rgba(0,0,0,.06);
+border-radius:18px;
+box-shadow:var(--shadow);
+animation:fadeUp .5s ease;
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:14px;
+gap:16px;
 }
 
 input{
 padding:12px;
-border-radius:10px;
-border:1px solid #ccc;
-width:100%;
+border-radius:12px;
+border:1px solid rgba(0,0,0,.08);
 font-size:14px;
+background:transparent;
+color:var(--text);
 }
 
 button{
-background:#1f4e79;
+background:var(--accent);
 color:white;
 border:none;
 padding:12px;
-border-radius:10px;
-font-weight:bold;
-margin-top:12px;
+border-radius:12px;
+font-weight:600;
+margin-top:14px;
 cursor:pointer;
+transition:.25s;
 }
+button:hover{transform:translateY(-2px);}
 
-.metricLabel{font-size:13px;color:#6c7a89;margin-top:14px;}
-.metricValue{font-size:22px;font-weight:700;margin-top:4px;}
+.metricLabel{font-size:13px;color:var(--muted);margin-top:14px;}
+.metricValue{font-size:24px;font-weight:700;margin-top:4px;}
 
-.verdict{font-size:22px;font-weight:700;text-align:center;margin-top:16px;}
+.verdict{
+font-size:24px;
+font-weight:700;
+text-align:center;
+margin-top:18px;
+}
 
 .chartStack{display:flex;flex-direction:column;gap:24px;}
 
 .chartCard{
-background:#fff;
+background:var(--card);
+backdrop-filter:blur(14px);
 padding:24px;
-border-radius:14px;
-box-shadow:0 8px 18px rgba(0,0,0,.06);
+border-radius:18px;
+box-shadow:var(--shadow);
 }
 
-.chartTitle{font-size:16px;font-weight:600;margin-bottom:12px;}
+.chartTitle{
+font-size:16px;
+font-weight:600;
+margin-bottom:14px;
+}
+
+.toggle{
+position:fixed;
+top:18px;
+right:18px;
+background:var(--accent);
+color:white;
+padding:8px 14px;
+border-radius:20px;
+cursor:pointer;
+font-size:13px;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+@keyframes fadeUp{
+from{opacity:0;transform:translateY(16px);}
+to{opacity:1;transform:translateY(0);}
+}
 
 </style>
 </head>
 
 <body>
 
+<div class="toggle" onclick="toggleTheme()"> Toggle Theme</div>
+
 <div class="container">
 
 <div class="hero">
 <h1>Lease vs Rent Financial Decision Engine</h1>
-<p>Compare a loan-funded lease against market rent using opportunity cost,
-risk-adjusted rent and capital efficiency analytics.</p>
+<p>Opportunity-cost driven lease vs rent analysis with analyst-grade insights.</p>
 </div>
 
 <div class="card">
@@ -115,6 +171,7 @@ risk-adjusted rent and capital efficiency analytics.</p>
 </div>
 
 <div class="chartStack">
+
 <div class="chartCard">
 <div class="chartTitle">Monthly Cost Comparison</div>
 <canvas id="comparisonChart"></canvas>
@@ -129,24 +186,27 @@ risk-adjusted rent and capital efficiency analytics.</p>
 <div class="chartTitle">Economic Cost Composition</div>
 <canvas id="compositionChart"></canvas>
 </div>
+
 </div>
 
 </div>
 
 <script>
 
-const $=id=>document.getElementById(id);
-let comparisonChart,projectionChart,compositionChart;
+/* ===== THEME TOGGLE ===== */
+function toggleTheme(){
+document.body.classList.toggle("dark");
+}
 
-/* ===== BLOOMBERG-GRADE FORMAT ENGINE ===== */
+/* ===== BLOOMBERG FORMAT ENGINE ===== */
+
+const $=id=>document.getElementById(id);
 
 function cleanNumber(v){
 return parseFloat((v||"").replace(/[,%\s,]/g,""))||0;
 }
 
-function num(id){
-return cleanNumber($(id).value);
-}
+function num(id){return cleanNumber($(id).value);}
 
 function formatINR(n){
 return " "+Number(n).toLocaleString("en-IN",{maximumFractionDigits:0});
@@ -156,20 +216,28 @@ function formatPercent(n){
 return Number(n).toFixed(2)+"%";
 }
 
-function attachSmartFormatter(selector,formatter){
-document.querySelectorAll(selector).forEach(el=>{
-el.addEventListener("input",()=>{
-let cursor=el.selectionStart;
+function smartFormat(el,formatter){
+let caret=el.selectionStart;
 let raw=cleanNumber(el.value);
 if(!raw){el.value="";return;}
+let beforeLen=el.value.length;
 el.value=formatter(raw);
-el.setSelectionRange(cursor,cursor);
-});
-});
+let afterLen=el.value.length;
+let newCaret=caret+(afterLen-beforeLen);
+el.setSelectionRange(newCaret,newCaret);
 }
 
-attachSmartFormatter(".currency",formatINR);
-attachSmartFormatter(".percent",formatPercent);
+document.querySelectorAll(".currency").forEach(el=>{
+el.addEventListener("input",()=>smartFormat(el,formatINR));
+});
+
+document.querySelectorAll(".percent").forEach(el=>{
+el.addEventListener("input",()=>smartFormat(el,formatPercent));
+});
+
+/* ===== FINANCIAL ENGINE (UNCHANGED) ===== */
+
+let comparisonChart,projectionChart,compositionChart;
 
 function INR(n){return " "+Math.round(n||0).toLocaleString("en-IN");}
 
@@ -187,8 +255,6 @@ function calculate(){
 
 const LEASE_AMOUNT=num("leaseAmount");
 const LOAN_AMOUNT=num("loanAmount");
-
-/* OWN FUNDS AUTO-CALCULATED — LOGIC SAME */
 const OWN_FUNDS=Math.max(0,LEASE_AMOUNT-LOAN_AMOUNT);
 
 const LOAN_INTEREST_RATE=(num("loanRate")/100)/12;
@@ -205,7 +271,7 @@ const OPP_RATE=(num("oppRate")/100)/12;
 const RISK_PREMIUM=num("riskPremium")/100;
 const SALARY=num("salary");
 
-/* ===== ORIGINAL LOGIC PRESERVED ===== */
+/* ===== ORIGINAL LOGIC ===== */
 
 const EMI=emi(LOAN_AMOUNT,LOAN_INTEREST_RATE,LOAN_TENURE);
 const totalInterest=EMI*LOAN_TENURE-LOAN_AMOUNT;
@@ -277,7 +343,7 @@ if(score<5) verdict=" Rent Is Safer";
 
 $("verdict").innerText=verdict;
 
-/* ===== CHARTS UNCHANGED ===== */
+/* ===== CHARTS ===== */
 
 if(comparisonChart)comparisonChart.destroy();
 
@@ -287,8 +353,7 @@ data:{
 labels:["Market Rent","Risk Rent","Lease Monthly Cost"],
 datasets:[{
 label:"Monthly Comparison",
-data:[MARKET_RENT,riskRent,monthlyLeaseCost],
-backgroundColor:["#3498db","#e74c3c","#2ecc71"]
+data:[MARKET_RENT,riskRent,monthlyLeaseCost]
 }]
 }
 });
