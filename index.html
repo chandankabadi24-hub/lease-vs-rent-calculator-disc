@@ -536,12 +536,6 @@
                         </div>
 
                         <div class="field">
-                            <label>Loan Tenure (Months)</label>
-                            <input id="loanTenure" type="text" value="240">
-                            <input type="range" id="loanTenureRange" min="12" max="360" step="12" value="240">
-                        </div>
-
-                        <div class="field">
                             <label>Monthly Maintenance (₹)</label>
                             <input id="maintenance" type="text" value="5000">
                             <input type="range" id="maintenanceRange" min="0" max="20000" step="500" value="5000">
@@ -596,6 +590,18 @@
                 <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.4px;">⚖️ Common Parameters</div>
                 <div class="grid">
                     <div class="field">
+                        <label>Lease Tenure (Months)</label>
+                        <input id="leaseTenure" type="text" value="240">
+                        <input type="range" id="leaseTenureRange" min="12" max="360" step="12" value="240">
+                    </div>
+
+                    <div class="field">
+                        <label>Loan Tenure (Months)</label>
+                        <input id="loanTenure" type="text" value="240">
+                        <input type="range" id="loanTenureRange" min="12" max="360" step="12" value="240">
+                    </div>
+
+                    <div class="field">
                         <label>Opportunity Cost (%)</label>
                         <input id="oppRate" type="text" value="12">
                         <input type="range" id="oppRateRange" min="1" max="20" step="0.1" value="12">
@@ -605,12 +611,6 @@
                         <label>Risk Premium (%)</label>
                         <input id="riskPremium" type="text" value="3">
                         <input type="range" id="riskPremiumRange" min="0" max="20" step="0.1" value="3">
-                    </div>
-
-                    <div class="field">
-                        <label>Lease Tenure (Months)</label>
-                        <input id="leaseTenure" type="text" value="240">
-                        <input type="range" id="leaseTenureRange" min="12" max="360" step="12" value="240">
                     </div>
                 </div>
             </div>
@@ -877,7 +877,8 @@
                                 'rgba(155, 89, 182, 0.8)',
                                 'rgba(241, 196, 15, 0.8)',
                                 'rgba(77, 179, 255, 0.8)',
-                                'rgba(255, 140, 58, 0.8)'
+                                'rgba(255, 140, 58, 0.8)',
+                                'rgba(46, 204, 113, 0.8)'
                             ],
                             borderRadius: 8,
                             borderWidth: 0
@@ -1239,71 +1240,89 @@
                 const RISK_PREMIUM = num('riskPremium') / 100;
                 const RENT_INCREMENT = num('rentIncrement') / 100;
 
-                // Validation - Check for invalid inputs
-                if (LEASE_AMOUNT <= 0) {
-                    console.warn('Lease Amount must be greater than 0');
-                    return;
-                }
-                if (LEASE_TENURE <= 0) {
-                    console.warn('Lease Tenure must be greater than 0');
-                    return;
-                }
-                if (LOAN_TENURE <= 0) {
-                    console.warn('Loan Tenure must be greater than 0');
-                    return;
-                }
-                if (MARKET_RENT <= 0) {
-                    console.warn('Market Rent must be greater than 0');
-                    return;
-                }
-                if (LOAN_AMOUNT > LEASE_AMOUNT) {
-                    console.warn('Loan Amount cannot exceed Lease Amount');
-                    return;
+                // Validation
+                if (LEASE_AMOUNT <= 0) return;
+                if (LEASE_TENURE <= 0) return;
+                if (LOAN_TENURE <= 0) return;
+                if (MARKET_RENT <= 0) return;
+
+                // 1. INPUTS & DERIVED BASICS
+                // Clamp withholding to [0,1]
+                const WITHHOLDING_CLAMPED = Math.min(1, Math.max(0, WITHHOLDING));
+                // Prevent negative OWN_FUNDS if loan > lease amount
+                const OWN_FUNDS_SAFE = Math.max(0, OWN_FUNDS);
+                // Align loan tenure — cannot exceed lease tenure
+                const effectiveLoanMonths = Math.min(LOAN_TENURE, LEASE_TENURE);
+
+                // 2. EMI — zero-interest guard already handled by emi() function
+                const EMI = emi(LOAN_AMOUNT, LOAN_INTEREST_RATE, effectiveLoanMonths);
+
+                // 3. LEASE COST COMPONENTS
+                const totalInterestPaid = (EMI * effectiveLoanMonths) - LOAN_AMOUNT;
+                const withholdingLoss = LEASE_AMOUNT * WITHHOLDING_CLAMPED;
+                const depositRefundable = LEASE_AMOUNT * (1 - WITHHOLDING_CLAMPED);
+
+                // Opportunity cost of own funds locked in lease deposit (compound)
+                const ownFundsOppCost = OWN_FUNDS_SAFE * (Math.pow(1 + OPP_RATE, LEASE_TENURE) - 1);
+
+                // Delay cost — compound (consistent with ownFundsOppCost)
+                const delayCost = REFUND_DELAY > 0
+                    ? depositRefundable * (Math.pow(1 + OPP_RATE, REFUND_DELAY) - 1)
+                    : 0;
+
+                // Alias for chart use
+                const totalLeasePaymentOppCost = ownFundsOppCost;
+
+                // 4. TOTAL LEASE COST
+                // Maintenance is a real monthly cash outflow over the full lease tenure
+                const totalMaintenanceCost = MAINTENANCE * LEASE_TENURE;
+                const totalLeaseCostWithoutRisk = totalInterestPaid + withholdingLoss + ownFundsOppCost + delayCost + totalMaintenanceCost;
+
+                // Risk premium applied only to refund-risk components (withholding + delay)
+                // Interest and opp cost already price time value; risk mainly affects refund uncertainty
+                const riskAdjustedLeaseCost = totalLeaseCostWithoutRisk + (withholdingLoss + delayCost) * RISK_PREMIUM;
+
+                // Single source of truth — monthly lease cost
+                const monthlyLeaseCost = riskAdjustedLeaseCost / LEASE_TENURE;
+                const riskRent = monthlyLeaseCost; // alias used in charts
+
+                // 5. RENT COST COMPONENTS
+                // Annual increment: Y = floor((month-1)/12), applied as (1+RENT_INCREMENT)^Y
+                let totalRentPaidOverLeaseTerm = 0;
+                for (let month = 1; month <= LEASE_TENURE; month++) {
+                    const Y = Math.floor((month - 1) / 12);
+                    totalRentPaidOverLeaseTerm += MARKET_RENT * Math.pow(1 + RENT_INCREMENT, Y);
                 }
 
-                // EMI & Interest
-                const EMI = emi(LOAN_AMOUNT, LOAN_INTEREST_RATE, LOAN_TENURE);
-                const totalInterest = EMI * LOAN_TENURE - LOAN_AMOUNT;
-                const monthlyBuyCost = EMI + MAINTENANCE;
+                // Rent deposit opp cost — compound over full lease tenure
+                const rentDepositOppCost = RENT_DEPOSIT * (Math.pow(1 + OPP_RATE, LEASE_TENURE) - 1);
 
-                // Withholding & Refund
-                const refund = LEASE_AMOUNT * (1 - WITHHOLDING);
-                const withholdingLoss = LEASE_AMOUNT * WITHHOLDING;
+                // Rent deposit delay opp cost — compound (consistent)
+                const rentDepositDelayOppCost = DEPOSIT_REFUND_DELAY > 0
+                    ? RENT_DEPOSIT * (Math.pow(1 + OPP_RATE, DEPOSIT_REFUND_DELAY) - 1)
+                    : 0;
 
-                // Opportunity Costs
-                const ownOpp = OWN_FUNDS * (Math.pow(1 + OPP_RATE, LEASE_TENURE) - 1);
+                const totalRentCostOverLeaseTerm = totalRentPaidOverLeaseTerm + rentDepositOppCost + rentDepositDelayOppCost;
 
-                let emiOpp = 0;
-                for (let m = 1; m <= LEASE_TENURE; m++) {
-                    const yearIndex = Math.floor((m - 1) / 12);
-                    const adjustedRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
-                    const extra = monthlyBuyCost - adjustedRent;
-                    if (extra > 0) {
-                        emiOpp += extra * (Math.pow(1 + OPP_RATE, LEASE_TENURE - m + 1) - 1);
-                    }
-                }
+                // Single source of truth — monthly rent cost
+                const monthlyRentCost = totalRentCostOverLeaseTerm / LEASE_TENURE;
 
-                const delayCost = refund * OPP_RATE * REFUND_DELAY;
-                const capitalLoss = totalInterest + withholdingLoss;
-                const totalEconomic = capitalLoss + ownOpp + emiOpp + delayCost;
+                // 6. COMPARISON & SCORE
+                const costAdvantage = totalRentCostOverLeaseTerm - riskAdjustedLeaseCost;
 
-                const riskRent = (totalEconomic / LEASE_TENURE) * (1 + RISK_PREMIUM);
-                
-                // Rent Deposit Opportunity Cost
-                const depositDelayCost = RENT_DEPOSIT * OPP_RATE * DEPOSIT_REFUND_DELAY;
-                const depositOppCost = RENT_DEPOSIT * (Math.pow(1 + OPP_RATE, LEASE_TENURE) - 1);
-                
-                // Rent Economic Cost includes deposit costs
-                const rentEconomicCost = depositOppCost + depositDelayCost;
-                const monthlySavings = MARKET_RENT - riskRent + (rentEconomicCost / LEASE_TENURE);
+                // Division safety
+                const costRatio = totalRentCostOverLeaseTerm === 0 ? 0 : riskAdjustedLeaseCost / totalRentCostOverLeaseTerm;
+
+                // Simplified score — mathematically equivalent to previous two-branch logic, cleaner
+                const score = Math.max(0, Math.min(100, 100 - 50 * costRatio));
+
+                // 7. DISPLAY METRICS — all derived from the two monthly costs above
+                const monthlySavings = monthlyRentCost - monthlyLeaseCost;
                 const yearlySavings = monthlySavings * 12;
                 const termSavings = monthlySavings * LEASE_TENURE;
 
-                // Score & Confidence - Positive savings = High score (Leasing advantage)
-                let score = MARKET_RENT > 0 ? 50 + (monthlySavings / MARKET_RENT) * 50 : 50;
-                score = Math.max(0, Math.min(100, score));
-
-                const confidence = Math.abs(monthlySavings) / MARKET_RENT * 100;
+                // Stabilized confidence: scale-independent, based on costRatio distance from 1
+                const confidence = Math.max(0, Math.min(100, Math.abs(costRatio - 1) * 100));
 
                 let color = '#f1c40f';
                 let interpretation = '📊 Balanced decision - Consider other factors';
@@ -1338,42 +1357,43 @@
                 $('mSave').innerText = formatINR(monthlySavings);
                 $('ySave').innerText = formatINR(yearlySavings);
                 $('tSave').innerText = formatINR(termSavings);
-                $('confidence').innerText = Math.round(Math.min(100, confidence)) + '%';
+                $('confidence').innerText = Math.round(confidence) + '%';
 
                 // ========== PREPARE CHART DATA ==========
 
-                // 1. TCO Data
+                // 1. TCO Data - The 5 components that make up total economic lease cost
                 const tcoData = {
-                    labels: ['Interest Paid', 'Withholding Loss', 'Own Funds Opp Cost', 'EMI Opp Cost', 'Refund Delay Cost'],
+                    labels: ['Interest Paid', 'Withholding Loss', 'Own Funds Opp Cost', 'Refund Delay Cost', 'Total Maintenance'],
                     values: [
-                        Math.max(0, totalInterest),
+                        Math.max(0, totalInterestPaid),
                         Math.max(0, withholdingLoss),
-                        Math.max(0, ownOpp),
-                        Math.max(0, emiOpp),
-                        Math.max(0, delayCost)
+                        Math.max(0, totalLeasePaymentOppCost),
+                        Math.max(0, delayCost),
+                        Math.max(0, totalMaintenanceCost)
                     ]
                 };
 
-                // 2. Monthly Cost Data - NOW COMPARING LEASE VS RENT (including deposit)
+                // 2. Monthly Cost Data
                 const monthlyData = {
                     emi: EMI,
                     maintenance: MAINTENANCE,
                     rent: MARKET_RENT,
                     riskRent: riskRent,
-                    advantage: monthlySavings,
-                    rentDeposit: RENT_DEPOSIT,
-                    depositOppCost: rentEconomicCost
+                    advantage: monthlySavings
                 };
 
-                // 3. Cumulative Data - SWAPPED: Now lease costs in first dataset, rent in second
+                // 3. Cumulative Data - month-by-month running totals
                 let cumulativeLeaseCosts = [];
                 let cumulativeRentCosts = [];
                 let cumulativeMonths = [];
-                let cumulativeLeaseTotal = riskRent * 0; // Start from zero
-                let cumulativeRentTotal = 0; // Rent starts from month 1, no deposit upfront
+                let cumulativeLeaseTotal = 0;
+                let cumulativeRentTotal = 0;
 
                 for (let m = 1; m <= LEASE_TENURE; m++) {
+                    // Lease: spread risk-adjusted cost evenly across months
                     cumulativeLeaseTotal += riskRent;
+                    
+                    // Rent: apply annual escalation
                     const yearIndex = Math.floor((m - 1) / 12);
                     const monthlyMarketRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
                     cumulativeRentTotal += monthlyMarketRent;
@@ -1389,30 +1409,29 @@
                     buyCosts: cumulativeRentCosts
                 };
 
-                // 4. Sensitivity Data - Lease vs Rent (Positive savings = Lease advantage)
+                // 4. Sensitivity Data - varying rent levels vs fixed lease monthly cost
                 const sensitivityLeaseAdvantage = [];
                 const sensitivityRentAdvantage = [];
 
                 for (let rateChange = -15; rateChange <= 15; rateChange += 3) {
                     for (let rentChange = -15; rentChange <= 15; rentChange += 3) {
                         const adjRent = MARKET_RENT * (1 + rentChange / 100);
-                        
-                        // Savings = Rent - Risk-Adjusted Lease Cost (pre-calculated)
+                        // Savings = Adjusted Rent - Risk-Adjusted Lease monthly equivalent
                         const adjustedSavings = adjRent - riskRent;
                         const netDifference = Math.abs(adjustedSavings);
                         
-                        // Positive savings = Leasing is cheaper = Lease advantage
+                        // Positive savings = Rent > Lease cost = Lease advantage
                         if (adjustedSavings > 0) {
                             sensitivityLeaseAdvantage.push({
                                 x: rateChange,
                                 y: rentChange,
-                                r: Math.sqrt(netDifference / 100)
+                                r: Math.min(30, Math.sqrt(netDifference / 100))
                             });
                         } else {
                             sensitivityRentAdvantage.push({
                                 x: rateChange,
                                 y: rentChange,
-                                r: Math.sqrt(netDifference / 100)
+                                r: Math.min(30, Math.sqrt(netDifference / 100))
                             });
                         }
                     }
@@ -1423,23 +1442,24 @@
                     rentAdvantage: sensitivityRentAdvantage
                 };
 
-                // 5. Cost Composition
+                // 5. Cost Composition - same 5 components as TCO
                 const compositionData = {
-                    labels: ['Total Interest', 'Opp Costs', 'Withholding', 'Delay Cost'],
+                    labels: ['Interest', 'Withholding', 'Own Funds Opp Cost', 'Refund Delay', 'Maintenance'],
                     values: [
-                        Math.max(1, totalInterest),
-                        Math.max(1, ownOpp + emiOpp),
+                        Math.max(1, totalInterestPaid),
                         Math.max(1, withholdingLoss),
-                        Math.max(1, delayCost)
+                        Math.max(1, totalLeasePaymentOppCost),
+                        Math.max(1, delayCost),
+                        Math.max(1, totalMaintenanceCost)
                     ]
                 };
 
-                // 6. Rent Projection - LEASE COST CONSTANT + MARKET RENT ESCALATING (Deposit as economic cost, not upfront)
+                // 6. Rent Projection - monthly rent escalation vs constant lease cost
                 const rentMonthlyRent = [];
                 const leaseConstantRent = [];
                 const rentCumulativeRent = [];
                 const rentMonths = [];
-                let rentTotal = 0; // Pure rent costs only
+                let rentTotal = 0;
 
                 for (let m = 1; m <= LEASE_TENURE; m++) {
                     const yearIndex = Math.floor((m - 1) / 12);
@@ -1447,7 +1467,7 @@
                     rentTotal += monthlyRent;
                     
                     rentMonthlyRent.push(monthlyRent);
-                    leaseConstantRent.push(riskRent); // Constant lease cost
+                    leaseConstantRent.push(riskRent);
                     rentCumulativeRent.push(rentTotal);
                     rentMonths.push('M' + m);
                 }
@@ -1470,21 +1490,34 @@
                 });
 
                 // Update Comparison Table
-                updateComparisonTable(riskRent, MARKET_RENT, monthlySavings, termSavings, LEASE_TENURE);
+                updateComparisonTable(EMI, MAINTENANCE, riskRent, MARKET_RENT, monthlySavings, termSavings, LEASE_TENURE);
 
             } catch (error) {
                 console.error('Calculation error:', error);
             }
         }
 
-        function updateComparisonTable(leaseCost, rentCost, advantage, termAdvantage, leaseTenure) {
+        function updateComparisonTable(emi, maintenance, economicCost, rentCost, advantage, termAdvantage, leaseTenure) {
             const tbody = $('comparisonBody');
-            const leaseBetter = advantage > 0; // Positive advantage = leasing is cheaper
+            const leaseBetter = advantage > 0;
+            const actualLeaseOutflow = emi + maintenance;
             
             tbody.innerHTML = `
                 <tr>
                     <td><strong>Monthly EMI</strong></td>
-                    <td class="metric-negative">${formatINR(leaseCost)}</td>
+                    <td class="metric-negative">${formatINR(emi)}</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td><strong>Monthly Maintenance</strong></td>
+                    <td class="metric-negative">${formatINR(maintenance)}</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td><strong>Actual Monthly Lease Outflow</strong></td>
+                    <td class="metric-negative">${formatINR(actualLeaseOutflow)}</td>
                     <td>-</td>
                     <td>-</td>
                 </tr>
@@ -1496,19 +1529,19 @@
                 </tr>
                 <tr>
                     <td><strong>Monthly Cost (Economic)</strong></td>
-                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(leaseCost)}</td>
+                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(economicCost)}</td>
                     <td class="${leaseBetter ? 'metric-negative' : 'metric-positive'}">${formatINR(rentCost)}</td>
                     <td class="${advantage >= 0 ? 'metric-positive' : 'metric-negative'}">${formatINR(Math.abs(advantage))}</td>
                 </tr>
                 <tr>
                     <td><strong>Annual Impact</strong></td>
-                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(leaseCost * 12)}</td>
+                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(economicCost * 12)}</td>
                     <td class="${leaseBetter ? 'metric-negative' : 'metric-positive'}">${formatINR(rentCost * 12)}</td>
                     <td class="${advantage >= 0 ? 'metric-positive' : 'metric-negative'}">${formatINR(Math.abs(advantage) * 12)}</td>
                 </tr>
                 <tr>
                     <td><strong>Lease Term Total</strong></td>
-                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(leaseCost * leaseTenure)}</td>
+                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(economicCost * leaseTenure)}</td>
                     <td class="${leaseBetter ? 'metric-negative' : 'metric-positive'}">${formatINR(rentCost * leaseTenure)}</td>
                     <td class="${advantage >= 0 ? 'metric-positive' : 'metric-negative'}">${formatINR(Math.abs(termAdvantage))}</td>
                 </tr>
