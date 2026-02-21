@@ -1278,9 +1278,9 @@
                 const totalMaintenanceCost = MAINTENANCE * LEASE_TENURE;
                 const totalLeaseCostWithoutRisk = totalInterestPaid + withholdingLoss + ownFundsOppCost + delayCost + totalMaintenanceCost;
 
-                // Risk premium applied only to refund-risk components (withholding + delay)
-                // Interest and opp cost already price time value; risk mainly affects refund uncertainty
-                const riskAdjustedLeaseCost = totalLeaseCostWithoutRisk + (withholdingLoss + delayCost) * RISK_PREMIUM;
+                // Risk premium applied to lease amount directly — treats X% of total deposit value
+                // as a risk buffer, always visible and meaningful regardless of other inputs
+                const riskAdjustedLeaseCost = totalLeaseCostWithoutRisk + LEASE_AMOUNT * RISK_PREMIUM;
 
                 // Single source of truth — monthly lease cost
                 const monthlyLeaseCost = riskAdjustedLeaseCost / LEASE_TENURE;
