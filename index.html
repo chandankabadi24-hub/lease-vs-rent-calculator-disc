@@ -509,76 +509,110 @@
         <!-- INPUT PANEL -->
         <div class="card">
             <div class="card-title"><span class="card-icon">⚙️</span>Financial Parameters</div>
-            <div class="grid">
+            
+            <!-- Two-Column Layout for Lease and Rent Components -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 20px;">
+                
+                <!-- LEASE COMPONENTS -->
+                <div>
+                    <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.4px;">📋 Lease Components</div>
+                    <div class="grid">
+                        <div class="field">
+                            <label>Lease Amount (₹)</label>
+                            <input id="leaseAmount" type="text" value="2000000">
+                            <input type="range" id="leaseAmountRange" min="100000" max="5000000" step="50000" value="2000000">
+                        </div>
 
-                <div class="field">
-                    <label>Lease Amount (₹)</label>
-                    <input id="leaseAmount" type="text" value="2000000">
-                    <input type="range" id="leaseAmountRange" min="100000" max="5000000" step="50000" value="2000000">
+                        <div class="field">
+                            <label>Loan Amount (₹)</label>
+                            <input id="loanAmount" type="text" value="1500000">
+                            <input type="range" id="loanAmountRange" min="0" max="5000000" step="50000" value="1500000">
+                        </div>
+
+                        <div class="field">
+                            <label>Loan Interest Rate (%)</label>
+                            <input id="loanRate" type="text" value="8.5">
+                            <input type="range" id="loanRateRange" min="1" max="20" step="0.1" value="8.5">
+                        </div>
+
+                        <div class="field">
+                            <label>Loan Tenure (Months)</label>
+                            <input id="loanTenure" type="text" value="240">
+                            <input type="range" id="loanTenureRange" min="12" max="360" step="12" value="240">
+                        </div>
+
+                        <div class="field">
+                            <label>Monthly Maintenance (₹)</label>
+                            <input id="maintenance" type="text" value="5000">
+                            <input type="range" id="maintenanceRange" min="0" max="20000" step="500" value="5000">
+                        </div>
+
+                        <div class="field">
+                            <label>Lease Withholding (%)</label>
+                            <input id="withholding" type="text" value="0">
+                        </div>
+
+                        <div class="field">
+                            <label>Lease Refund Delay (Months)</label>
+                            <input id="refundDelay" type="text" value="0">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="field">
-                    <label>Loan Amount (₹)</label>
-                    <input id="loanAmount" type="text" value="1500000">
-                    <input type="range" id="loanAmountRange" min="0" max="3000000" step="50000" value="1500000">
+                <!-- RENT COMPONENTS -->
+                <div>
+                    <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.4px;">📋 Rent Components</div>
+                    <div class="grid">
+                        <div class="field">
+                            <label>Market Rent (₹)</label>
+                            <input id="marketRent" type="text" value="45000">
+                            <input type="range" id="marketRentRange" min="5000" max="200000" step="1000" value="45000">
+                        </div>
+
+                        <div class="field">
+                            <label>Rent Deposit (₹)</label>
+                            <input id="rentDeposit" type="text" value="0">
+                            <input type="range" id="rentDepositRange" min="0" max="500000" step="10000" value="0">
+                        </div>
+
+                        <div class="field">
+                            <label>Deposit Refund Delay (Months)</label>
+                            <input id="depositRefundDelay" type="text" value="0">
+                            <input type="range" id="depositRefundDelayRange" min="0" max="12" step="1" value="0">
+                        </div>
+
+                        <div class="field">
+                            <label>Rent Increment (%)</label>
+                            <input id="rentIncrement" type="text" value="5">
+                            <input type="range" id="rentIncrementRange" min="0" max="10" step="0.5" value="5">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="field">
-                    <label>Loan Interest Rate (%)</label>
-                    <input id="loanRate" type="text" value="8.5">
-                    <input type="range" id="loanRateRange" min="1" max="20" step="0.1" value="8.5">
-                </div>
+            </div>
 
-                <div class="field">
-                    <label>Opportunity Cost (%)</label>
-                    <input id="oppRate" type="text" value="12">
-                    <input type="range" id="oppRateRange" min="1" max="20" step="0.1" value="12">
-                </div>
+            <!-- Common Parameters Section -->
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+                <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.4px;">⚖️ Common Parameters</div>
+                <div class="grid">
+                    <div class="field">
+                        <label>Opportunity Cost (%)</label>
+                        <input id="oppRate" type="text" value="12">
+                        <input type="range" id="oppRateRange" min="1" max="20" step="0.1" value="12">
+                    </div>
 
-                <div class="field">
-                    <label>Risk Premium (%)</label>
-                    <input id="riskPremium" type="text" value="3">
-                    <input type="range" id="riskPremiumRange" min="0" max="20" step="0.1" value="3">
-                </div>
+                    <div class="field">
+                        <label>Risk Premium (%)</label>
+                        <input id="riskPremium" type="text" value="3">
+                        <input type="range" id="riskPremiumRange" min="0" max="20" step="0.1" value="3">
+                    </div>
 
-                <div class="field">
-                    <label>Market Rent (₹)</label>
-                    <input id="marketRent" type="text" value="45000">
-                    <input type="range" id="marketRentRange" min="5000" max="100000" step="1000" value="45000">
+                    <div class="field">
+                        <label>Lease Tenure (Months)</label>
+                        <input id="leaseTenure" type="text" value="240">
+                        <input type="range" id="leaseTenureRange" min="12" max="360" step="12" value="240">
+                    </div>
                 </div>
-
-                <div class="field">
-                    <label>Monthly Maintenance (₹)</label>
-                    <input id="maintenance" type="text" value="5000">
-                    <input type="range" id="maintenanceRange" min="0" max="20000" step="500" value="5000">
-                </div>
-
-                <div class="field">
-                    <label>Rent Increment (%)</label>
-                    <input id="rentIncrement" type="text" value="5">
-                    <input type="range" id="rentIncrementRange" min="0" max="10" step="0.5" value="5">
-                </div>
-
-                <div class="field">
-                    <label>Loan Tenure (Months)</label>
-                    <input id="loanTenure" type="text" value="240">
-                </div>
-
-                <div class="field">
-                    <label>Lease Tenure (Months)</label>
-                    <input id="leaseTenure" type="text" value="240">
-                </div>
-
-                <div class="field">
-                    <label>Withholding (%)</label>
-                    <input id="withholding" type="text" value="0">
-                </div>
-
-                <div class="field">
-                    <label>Refund Delay (Months)</label>
-                    <input id="refundDelay" type="text" value="0">
-                </div>
-
             </div>
         </div>
 
@@ -598,6 +632,14 @@
             </div>
 
             <div class="metricsBox">
+                <div class="metric-card">
+                    <div class="metric-label">Monthly EMI</div>
+                    <div id="mEMI" class="metric-value">₹0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Monthly Maintenance</div>
+                    <div id="mMaintenance" class="metric-value">₹0</div>
+                </div>
                 <div class="metric-card">
                     <div class="metric-label">Monthly Advantage</div>
                     <div id="mSave" class="metric-value">₹0</div>
@@ -622,34 +664,34 @@
 
             <!-- 1. Total Cost of Ownership Waterfall -->
             <div class="chartCard">
-                <div class="card-title"><span class="card-icon">💾</span>Total Cost Drivers</div>
+                <div class="card-title"><span class="card-icon">💾</span>Total Economic Cost Drivers (Lease Scenario)</div>
                 <div class="chart-container">
                     <canvas id="tcoChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    📌 Breakdown of all cost components impacting the buy vs. lease decision. Identify which factors drive the most impact.
+                    📌 Breakdown of all economic cost components when choosing to lease. These costs justify the risk-adjusted rental equivalent.
                 </div>
             </div>
 
             <!-- 2. Monthly Cost Comparison Waterfall -->
             <div class="chartCard">
-                <div class="card-title"><span class="card-icon">💰</span>Monthly Cost Structure</div>
+                <div class="card-title"><span class="card-icon">💰</span>Monthly Cost Comparison: Lease vs. Market Rent</div>
                 <div class="chart-container">
                     <canvas id="monthlyCostChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    📊 Direct comparison of monthly outflows: EMI+Maintenance vs. Risk-Adjusted Lease Cost. Shows your monthly decision outcome.
+                    📊 Direct comparison of monthly outflows: Risk-Adjusted Lease Cost vs. Current Market Rent. Shows which option is more economical on a monthly basis.
                 </div>
             </div>
 
             <!-- 3. 10-Year Cumulative Impact (Full Width) -->
             <div class="chartCard chart-full">
-                <div class="card-title"><span class="card-icon">📈</span>Cumulative Financial Impact Over Time</div>
+                <div class="card-title"><span class="card-icon">📈</span>Cumulative Cost Impact Over Time: Lease vs. Rent</div>
                 <div class="chart-container">
                     <canvas id="cumulativeImpactChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    🎯 The most critical chart: Shows total accumulated costs/savings over the lease tenure. The spread between lines is your actual financial advantage.
+                    🎯 The most critical chart: Shows total accumulated costs over the lease tenure when choosing to LEASE (with all economic costs) vs. paying MARKET RENT. The spread between lines is your actual financial advantage.
                 </div>
             </div>
 
@@ -660,29 +702,29 @@
                     <canvas id="sensitivityChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    ⚠️ Tests decision reliability: How does the outcome change with interest rate and rent growth variations? Red = buy advantage, Green = lease advantage.
+                    ⚠️ Tests decision reliability: How does the outcome change with interest rate and rent growth variations? Red = Lease advantage, Green = Rent advantage.
                 </div>
             </div>
 
             <!-- 5. Cost Composition Pie -->
             <div class="chartCard">
-                <div class="card-title"><span class="card-icon">🥧</span>Economic Cost Distribution</div>
+                <div class="card-title"><span class="card-icon">🥧</span>Economic Cost Distribution (Lease Scenario)</div>
                 <div class="chart-container">
                     <canvas id="costCompositionChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    💡 What's eating your budget? See which cost categories dominate: Interest, Opportunity costs, Withholding losses, etc.
+                    💡 What's driving the lease cost? See which economic cost categories dominate: Interest, Opportunity costs, Withholding losses, etc.
                 </div>
             </div>
 
             <!-- 6. Rent Escalation Forecast -->
             <div class="chartCard">
-                <div class="card-title"><span class="card-icon">📊</span>Rent Growth Trajectory</div>
+                <div class="card-title"><span class="card-icon">📊</span>Rent Growth Trajectory vs. Fixed Lease Cost</div>
                 <div class="chart-container">
                     <canvas id="rentProjectionChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    🚀 How will your lease costs evolve? Shows projected rent escalation and cumulative rent burden over time.
+                    🚀 How does market rent evolve against your fixed lease economics? Shows projected rent escalation and cumulative rent burden over time.
                 </div>
             </div>
 
@@ -690,13 +732,13 @@
 
         <!-- COMPARISON TABLE -->
         <div class="card">
-            <div class="card-title"><span class="card-icon">📋</span>Buy vs Lease Financial Summary</div>
+            <div class="card-title"><span class="card-icon">📋</span>Lease vs Market Rent Financial Summary</div>
             <table class="comparison-table">
                 <thead>
                     <tr>
                         <th>Metric</th>
-                        <th>Buy (EMI + Maintenance)</th>
-                        <th>Lease (Market Rent)</th>
+                        <th>Lease (Economic Cost)</th>
+                        <th>Market Rent</th>
                         <th>Advantage</th>
                     </tr>
                 </thead>
@@ -791,7 +833,7 @@
         }
 
         /* ================= INPUT SYNC ================= */
-        ['leaseAmount', 'loanAmount', 'loanRate', 'oppRate', 'riskPremium', 'marketRent', 'maintenance', 'rentIncrement']
+        ['leaseAmount', 'loanAmount', 'loanRate', 'oppRate', 'riskPremium', 'marketRent', 'maintenance', 'rentIncrement', 'loanTenure', 'leaseTenure', 'rentDeposit', 'depositRefundDelay']
             .forEach(id => {
                 const input = $(id);
                 const range = $(id + 'Range');
@@ -828,7 +870,7 @@
                     data: {
                         labels: data.tco.labels,
                         datasets: [{
-                            label: 'Cost Component',
+                            label: 'Economic Cost',
                             data: data.tco.values,
                             backgroundColor: [
                                 'rgba(255, 77, 77, 0.8)',
@@ -879,19 +921,33 @@
                 monthlyCostChart = new Chart($('monthlyCostChart'), {
                     type: 'bar',
                     data: {
-                        labels: ['EMI', 'Maintenance', 'Total Buy Cost', 'Market Rent', 'Risk Adj. Rent', 'Monthly Advantage'],
+                        labels: ['EMI', 'Maintenance', 'Risk-Adj. Lease', 'Market Rent', 'Advantage'],
                         datasets: [
                             {
-                                label: 'Buy Scenario',
-                                data: [data.monthly.emi, data.monthly.maintenance, data.monthly.buyCost, null, null, null],
-                                backgroundColor: 'rgba(255, 77, 77, 0.7)',
+                                label: 'Actual Lease Outflow',
+                                data: [data.monthly.emi, data.monthly.maintenance, null, null, null],
+                                backgroundColor: 'rgba(255, 140, 58, 0.7)',
                                 borderRadius: 6,
                                 borderWidth: 0
                             },
                             {
-                                label: 'Lease Scenario',
-                                data: [null, null, null, data.monthly.rent, data.monthly.riskRent, data.monthly.advantage],
+                                label: 'Economic Lease Cost',
+                                data: [null, null, data.monthly.riskRent, null, null],
+                                backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                                borderRadius: 6,
+                                borderWidth: 0
+                            },
+                            {
+                                label: 'Current Market Rent',
+                                data: [null, null, null, data.monthly.rent, null],
                                 backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                                borderRadius: 6,
+                                borderWidth: 0
+                            },
+                            {
+                                label: 'Monthly Savings',
+                                data: [null, null, null, null, data.monthly.advantage],
+                                backgroundColor: data.monthly.advantage >= 0 ? 'rgba(46, 204, 113, 0.7)' : 'rgba(255, 77, 77, 0.7)',
                                 borderRadius: 6,
                                 borderWidth: 0
                             }
@@ -924,8 +980,11 @@
                     plugins: [ChartDataLabels]
                 });
             } else {
-                monthlyCostChart.data.datasets[0].data = [data.monthly.emi, data.monthly.maintenance, data.monthly.buyCost, null, null, null];
-                monthlyCostChart.data.datasets[1].data = [null, null, null, data.monthly.rent, data.monthly.riskRent, data.monthly.advantage];
+                monthlyCostChart.data.datasets[0].data = [data.monthly.emi, data.monthly.maintenance, null, null, null];
+                monthlyCostChart.data.datasets[1].data = [null, null, data.monthly.riskRent, null, null];
+                monthlyCostChart.data.datasets[2].data = [null, null, null, data.monthly.rent, null];
+                monthlyCostChart.data.datasets[3].data = [null, null, null, null, data.monthly.advantage];
+                monthlyCostChart.data.datasets[3].backgroundColor = data.monthly.advantage >= 0 ? 'rgba(46, 204, 113, 0.7)' : 'rgba(255, 77, 77, 0.7)';
                 monthlyCostChart.update();
             }
 
@@ -937,8 +996,8 @@
                         labels: data.cumulative.months,
                         datasets: [
                             {
-                                label: 'Buy: Cumulative Cost',
-                                data: data.cumulative.buyCosts,
+                                label: 'Cumulative Lease Cost (Economic)',
+                                data: data.cumulative.leaseCosts,
                                 borderColor: 'rgba(255, 77, 77, 0.9)',
                                 backgroundColor: 'rgba(255, 77, 77, 0.1)',
                                 borderWidth: 3,
@@ -948,8 +1007,8 @@
                                 pointHoverRadius: 6
                             },
                             {
-                                label: 'Lease: Cumulative Cost',
-                                data: data.cumulative.leaseCosts,
+                                label: 'Cumulative Market Rent',
+                                data: data.cumulative.buyCosts,
                                 borderColor: 'rgba(46, 204, 113, 0.9)',
                                 backgroundColor: 'rgba(46, 204, 113, 0.1)',
                                 borderWidth: 3,
@@ -982,8 +1041,8 @@
                 });
             } else {
                 cumulativeImpactChart.data.labels = data.cumulative.months;
-                cumulativeImpactChart.data.datasets[0].data = data.cumulative.buyCosts;
-                cumulativeImpactChart.data.datasets[1].data = data.cumulative.leaseCosts;
+                cumulativeImpactChart.data.datasets[0].data = data.cumulative.leaseCosts;
+                cumulativeImpactChart.data.datasets[1].data = data.cumulative.buyCosts;
                 cumulativeImpactChart.update();
             }
 
@@ -994,15 +1053,15 @@
                     data: {
                         datasets: [
                             {
-                                label: 'Buy Advantage',
-                                data: data.sensitivity.buyAdvantage,
+                                label: 'Lease Advantage',
+                                data: data.sensitivity.leaseAdvantage,
                                 backgroundColor: 'rgba(255, 77, 77, 0.6)',
                                 borderColor: 'rgba(255, 77, 77, 0.9)',
                                 borderWidth: 1
                             },
                             {
-                                label: 'Lease Advantage',
-                                data: data.sensitivity.leaseAdvantage,
+                                label: 'Rent Advantage',
+                                data: data.sensitivity.rentAdvantage,
                                 backgroundColor: 'rgba(46, 204, 113, 0.6)',
                                 borderColor: 'rgba(46, 204, 113, 0.9)',
                                 borderWidth: 1
@@ -1018,8 +1077,8 @@
                         },
                         scales: {
                             x: {
-                                title: { display: true, text: 'Interest Rate Change (%)', color: colors.muted },
-                                ticks: { callback: v => v + '%', color: colors.muted },
+                                title: { display: true, text: 'Scenario Index', color: colors.muted },
+                                ticks: { callback: v => v, color: colors.muted },
                                 grid: { color: colors.border }
                             },
                             y: {
@@ -1031,8 +1090,8 @@
                     }
                 });
             } else {
-                sensitivityChart.data.datasets[0].data = data.sensitivity.buyAdvantage;
-                sensitivityChart.data.datasets[1].data = data.sensitivity.leaseAdvantage;
+                sensitivityChart.data.datasets[0].data = data.sensitivity.leaseAdvantage;
+                sensitivityChart.data.datasets[1].data = data.sensitivity.rentAdvantage;
                 sensitivityChart.update();
             }
 
@@ -1086,14 +1145,25 @@
                         labels: data.rentProjection.months,
                         datasets: [
                             {
-                                label: 'Monthly Rent',
+                                label: 'Market Rent (Escalating)',
                                 data: data.rentProjection.monthlyRent,
-                                borderColor: 'rgba(77, 179, 255, 0.9)',
-                                backgroundColor: 'rgba(77, 179, 255, 0.1)',
+                                borderColor: 'rgba(46, 204, 113, 0.9)',
+                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
                                 borderWidth: 2,
                                 fill: false,
                                 tension: 0.4,
                                 pointRadius: 0
+                            },
+                            {
+                                label: 'Lease Economic Cost (Fixed)',
+                                data: data.rentProjection.leaseConstant,
+                                borderColor: 'rgba(255, 77, 77, 0.9)',
+                                backgroundColor: 'rgba(255, 77, 77, 0.1)',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                borderDash: [5, 5]
                             },
                             {
                                 label: 'Cumulative Rent Burden',
@@ -1118,12 +1188,12 @@
                         },
                         scales: {
                             y: {
-                                title: { display: true, text: 'Monthly Rent' },
+                                title: { display: true, text: 'Monthly Cost' },
                                 ticks: { callback: v => formatINR(v), color: colors.muted },
                                 grid: { color: colors.border }
                             },
                             y1: {
-                                title: { display: true, text: 'Cumulative Rent' },
+                                title: { display: true, text: 'Cumulative Cost' },
                                 position: 'right',
                                 ticks: { callback: v => formatINR(v), color: colors.muted },
                                 grid: { drawOnChartArea: false }
@@ -1138,7 +1208,8 @@
             } else {
                 rentProjectionChart.data.labels = data.rentProjection.months;
                 rentProjectionChart.data.datasets[0].data = data.rentProjection.monthlyRent;
-                rentProjectionChart.data.datasets[1].data = data.rentProjection.cumulativeRent;
+                rentProjectionChart.data.datasets[1].data = data.rentProjection.leaseConstant;
+                rentProjectionChart.data.datasets[2].data = data.rentProjection.cumulativeRent;
                 rentProjectionChart.update();
             }
         }
@@ -1159,14 +1230,34 @@
 
                 const MAINTENANCE = num('maintenance');
                 const MARKET_RENT = num('marketRent');
+                
+                // Rent Deposit Parameters
+                const RENT_DEPOSIT = num('rentDeposit');
+                const DEPOSIT_REFUND_DELAY = num('depositRefundDelay');
 
                 const OPP_RATE = (num('oppRate') / 100) / 12;
                 const RISK_PREMIUM = num('riskPremium') / 100;
                 const RENT_INCREMENT = num('rentIncrement') / 100;
 
-                // Validation
-                if (LEASE_TENURE <= 0 || LOAN_TENURE <= 0 || MARKET_RENT <= 0) {
-                    console.warn('Invalid parameters');
+                // Validation - Check for invalid inputs
+                if (LEASE_AMOUNT <= 0) {
+                    console.warn('Lease Amount must be greater than 0');
+                    return;
+                }
+                if (LEASE_TENURE <= 0) {
+                    console.warn('Lease Tenure must be greater than 0');
+                    return;
+                }
+                if (LOAN_TENURE <= 0) {
+                    console.warn('Loan Tenure must be greater than 0');
+                    return;
+                }
+                if (MARKET_RENT <= 0) {
+                    console.warn('Market Rent must be greater than 0');
+                    return;
+                }
+                if (LOAN_AMOUNT > LEASE_AMOUNT) {
+                    console.warn('Loan Amount cannot exceed Lease Amount');
                     return;
                 }
 
@@ -1197,12 +1288,19 @@
                 const totalEconomic = capitalLoss + ownOpp + emiOpp + delayCost;
 
                 const riskRent = (totalEconomic / LEASE_TENURE) * (1 + RISK_PREMIUM);
-                const monthlySavings = MARKET_RENT - riskRent;
+                
+                // Rent Deposit Opportunity Cost
+                const depositDelayCost = RENT_DEPOSIT * OPP_RATE * DEPOSIT_REFUND_DELAY;
+                const depositOppCost = RENT_DEPOSIT * (Math.pow(1 + OPP_RATE, LEASE_TENURE) - 1);
+                
+                // Rent Economic Cost includes deposit costs
+                const rentEconomicCost = depositOppCost + depositDelayCost;
+                const monthlySavings = MARKET_RENT - riskRent + (rentEconomicCost / LEASE_TENURE);
                 const yearlySavings = monthlySavings * 12;
                 const termSavings = monthlySavings * LEASE_TENURE;
 
-                // Score & Confidence
-                let score = MARKET_RENT > 0 ? (monthlySavings / MARKET_RENT) * 100 : 0;
+                // Score & Confidence - Positive savings = High score (Leasing advantage)
+                let score = MARKET_RENT > 0 ? 50 + (monthlySavings / MARKET_RENT) * 50 : 50;
                 score = Math.max(0, Math.min(100, score));
 
                 const confidence = Math.abs(monthlySavings) / MARKET_RENT * 100;
@@ -1210,21 +1308,21 @@
                 let color = '#f1c40f';
                 let interpretation = '📊 Balanced decision - Consider other factors';
 
-                if (score < 5) {
-                    color = '#ff4d4d';
-                    interpretation = '❌ Strong Buying Advantage - Buying is significantly more economical';
-                } else if (score < 25) {
-                    color = '#ff9f43';
-                    interpretation = '⚠️ Slight Buying Advantage - Buying is marginally better';
-                } else if (score < 50) {
-                    color = '#f1c40f';
-                    interpretation = '📊 Marginal Leasing Advantage - Consider flexibility & other factors';
-                } else if (score < 75) {
-                    color = '#2ecc71';
-                    interpretation = '✅ Strong Leasing Advantage - Leasing is recommended';
-                } else {
+                if (score >= 85) {
                     color = '#1abc9c';
                     interpretation = '🎯 Excellent Leasing Advantage - Highly favorable to lease';
+                } else if (score >= 65) {
+                    color = '#2ecc71';
+                    interpretation = '✅ Strong Leasing Advantage - Leasing is recommended';
+                } else if (score >= 50) {
+                    color = '#f1c40f';
+                    interpretation = '📊 Marginal Leasing Advantage - Consider flexibility & other factors';
+                } else if (score >= 35) {
+                    color = '#ff9f43';
+                    interpretation = '⚠️ Slight Renting Advantage - Renting is marginally better';
+                } else {
+                    color = '#ff4d4d';
+                    interpretation = '❌ Strong Renting Advantage - Renting is significantly more economical';
                 }
 
                 // Update Gauge
@@ -1235,6 +1333,8 @@
                 $('interpretation').innerText = interpretation;
 
                 // Update Metrics
+                $('mEMI').innerText = formatINR(EMI);
+                $('mMaintenance').innerText = formatINR(MAINTENANCE);
                 $('mSave').innerText = formatINR(monthlySavings);
                 $('ySave').innerText = formatINR(yearlySavings);
                 $('tSave').innerText = formatINR(termSavings);
@@ -1254,61 +1354,62 @@
                     ]
                 };
 
-                // 2. Monthly Cost Data
+                // 2. Monthly Cost Data - NOW COMPARING LEASE VS RENT (including deposit)
                 const monthlyData = {
                     emi: EMI,
                     maintenance: MAINTENANCE,
-                    buyCost: monthlyBuyCost,
                     rent: MARKET_RENT,
                     riskRent: riskRent,
-                    advantage: monthlySavings
+                    advantage: monthlySavings,
+                    rentDeposit: RENT_DEPOSIT,
+                    depositOppCost: rentEconomicCost
                 };
 
-                // 3. Cumulative Data
-                let cumulativeBuyCosts = [];
+                // 3. Cumulative Data - SWAPPED: Now lease costs in first dataset, rent in second
                 let cumulativeLeaseCosts = [];
+                let cumulativeRentCosts = [];
                 let cumulativeMonths = [];
-                let cumulativeBuyTotal = 0;
-                let cumulativeLeaseTotal = 0;
+                let cumulativeLeaseTotal = riskRent * 0; // Start from zero
+                let cumulativeRentTotal = 0; // Rent starts from month 1, no deposit upfront
 
-                for (let m = 1; m <= Math.min(LEASE_TENURE, 120); m++) {
-                    cumulativeBuyTotal += monthlyBuyCost;
+                for (let m = 1; m <= LEASE_TENURE; m++) {
+                    cumulativeLeaseTotal += riskRent;
                     const yearIndex = Math.floor((m - 1) / 12);
-                    const monthlyLeaseRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
-                    cumulativeLeaseTotal += monthlyLeaseRent;
+                    const monthlyMarketRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
+                    cumulativeRentTotal += monthlyMarketRent;
                     
-                    cumulativeBuyCosts.push(cumulativeBuyTotal);
                     cumulativeLeaseCosts.push(cumulativeLeaseTotal);
+                    cumulativeRentCosts.push(cumulativeRentTotal);
                     cumulativeMonths.push('Y' + (Math.floor((m - 1) / 12) + 1) + 'M' + ((m % 12) || 12));
                 }
 
                 const cumulativeData = {
                     months: cumulativeMonths,
-                    buyCosts: cumulativeBuyCosts,
-                    leaseCosts: cumulativeLeaseCosts
+                    leaseCosts: cumulativeLeaseCosts,
+                    buyCosts: cumulativeRentCosts
                 };
 
-                // 4. Sensitivity Data
-                const sensitivityBuyAdvantage = [];
+                // 4. Sensitivity Data - Lease vs Rent (Positive savings = Lease advantage)
                 const sensitivityLeaseAdvantage = [];
+                const sensitivityRentAdvantage = [];
 
                 for (let rateChange = -15; rateChange <= 15; rateChange += 3) {
                     for (let rentChange = -15; rentChange <= 15; rentChange += 3) {
-                        const adjRate = LOAN_INTEREST_RATE * (1 + rateChange / 100);
                         const adjRent = MARKET_RENT * (1 + rentChange / 100);
-                        const adjEMI = emi(LOAN_AMOUNT, adjRate, LOAN_TENURE);
-                        const adjMonthly = adjEMI + MAINTENANCE;
                         
-                        const netDifference = Math.abs(adjMonthly - adjRent);
+                        // Savings = Rent - Risk-Adjusted Lease Cost (pre-calculated)
+                        const adjustedSavings = adjRent - riskRent;
+                        const netDifference = Math.abs(adjustedSavings);
                         
-                        if (adjMonthly < adjRent) {
-                            sensitivityBuyAdvantage.push({
+                        // Positive savings = Leasing is cheaper = Lease advantage
+                        if (adjustedSavings > 0) {
+                            sensitivityLeaseAdvantage.push({
                                 x: rateChange,
                                 y: rentChange,
                                 r: Math.sqrt(netDifference / 100)
                             });
                         } else {
-                            sensitivityLeaseAdvantage.push({
+                            sensitivityRentAdvantage.push({
                                 x: rateChange,
                                 y: rentChange,
                                 r: Math.sqrt(netDifference / 100)
@@ -1318,8 +1419,8 @@
                 }
 
                 const sensitivityData = {
-                    buyAdvantage: sensitivityBuyAdvantage,
-                    leaseAdvantage: sensitivityLeaseAdvantage
+                    leaseAdvantage: sensitivityLeaseAdvantage,
+                    rentAdvantage: sensitivityRentAdvantage
                 };
 
                 // 5. Cost Composition
@@ -1333,18 +1434,20 @@
                     ]
                 };
 
-                // 6. Rent Projection
+                // 6. Rent Projection - LEASE COST CONSTANT + MARKET RENT ESCALATING (Deposit as economic cost, not upfront)
                 const rentMonthlyRent = [];
+                const leaseConstantRent = [];
                 const rentCumulativeRent = [];
                 const rentMonths = [];
-                let rentTotal = 0;
+                let rentTotal = 0; // Pure rent costs only
 
-                for (let m = 1; m <= Math.min(LEASE_TENURE, 120); m++) {
+                for (let m = 1; m <= LEASE_TENURE; m++) {
                     const yearIndex = Math.floor((m - 1) / 12);
                     const monthlyRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
                     rentTotal += monthlyRent;
                     
                     rentMonthlyRent.push(monthlyRent);
+                    leaseConstantRent.push(riskRent); // Constant lease cost
                     rentCumulativeRent.push(rentTotal);
                     rentMonths.push('M' + m);
                 }
@@ -1352,6 +1455,7 @@
                 const rentProjectionData = {
                     months: rentMonths,
                     monthlyRent: rentMonthlyRent,
+                    leaseConstant: leaseConstantRent,
                     cumulativeRent: rentCumulativeRent
                 };
 
@@ -1366,50 +1470,57 @@
                 });
 
                 // Update Comparison Table
-                updateComparisonTable(monthlyBuyCost, MARKET_RENT, riskRent, monthlySavings, termSavings);
+                updateComparisonTable(riskRent, MARKET_RENT, monthlySavings, termSavings, LEASE_TENURE);
 
             } catch (error) {
                 console.error('Calculation error:', error);
             }
         }
 
-        function updateComparisonTable(buyCost, rent, riskRent, advantage, termAdvantage) {
+        function updateComparisonTable(leaseCost, rentCost, advantage, termAdvantage, leaseTenure) {
             const tbody = $('comparisonBody');
+            const leaseBetter = advantage > 0; // Positive advantage = leasing is cheaper
+            
             tbody.innerHTML = `
                 <tr>
-                    <td><strong>Monthly Cost</strong></td>
-                    <td class="metric-negative">${formatINR(buyCost)}</td>
-                    <td class="metric-positive">${formatINR(rent)}</td>
-                    <td class="metric-negative">${formatINR(buyCost - rent)}</td>
+                    <td><strong>Monthly EMI</strong></td>
+                    <td class="metric-negative">${formatINR(leaseCost)}</td>
+                    <td>-</td>
+                    <td>-</td>
                 </tr>
                 <tr>
-                    <td><strong>Risk-Adjusted Cost</strong></td>
-                    <td class="metric-negative">${formatINR(buyCost)}</td>
-                    <td class="metric-positive">${formatINR(riskRent)}</td>
-                    <td>${formatINR(advantage)}</td>
+                    <td><strong>Monthly Rent</strong></td>
+                    <td>-</td>
+                    <td class="metric-negative">${formatINR(rentCost)}</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td><strong>Monthly Cost (Economic)</strong></td>
+                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(leaseCost)}</td>
+                    <td class="${leaseBetter ? 'metric-negative' : 'metric-positive'}">${formatINR(rentCost)}</td>
+                    <td class="${advantage >= 0 ? 'metric-positive' : 'metric-negative'}">${formatINR(Math.abs(advantage))}</td>
                 </tr>
                 <tr>
                     <td><strong>Annual Impact</strong></td>
-                    <td class="metric-negative">${formatINR(buyCost * 12)}</td>
-                    <td class="metric-positive">${formatINR(rent * 12)}</td>
-                    <td>${formatINR(advantage * 12)}</td>
+                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(leaseCost * 12)}</td>
+                    <td class="${leaseBetter ? 'metric-negative' : 'metric-positive'}">${formatINR(rentCost * 12)}</td>
+                    <td class="${advantage >= 0 ? 'metric-positive' : 'metric-negative'}">${formatINR(Math.abs(advantage) * 12)}</td>
                 </tr>
                 <tr>
                     <td><strong>Lease Term Total</strong></td>
-                    <td class="metric-negative">${formatINR(buyCost * 240)}</td>
-                    <td class="metric-positive">${formatINR(rent * 240)}</td>
-                    <td>${formatINR(termAdvantage)}</td>
+                    <td class="${leaseBetter ? 'metric-positive' : 'metric-negative'}">${formatINR(leaseCost * leaseTenure)}</td>
+                    <td class="${leaseBetter ? 'metric-negative' : 'metric-positive'}">${formatINR(rentCost * leaseTenure)}</td>
+                    <td class="${advantage >= 0 ? 'metric-positive' : 'metric-negative'}">${formatINR(Math.abs(termAdvantage))}</td>
                 </tr>
             `;
         }
 
         /* ================= EVENT LISTENERS ================= */
+        let calculationTimer = null;
         document.querySelectorAll('input').forEach(el => {
             el.addEventListener('input', () => {
-                const timer = setTimeout(calculate, 300);
-                el.addEventListener('input', () => {
-                    clearTimeout(timer);
-                }, { once: true });
+                if (calculationTimer) clearTimeout(calculationTimer);
+                calculationTimer = setTimeout(calculate, 300);
             });
         });
 
