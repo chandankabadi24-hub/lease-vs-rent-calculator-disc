@@ -7,10 +7,45 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
-        /* ===== ELITE FINTECH BI UI ==== */
+        /* GPU ACCELERATION - Performance Optimization */
+        .card, .chartCard, .metric-card, input[type="range"], button {
+            will-change: transform, box-shadow;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+        }
+
+        /* REDUCED MOTION ACCESSIBILITY */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            
+            .gauge {
+                transition: none !important;
+            }
+            
+            .card, .chartCard {
+                animation: none !important;
+                transition: opacity 0.1ms, box-shadow 0.1ms, border-color 0.1ms !important;
+            }
+
+            .metric-card {
+                animation: none !important;
+                transition: background 0.1ms, border 0.1ms, transform 0.1ms !important;
+            }
+
+            input[type="range"]::-webkit-slider-thumb,
+            input[type="range"]::-moz-range-thumb {
+                transition: none !important;
+            }
+        }
         :root {
             --bg: #060d15;
             --card: #0e1a27;
+            --card-rgb: 14, 26, 39;
             --text: #eaf2f9;
             --accent: #4db3ff;
             --muted: #94a8bd;
@@ -26,6 +61,7 @@
         body.light {
             --bg: #f8fafb;
             --card: #ffffff;
+            --card-rgb: 255, 255, 255;
             --text: #0f172a;
             --accent: #1e40af;
             --muted: #475569;
@@ -42,7 +78,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: var(--bg);
             color: var(--text);
-            transition: 0.35s ease;
+            transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             scroll-behavior: smooth;
             padding: 20px;
             min-height: 100vh;
@@ -53,6 +89,7 @@
             margin: 0 auto;
             display: grid;
             gap: 24px;
+            animation: fadeInChart 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .header {
@@ -72,6 +109,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s ease;
+            display: inline-block;
+        }
+
+        .logo:hover {
+            filter: brightness(1.1);
+            transform: translateX(4px);
         }
 
         .header-actions {
@@ -90,6 +135,7 @@
             font-size: 13px;
             border: none;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .global-help-btn {
@@ -97,15 +143,16 @@
             background: rgba(77, 179, 255, 0.15);
             color: var(--accent);
             border: 1px solid rgba(77, 179, 255, 0.3);
+            animation-delay: 0.1s;
         }
 
         .toggle:hover, .global-help-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(77, 179, 255, 0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(77, 179, 255, 0.3);
         }
 
         .toggle:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .card, .chartCard {
@@ -132,9 +179,15 @@
         }
 
         .card:hover, .chartCard:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
             border-color: var(--accent);
+        }
+
+        body.light .card:hover,
+        body.light .chartCard:hover {
+            box-shadow: 0 8px 24px rgba(30, 64, 175, 0.12);
+            border-color: #60a5fa;
         }
 
         .card-title {
@@ -195,10 +248,19 @@
             justify-content: space-between;
             align-items: baseline;
             flex: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        label:hover {
+            color: var(--accent);
         }
 
         body.light label {
             color: #374151;
+        }
+
+        body.light label:hover {
+            color: #1e40af;
         }
 
         .label-value {
@@ -206,6 +268,11 @@
             color: var(--accent);
             font-weight: 700;
             font-family: 'Courier New', monospace;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        label:hover .label-value {
+            transform: scale(1.1);
         }
 
         body.light .label-value {
@@ -225,8 +292,9 @@
             font-weight: bold;
             cursor: help;
             border: 1px solid rgba(77, 179, 255, 0.3);
-            transition: all 0.2s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
+            animation: popIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.light .info-btn {
@@ -236,9 +304,15 @@
         }
 
         .info-btn:hover {
-            background: rgba(77, 179, 255, 0.25);
+            background: rgba(77, 179, 255, 0.3);
             border-color: var(--accent);
-            transform: scale(1.15);
+            transform: scale(1.35) rotate(180deg);
+            box-shadow: 0 6px 16px rgba(77, 179, 255, 0.25);
+        }
+
+        body.light .info-btn:hover {
+            background: rgba(30, 64, 175, 0.15);
+            box-shadow: 0 6px 16px rgba(30, 64, 175, 0.2);
         }
 
         .input-group {
@@ -257,7 +331,7 @@
             font-weight: 600;
             font-family: 'Courier New', monospace;
             font-size: 13px;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.light input[type="text"],
@@ -269,14 +343,16 @@
 
         input[type="text"]:hover,
         input[type="number"]:hover {
-            border-color: var(--border);
+            border-color: var(--accent);
             background: var(--card);
+            box-shadow: 0 2px 8px rgba(77, 179, 255, 0.1);
         }
 
         body.light input[type="text"]:hover,
         body.light input[type="number"]:hover {
             background: #ffffff;
-            border-color: #9ca3af;
+            border-color: #60a5fa;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.08);
         }
 
         input[type="text"]:focus,
@@ -284,14 +360,15 @@
             outline: none;
             border-color: var(--accent);
             background: var(--card);
-            box-shadow: 0 0 0 3px rgba(77, 179, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(77, 179, 255, 0.15), 0 4px 12px rgba(77, 179, 255, 0.1);
+            transform: translateY(-1px);
         }
 
         body.light input[type="text"]:focus,
         body.light input[type="number"]:focus {
             border-color: #1e40af;
             background: #ffffff;
-            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+            box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.12), 0 4px 12px rgba(30, 64, 175, 0.08);
         }
 
         input[type="range"] {
@@ -305,7 +382,7 @@
             cursor: grab;
             padding: 8px 0;
             pointer-events: none;
-            transition: background 0.2s ease;
+            transition: background 0.3s ease;
         }
 
         input[type="range"]:active {
@@ -322,18 +399,18 @@
             cursor: grab;
             pointer-events: auto;
             box-shadow: 0 2px 8px rgba(77, 179, 255, 0.3);
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 2px solid var(--card);
         }
 
         input[type="range"]::-webkit-slider-thumb:hover {
-            box-shadow: 0 4px 12px rgba(77, 179, 255, 0.5);
-            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(77, 179, 255, 0.5);
+            transform: scale(1.2);
         }
 
         input[type="range"]::-webkit-slider-thumb:active {
-            box-shadow: 0 6px 16px rgba(77, 179, 255, 0.6);
-            transform: scale(1.15);
+            box-shadow: 0 8px 20px rgba(77, 179, 255, 0.6);
+            transform: scale(1.25);
         }
 
         input[type="range"]:focus {
@@ -341,7 +418,7 @@
         }
 
         input[type="range"]:focus::-webkit-slider-thumb {
-            box-shadow: 0 0 0 3px rgba(77, 179, 255, 0.2), 0 4px 12px rgba(77, 179, 255, 0.5);
+            box-shadow: 0 0 0 4px rgba(77, 179, 255, 0.25), 0 4px 16px rgba(77, 179, 255, 0.5);
         }
 
         input[type="range"]::-moz-range-track {
@@ -357,22 +434,22 @@
             cursor: grab;
             border: 2px solid var(--card);
             box-shadow: 0 2px 8px rgba(77, 179, 255, 0.3);
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         input[type="range"]::-moz-range-thumb:hover {
-            box-shadow: 0 4px 12px rgba(77, 179, 255, 0.5);
-            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(77, 179, 255, 0.5);
+            transform: scale(1.2);
         }
 
         input[type="range"]::-moz-range-thumb:active {
-            box-shadow: 0 6px 16px rgba(77, 179, 255, 0.6);
-            transform: scale(1.15);
+            box-shadow: 0 8px 20px rgba(77, 179, 255, 0.6);
+            transform: scale(1.25);
             cursor: grabbing;
         }
 
         input[type="range"]:focus::-moz-range-thumb {
-            box-shadow: 0 0 0 3px rgba(77, 179, 255, 0.2), 0 4px 12px rgba(77, 179, 255, 0.5);
+            box-shadow: 0 0 0 4px rgba(77, 179, 255, 0.25), 0 4px 16px rgba(77, 179, 255, 0.5);
         }
 
         /* HIDDEN HELP TEXT */
@@ -398,10 +475,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 0 32px rgba(77, 179, 255, 0.2);
             position: relative;
             background: conic-gradient(#4db3ff 0deg, #9b59b6 360deg);
+        }
+
+        .gauge:hover {
+            box-shadow: 0 0 48px rgba(77, 179, 255, 0.35);
+            transform: scale(1.02);
         }
 
         .gauge::after {
@@ -414,6 +496,11 @@
             filter: blur(16px);
             opacity: 0.2;
             z-index: -1;
+            transition: opacity 0.8s ease;
+        }
+
+        .gauge:hover::after {
+            opacity: 0.35;
         }
 
         .gaugeInner {
@@ -428,6 +515,11 @@
             font-size: 44px;
             font-weight: 900;
             box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.6s ease;
+        }
+
+        .gauge:hover .gaugeInner {
+            box-shadow: inset 0 6px 16px rgba(0, 0, 0, 0.3);
         }
 
         .gauge-label {
@@ -460,9 +552,28 @@
             padding: 14px;
             border-radius: 10px;
             border: 1px solid rgba(77, 179, 255, 0.15);
-            transition: all 0.2s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            animation: slideUpMetric 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
         }
+
+        @keyframes slideUpMetric {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .metric-card:nth-child(1) { animation-delay: 0.1s; }
+        .metric-card:nth-child(2) { animation-delay: 0.15s; }
+        .metric-card:nth-child(3) { animation-delay: 0.2s; }
+        .metric-card:nth-child(4) { animation-delay: 0.25s; }
+        .metric-card:nth-child(5) { animation-delay: 0.3s; }
+        .metric-card:nth-child(6) { animation-delay: 0.35s; }
 
         body.light .metric-card {
             background: #f0f7ff;
@@ -470,14 +581,16 @@
         }
 
         .metric-card:hover {
-            background: rgba(77, 179, 255, 0.12);
+            background: rgba(77, 179, 255, 0.15);
             border-color: var(--accent);
-            transform: translateY(-1px);
+            transform: translateY(-6px);
+            box-shadow: 0 8px 24px rgba(77, 179, 255, 0.2);
         }
 
         body.light .metric-card:hover {
             background: #e0efff;
             border-color: #60a5fa;
+            box-shadow: 0 8px 24px rgba(30, 64, 175, 0.15);
         }
 
         .metric-label {
@@ -487,6 +600,11 @@
             text-transform: uppercase;
             letter-spacing: 0.2px;
             margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .metric-card:hover .metric-label {
+            color: var(--accent);
         }
 
         .metric-value {
@@ -495,6 +613,11 @@
             color: var(--accent);
             letter-spacing: -0.5px;
             font-family: 'Courier New', monospace;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .metric-card:hover .metric-value {
+            transform: scale(1.08);
         }
 
         .chartCard {
@@ -505,7 +628,7 @@
             position: relative;
             height: 380px;
             margin-top: 12px;
-            animation: fadeInChart 0.8s ease-out;
+            animation: fadeInChart 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes fadeInChart {
@@ -519,6 +642,25 @@
             }
         }
 
+        .chart-container.transitioning {
+            animation: fadeOutChart 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeOutChart {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        .chart-container.transitioning-in {
+            animation: fadeInChart 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
         canvas {
             max-height: 100% !important;
         }
@@ -530,12 +672,20 @@
             padding-top: 10px;
             border-top: 1px solid var(--border);
             line-height: 1.6;
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
+            transition: all 0.3s ease;
+        }
+
+        .chart-description:hover {
+            color: var(--text);
+            border-top-color: var(--accent);
         }
 
         .charts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
             gap: 20px;
+            animation: fadeInChart 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .chart-full {
@@ -552,6 +702,7 @@
             width: 100%;
             margin-top: 16px;
             border-collapse: collapse;
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .comparison-table th {
@@ -564,6 +715,11 @@
             text-transform: uppercase;
             color: var(--accent);
             letter-spacing: 0.2px;
+            transition: all 0.3s ease;
+        }
+
+        .comparison-table th:hover {
+            background: rgba(77, 179, 255, 0.15);
         }
 
         .comparison-table td {
@@ -571,10 +727,16 @@
             border-bottom: 1px solid var(--border);
             font-size: 13px;
             font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .comparison-table tr:hover {
-            background: rgba(77, 179, 255, 0.04);
+            background: rgba(77, 179, 255, 0.06);
+        }
+
+        .comparison-table tr:hover td {
+            color: var(--text);
+            transform: translateX(4px);
         }
 
         .metric-positive {
@@ -597,10 +759,29 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            animation: slideInLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
+        }
+
+        .section-header:hover {
+            transform: translateX(4px);
+            color: var(--cyan);
         }
 
         .section-header-icon {
             font-size: 16px;
+            animation: rotateIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes rotateIn {
+            from {
+                transform: rotate(-45deg);
+                opacity: 0;
+            }
+            to {
+                transform: rotate(0);
+                opacity: 1;
+            }
         }
 
         .divider {
@@ -619,6 +800,7 @@
             border-radius: 10px;
             border: 1px solid var(--border);
             margin-bottom: 16px;
+            animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.light .summary-panel {
@@ -629,6 +811,20 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            animation: fadeInChart 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .summary-item:nth-child(1) { animation-delay: 0.1s; }
+        .summary-item:nth-child(2) { animation-delay: 0.15s; }
+        .summary-item:nth-child(3) { animation-delay: 0.2s; }
+        .summary-item:nth-child(4) { animation-delay: 0.25s; }
+
+        .summary-item:hover {
+            background: rgba(77, 179, 255, 0.1);
+            transform: translateY(-2px);
         }
 
         .summary-label {
@@ -637,6 +833,11 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.2px;
+            transition: color 0.3s ease;
+        }
+
+        .summary-item:hover .summary-label {
+            color: var(--accent);
         }
 
         .summary-value {
@@ -644,6 +845,11 @@
             font-weight: 700;
             color: var(--accent);
             font-family: 'Courier New', monospace;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .summary-item:hover .summary-value {
+            transform: scale(1.05);
         }
 
         body.light .summary-value {
@@ -660,7 +866,8 @@
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            animation: fadeIn 0.2s ease;
+            animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(2px);
         }
 
         .modal-overlay.active {
@@ -669,9 +876,30 @@
             justify-content: center;
         }
 
+        .modal-overlay.active .modal-content {
+            animation: slideUpModal 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { 
+                opacity: 0;
+                backdrop-filter: blur(0px);
+            }
+            to { 
+                opacity: 1;
+                backdrop-filter: blur(2px);
+            }
+        }
+
+        @keyframes slideUpModal {
+            from { 
+                transform: translateY(30px) scale(0.95);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-content {
@@ -683,17 +911,16 @@
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.light .modal-content {
             background: #ffffff;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        .modal-content:hover {
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
         }
 
         .modal-close {
@@ -709,13 +936,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             width: 32px;
             height: 32px;
+            border-radius: 6px;
         }
 
         .modal-close:hover {
             color: var(--text);
+            background: rgba(77, 179, 255, 0.1);
+            transform: rotate(90deg);
         }
 
         .modal-title {
@@ -724,6 +954,18 @@
             margin-bottom: 8px;
             color: var(--text);
             padding-right: 32px;
+            animation: slideInLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s backwards;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .modal-subtitle {
@@ -731,11 +973,20 @@
             color: var(--muted);
             margin-bottom: 16px;
             line-height: 1.5;
+            animation: slideInLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.15s backwards;
         }
 
         .modal-section {
             margin-bottom: 16px;
+            animation: slideInLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
         }
+
+        .modal-section:nth-child(1) { animation-delay: 0.2s; }
+        .modal-section:nth-child(2) { animation-delay: 0.25s; }
+        .modal-section:nth-child(3) { animation-delay: 0.3s; }
+        .modal-section:nth-child(4) { animation-delay: 0.35s; }
+        .modal-section:nth-child(5) { animation-delay: 0.4s; }
+        .modal-section:nth-child(6) { animation-delay: 0.45s; }
 
         .modal-section-title {
             font-size: 12px;
@@ -744,6 +995,11 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
             margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .modal-section:hover .modal-section-title {
+            color: var(--cyan);
         }
 
         .modal-text {
@@ -751,6 +1007,7 @@
             line-height: 1.6;
             color: var(--text);
             margin-bottom: 8px;
+            transition: color 0.3s ease;
         }
 
         .modal-example {
@@ -761,6 +1018,25 @@
             font-size: 12px;
             color: var(--text);
             margin-top: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.05s backwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .modal-example:hover {
+            background: rgba(77, 179, 255, 0.15);
+            border-left-color: var(--cyan);
+            transform: translateX(4px);
         }
 
         body.light .modal-example {
@@ -777,6 +1053,25 @@
             font-size: 12px;
             color: var(--text);
             line-height: 1.5;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-banner:hover {
+            border-left-color: var(--cyan);
+            background: rgba(30, 64, 175, 0.12);
+            box-shadow: 0 4px 12px rgba(77, 179, 255, 0.1);
         }
 
         body.light .info-banner {
@@ -825,7 +1120,7 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.light .sensitivity-chip {
@@ -835,6 +1130,8 @@
         .sensitivity-chip:hover {
             border-color: var(--accent);
             background: rgba(77, 179, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(77, 179, 255, 0.15);
         }
 
         body.light .sensitivity-chip:hover {
@@ -845,6 +1142,8 @@
             background: var(--accent);
             color: #060d15;
             border-color: var(--accent);
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(77, 179, 255, 0.3);
         }
 
         .sensitivity-back-btn {
@@ -856,12 +1155,49 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sensitivity-back-btn:hover {
             background: var(--accent);
             color: #060d15;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(77, 179, 255, 0.3);
+        }
+
+        .sensitivity-back-btn:active {
+            transform: translateY(0);
+        }
+
+        .sensitivity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: rgba(77, 179, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(77, 179, 255, 0.1);
+            animation: slideInDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #sensitivityOverviewMode {
+            animation: fadeInChart 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #sensitivityInteractiveMode {
+            animation: fadeInChart 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sensitivity-chart-title {
@@ -952,14 +1288,316 @@
             animation: pulse 2s infinite;
         }
 
-        *:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
+        /* SCROLL ANIMATIONS & PARALLAX */
+        .card {
+            animation: slideInCard 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        button:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
+        .card.animate-on-scroll, .chartCard.animate-on-scroll {
+            animation: slideInCard 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .metric-card.animate-on-scroll {
+            animation: slideUpMetric 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .comparison-table tbody tr.animate-on-scroll {
+            animation: tableRowFade 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* SCROLL REVEAL FOR FIRST LOAD */
+        @supports (scroll-behavior: smooth) {
+            html {
+                scroll-behavior: smooth;
+            }
+        }
+
+        /* MICRO-INTERACTIONS - Ripple Effect */
+        .toggle, .global-help-btn, .sensitivity-chip, .sensitivity-back-btn, .info-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toggle::after, .global-help-btn::after, .sensitivity-chip::after, .sensitivity-back-btn::after, .info-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .toggle:active::after, .global-help-btn:active::after, .sensitivity-chip:active::after, .sensitivity-back-btn:active::after, .info-btn:active::after {
+            animation: ripple 0.6s ease-out;
+        }
+
+        @keyframes ripple {
+            to {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+            }
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+            transform: scale(1);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        /* GLASSMORPHISM & BACKDROP EFFECTS */
+        .modal-overlay {
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: rgba(var(--card-rgb), 0.95);
+            backdrop-filter: blur(10px) saturate(180%);
+            border: 1px solid rgba(77, 179, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.25);
+        }
+
+        body.light .modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(8px) saturate(180%);
+        }
+
+        .info-banner {
+            backdrop-filter: blur(10px) saturate(150%);
+        }
+
+        /* ADVANCED CURSOR EFFECTS */
+        body {
+            cursor: default;
+        }
+
+        a, button, [onclick], .sensitivity-chip, input[type="range"] {
+            cursor: pointer;
+        }
+
+        input[type="text"], input[type="number"] {
+            cursor: text;
+        }
+
+        .info-btn {
+            cursor: help;
+        }
+
+        /* CUSTOM CURSOR VISUAL FEEDBACK */
+        button:hover::before, .info-btn:hover::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            background: radial-gradient(circle, rgba(77, 179, 255, 0.1) 0%, transparent 70%);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        /* TOOLTIP IMPROVEMENTS */
+        .info-btn[title] {
+            position: relative;
+        }
+
+        .info-btn[title]:hover::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: tooltipFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .info-btn[title]:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 115%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--card);
+            animation: tooltipFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+        }
+
+        @keyframes tooltipFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* SKELETON LOADING & SHIMMER */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                rgba(77, 179, 255, 0.1) 25%,
+                rgba(77, 179, 255, 0.2) 50%,
+                rgba(77, 179, 255, 0.1) 75%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* NUMBER COUNTER FILL EFFECT */
+        .metric-value {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-value::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(77, 179, 255, 0.2), transparent);
+            animation: fillValue 1.2s ease-out 0.3s forwards;
+        }
+
+        @keyframes fillValue {
+            to {
+                width: 100%;
+            }
+        }
+
+        /* STAGGERED TABLE ROW ANIMATIONS */
+        .comparison-table tbody tr {
+            animation: tableRowFade 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+        }
+
+        .comparison-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        .comparison-table tbody tr:nth-child(2) { animation-delay: 0.15s; }
+        .comparison-table tbody tr:nth-child(3) { animation-delay: 0.2s; }
+        .comparison-table tbody tr:nth-child(4) { animation-delay: 0.25s; }
+        .comparison-table tbody tr:nth-child(5) { animation-delay: 0.3s; }
+        .comparison-table tbody tr:nth-child(6) { animation-delay: 0.35s; }
+        .comparison-table tbody tr:nth-child(7) { animation-delay: 0.4s; }
+
+        @keyframes tableRowFade {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ENHANCED KEYBOARD NAVIGATION */
+        *:focus-visible {
+            outline: 3px dashed var(--accent);
+            outline-offset: 3px;
+            animation: focusGlow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes focusGlow {
+            from {
+                outline-offset: 0;
+                opacity: 0.5;
+            }
+            to {
+                outline-offset: 3px;
+                opacity: 1;
+            }
+        }
+
+        button:focus-visible, .sensitivity-chip:focus-visible {
+            box-shadow: 0 0 0 4px rgba(77, 179, 255, 0.3);
+        }
+
+        /* VALUE CHANGE ANIMATIONS */
+        .metric-value.updating {
+            animation: valueFlash 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes valueFlash {
+            0% {
+                background: rgba(77, 179, 255, 0.3);
+                transform: scale(1);
+            }
+            50% {
+                background: rgba(77, 179, 255, 0.15);
+                transform: scale(1.1);
+            }
+            100% {
+                background: transparent;
+                transform: scale(1);
+            }
+        }
+
+        /* PULSE EFFECT FOR IMPORTANT METRICS */
+        .metric-card.pulse {
+            animation: metricPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes metricPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(77, 179, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(77, 179, 255, 0);
+            }
+        }
+
+        /* PROGRESS BAR FILL EFFECTS */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(77, 179, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--cyan));
+            border-radius: 2px;
+            animation: progressFill 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes progressFill {
+            from {
+                width: 0;
+            }
+            to {
+                width: var(--progress-value, 100%);
+            }
         }
     </style>
 </head>
@@ -1842,6 +2480,13 @@ Chart.register(window['ChartDataLabels']);
 
         /* ================= CHARTS ================= */
         let tcoChart, monthlyCostChart, cumulativeImpactChart, sensitivityChart, costCompositionChart, rentProjectionChart, sensitivityHeatmapChart, amortizationChart;
+        
+        /* ================= GLOBAL CALCULATION STATE ================= */
+        let lastCalculationState = {
+            monthlyLeaseCost: 0,
+            monthlyRentCost: 0,
+            LEASE_TENURE: 24
+        };
 
         function initCharts(data) {
             const colors = getChartColors();
@@ -1871,6 +2516,16 @@ Chart.register(window['ChartDataLabels']);
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                if (context.type === 'data') {
+                                    return context.dataIndex * 80;
+                                }
+                                return 0;
+                            }
+                        },
                         plugins: {
                             legend: { display: false },
                             datalabels: {
@@ -1940,6 +2595,16 @@ Chart.register(window['ChartDataLabels']);
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                if (context.type === 'data') {
+                                    return context.datasetIndex * 120;
+                                }
+                                return 0;
+                            }
+                        },
                         plugins: {
                             legend: { display: true, position: 'top' },
                             datalabels: {
@@ -1988,7 +2653,11 @@ Chart.register(window['ChartDataLabels']);
                                 fill: true,
                                 tension: 0.4,
                                 pointRadius: 0,
-                                pointHoverRadius: 6
+                                pointHoverRadius: 6,
+                                segment: {
+                                    borderColor: 'rgba(255, 77, 77, 0.9)',
+                                    borderWidth: 3
+                                }
                             },
                             {
                                 label: 'Cumulative Market Rent',
@@ -1999,7 +2668,11 @@ Chart.register(window['ChartDataLabels']);
                                 fill: true,
                                 tension: 0.4,
                                 pointRadius: 0,
-                                pointHoverRadius: 6
+                                pointHoverRadius: 6,
+                                segment: {
+                                    borderColor: 'rgba(46, 204, 113, 0.9)',
+                                    borderWidth: 3
+                                }
                             }
                         ]
                     },
@@ -2007,6 +2680,16 @@ Chart.register(window['ChartDataLabels']);
                         responsive: true,
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
+                        animation: {
+                            duration: 1200,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                if (context.type === 'data') {
+                                    return context.dataIndex * 10 + context.datasetIndex * 200;
+                                }
+                                return 0;
+                            }
+                        },
                         plugins: {
                             legend: { display: true, position: 'top' },
                             datalabels: { display: false }
@@ -2055,6 +2738,16 @@ Chart.register(window['ChartDataLabels']);
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        animation: {
+                            duration: 1200,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                if (context.type === 'data') {
+                                    return context.dataIndex * 10 + context.datasetIndex * 300;
+                                }
+                                return 0;
+                            }
+                        },
                         plugins: {
                             legend: { display: true, position: 'top' },
                             datalabels: { display: false }
@@ -2079,7 +2772,7 @@ Chart.register(window['ChartDataLabels']);
                 sensitivityChart.update();
             }
 
-            // 5. COST COMPOSITION PIE
+            // 5. COST COMPOSITION PIE - FIXED FOR DYNAMIC COLORS
             if (!costCompositionChart) {
                 costCompositionChart = new Chart($('costCompositionChart'), {
                     type: 'doughnut',
@@ -2115,31 +2808,27 @@ Chart.register(window['ChartDataLabels']);
                         interaction: { mode: 'nearest', intersect: false },
                         animation: {
                             animateRotate: true,
-                            animateScale: false
+                            animateScale: false,
+                            duration: 1200,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                if (context.type === 'data') {
+                                    return context.dataIndex * 100;
+                                }
+                                return 0;
+                            }
                         },
                         plugins: {
                             legend: { 
                                 display: true, 
                                 position: 'bottom',
                                 labels: {
-                                    color: document.body.classList.contains('dark') ? '#E5E7EB' : '#374151',
+                                    color: colors.text,
                                     padding: 18,
                                     usePointStyle: true,
                                     pointStyle: 'circle',
                                     pointRadius: 6,
-                                    font: { weight: '700', size: 12 },
-                                    generateLabels: function(chart) {
-                                        const dataset = chart.data.datasets[0];
-                                        const labels = chart.data.labels;
-                                        return labels.map((label, i) => ({
-                                            text: label,
-                                            fillStyle: dataset.backgroundColor[i],
-                                            strokeStyle: colors.border,
-                                            lineWidth: 2,
-                                            hidden: false,
-                                            index: i
-                                        }));
-                                    }
+                                    font: { weight: '700', size: 12 }
                                 }
                             },
                             tooltip: {
@@ -2171,7 +2860,7 @@ Chart.register(window['ChartDataLabels']);
                                 }
                             },
                             datalabels: {
-                                color: '#ffffff',
+                                color: colors.text,
                                 font: { weight: 'bold', size: 13 },
                                 formatter: (v, ctx) => {
                                     const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
@@ -2204,7 +2893,8 @@ Chart.register(window['ChartDataLabels']);
                                 borderWidth: 2,
                                 fill: false,
                                 tension: 0.4,
-                                pointRadius: 0
+                                pointRadius: 0,
+                                pointHoverRadius: 6
                             },
                             {
                                 label: 'Lease Economic Cost (Fixed)',
@@ -2215,6 +2905,7 @@ Chart.register(window['ChartDataLabels']);
                                 fill: false,
                                 tension: 0.4,
                                 pointRadius: 0,
+                                pointHoverRadius: 6,
                                 borderDash: [5, 5]
                             },
                             {
@@ -2226,6 +2917,7 @@ Chart.register(window['ChartDataLabels']);
                                 fill: true,
                                 tension: 0.4,
                                 pointRadius: 0,
+                                pointHoverRadius: 6,
                                 yAxisID: 'y1'
                             }
                         ]
@@ -2234,6 +2926,16 @@ Chart.register(window['ChartDataLabels']);
                         responsive: true,
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
+                        animation: {
+                            duration: 1200,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                if (context.type === 'data') {
+                                    return context.dataIndex * 8 + context.datasetIndex * 250;
+                                }
+                                return 0;
+                            }
+                        },
                         plugins: {
                             legend: { display: true, position: 'top' },
                             datalabels: { display: false }
@@ -2292,6 +2994,16 @@ Chart.register(window['ChartDataLabels']);
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                if (context.type === 'data') {
+                                    return context.dataIndex * 80 + context.datasetIndex * 150;
+                                }
+                                return 0;
+                            }
+                        },
                         plugins: {
                             legend: { 
                                 display: true, 
@@ -2312,7 +3024,7 @@ Chart.register(window['ChartDataLabels']);
                                 type: 'linear',
                                 min: (ctx) => {
                                     const min = Math.min(...ctx.chart.data.datasets[0].data);
-                                    return min * 1.2; // Soften axis for better visibility
+                                    return min * 1.2;
                                 },
                                 max: (ctx) => {
                                     const max = Math.max(...ctx.chart.data.datasets[1].data);
@@ -2407,6 +3119,16 @@ Chart.register(window['ChartDataLabels']);
                         responsive: true,
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
+                        animation: {
+                            duration: 1200,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                if (context.type === 'data') {
+                                    return context.dataIndex * 15 + context.datasetIndex * 200;
+                                }
+                                return 0;
+                            }
+                        },
                         plugins: {
                             legend: { display: true, position: 'top', labels: { color: colors.text } },
                             datalabels: { display: false }
@@ -2621,13 +3343,30 @@ Chart.register(window['ChartDataLabels']);
                 $('dial').innerText = Math.round(score);
                 $('interpretation').innerText = interpretation;
 
-                // Update metrics
-                $('mEMI').innerText = formatINR(EMI);
-                $('mMaintenance').innerText = formatINR(MAINTENANCE);
-                $('mSave').innerText = formatINR(monthlySavings);
-                $('ySave').innerText = formatINR(yearlySavings);
-                $('tSave').innerText = formatINR(termSavings);
-                $('confidence').innerText = Math.round(confidence) + '%';
+                // Update metrics with smooth animations
+                const oldEMI = cleanNumber($('mEMI').textContent);
+                const oldMaint = cleanNumber($('mMaintenance').textContent);
+                const oldSave = cleanNumber($('mSave').textContent);
+                const oldYear = cleanNumber($('ySave').textContent);
+                const oldTerm = cleanNumber($('tSave').textContent);
+
+                animateCounter($('mEMI'), oldEMI, EMI, 800);
+                highlightValueChange($('mEMI'));
+                
+                animateCounter($('mMaintenance'), oldMaint, MAINTENANCE, 800);
+                highlightValueChange($('mMaintenance'));
+                
+                animateCounter($('mSave'), oldSave, monthlySavings, 800);
+                highlightValueChange($('mSave'));
+                
+                animateCounter($('ySave'), oldYear, yearlySavings, 800);
+                highlightValueChange($('ySave'));
+                
+                animateCounter($('tSave'), oldTerm, termSavings, 800);
+                highlightValueChange($('tSave'));
+                
+                $('confidence').textContent = Math.round(confidence) + '%';
+                highlightValueChange($('confidence'));
 
                 // ========== CHART DATA ==========
 
@@ -2880,6 +3619,13 @@ Chart.register(window['ChartDataLabels']);
                 // Update comparison table
                 updateComparisonTable(EMI, MAINTENANCE, monthlyLeaseCost, monthlyRentCost, monthlySavings, termSavings, LEASE_TENURE);
 
+                // Store calculation state for sensitivity analysis
+                lastCalculationState = {
+                    monthlyLeaseCost: monthlyLeaseCost,
+                    monthlyRentCost: monthlyRentCost,
+                    LEASE_TENURE: LEASE_TENURE
+                };
+
             } catch (error) {
                 console.error('Calculation error:', error);
             }
@@ -2944,174 +3690,275 @@ Chart.register(window['ChartDataLabels']);
             const overviewMode = $('sensitivityOverviewMode');
             const interactiveMode = $('sensitivityInteractiveMode');
             const title = $('sensitivityTitle');
+            const chartContainer = sensitivityHeatmapChart ? sensitivityHeatmapChart.canvas.closest('.chart-container') : null;
             
             if (!factor) {
-                // Back to overview
-                currentSensitivityMode = 'overview';
-                overviewMode.style.display = 'block';
-                interactiveMode.style.display = 'none';
-                title.innerText = 'What Changes Your Monthly Savings Most';
-                
-                if (lastSensitivityData && sensitivityHeatmapChart) {
-                    // Reset to bar chart
-                    sensitivityHeatmapChart.destroy();
-                    sensitivityHeatmapChart = null;
+                // Back to overview - with smooth animation
+                if (chartContainer) {
+                    chartContainer.classList.add('transitioning');
+                }
+
+                setTimeout(() => {
+                    currentSensitivityMode = 'overview';
+                    overviewMode.style.display = 'block';
+                    interactiveMode.style.display = 'none';
+                    title.innerText = 'What Changes Your Monthly Savings Most';
                     
-                    // Recreate the overview chart
-                    const colors = getChartColors();
-                    sensitivityHeatmapChart = new Chart($('sensitivityHeatmapChart'), {
-                        type: 'bar',
-                        data: {
-                            labels: lastSensitivityData.factors,
-                            datasets: [
-                                {
-                                    label: 'Less Savings',
-                                    data: lastSensitivityData.negativeImpact,
-                                    backgroundColor: 'rgba(255, 77, 77, 0.75)',
-                                    borderRadius: [6, 0, 0, 6],
-                                    borderWidth: 0
-                                },
-                                {
-                                    label: 'More Savings',
-                                    data: lastSensitivityData.positiveImpact,
-                                    backgroundColor: 'rgba(46, 204, 113, 0.75)',
-                                    borderRadius: [0, 6, 6, 0],
-                                    borderWidth: 0
-                                }
-                            ]
-                        },
-                        options: {
-                            indexAxis: 'y',
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { 
-                                    display: true, 
-                                    position: 'top',
-                                    labels: { color: colors.text, usePointStyle: true, padding: 16 }
-                                },
-                                datalabels: {
-                                    anchor: 'end',
-                                    align: (context) => context.datasetIndex === 0 ? 'right' : 'left',
-                                    color: colors.text,
-                                    font: { weight: 'bold', size: 10 },
-                                    formatter: v => v !== 0 ? formatINR(Math.abs(v)) : ''
-                                }
+                    if (lastSensitivityData && sensitivityHeatmapChart) {
+                        // Smooth transition back to bar chart
+                        sensitivityHeatmapChart.destroy();
+                        sensitivityHeatmapChart = null;
+                        
+                        // Recreate the overview chart with animation
+                        const colors = getChartColors();
+                        
+                        if (chartContainer) {
+                            chartContainer.classList.remove('transitioning');
+                            chartContainer.classList.add('transitioning-in');
+                        }
+
+                        sensitivityHeatmapChart = new Chart($('sensitivityHeatmapChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: lastSensitivityData.factors,
+                                datasets: [
+                                    {
+                                        label: 'Less Savings',
+                                        data: lastSensitivityData.negativeImpact,
+                                        backgroundColor: 'rgba(255, 77, 77, 0.75)',
+                                        borderRadius: [6, 0, 0, 6],
+                                        borderWidth: 0
+                                    },
+                                    {
+                                        label: 'More Savings',
+                                        data: lastSensitivityData.positiveImpact,
+                                        backgroundColor: 'rgba(46, 204, 113, 0.75)',
+                                        borderRadius: [0, 6, 6, 0],
+                                        borderWidth: 0
+                                    }
+                                ]
                             },
-                            scales: {
-                                x: {
-                                    stacked: true,
-                                    type: 'linear',
-                                    min: (ctx) => {
-                                        const min = Math.min(...ctx.chart.data.datasets[0].data);
-                                        return min * 1.2;
-                                    },
-                                    max: (ctx) => {
-                                        const max = Math.max(...ctx.chart.data.datasets[1].data);
-                                        return max * 1.2;
-                                    },
-                                    ticks: { 
-                                        callback: v => v !== 0 ? formatINR(Math.abs(v)) : '₹0', 
-                                        color: colors.muted,
-                                        font: { size: 10 }
-                                    },
-                                    grid: { 
-                                        color: colors.border,
-                                        drawBorder: false
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                animation: {
+                                    duration: 800,
+                                    easing: 'easeInOutQuart',
+                                    delay: (context) => {
+                                        let delay = 0;
+                                        if (context.type === 'data') {
+                                            delay = context.dataIndex * 50 + context.datasetIndex * 100;
+                                        }
+                                        return Math.min(delay, 400);
                                     }
                                 },
-                                y: {
-                                    stacked: true,
-                                    ticks: { color: colors.muted, font: { size: 11, weight: '600' }, padding: 12 },
-                                    grid: { display: false }
+                                plugins: {
+                                    legend: { 
+                                        display: true, 
+                                        position: 'top',
+                                        labels: { color: colors.text, usePointStyle: true, padding: 16 }
+                                    },
+                                    datalabels: {
+                                        anchor: 'end',
+                                        align: (context) => context.datasetIndex === 0 ? 'right' : 'left',
+                                        color: colors.text,
+                                        font: { weight: 'bold', size: 10 },
+                                        formatter: v => v !== 0 ? formatINR(Math.abs(v)) : ''
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        stacked: true,
+                                        type: 'linear',
+                                        min: (ctx) => {
+                                            const min = Math.min(...ctx.chart.data.datasets[0].data);
+                                            return min * 1.2;
+                                        },
+                                        max: (ctx) => {
+                                            const max = Math.max(...ctx.chart.data.datasets[1].data);
+                                            return max * 1.2;
+                                        },
+                                        ticks: { 
+                                            callback: v => v !== 0 ? formatINR(Math.abs(v)) : '₹0', 
+                                            color: colors.muted,
+                                            font: { size: 10 }
+                                        },
+                                        grid: { 
+                                            color: colors.border,
+                                            drawBorder: false
+                                        }
+                                    },
+                                    y: {
+                                        stacked: true,
+                                        ticks: { color: colors.muted, font: { size: 11, weight: '600' }, padding: 12 },
+                                        grid: { display: false }
+                                    }
                                 }
-                            }
-                        },
-                        plugins: [
-                            ChartDataLabels,
-                            {
-                                id: 'zeroLine',
-                                afterDatasetsDraw(chart) {
-                                    const { ctx, chartArea: { left, top, width, height } } = chart;
-                                    const xScale = chart.scales.x;
-                                    const x = left + xScale.getPixelForValue(0);
-                                    ctx.strokeStyle = colors.accent;
-                                    ctx.lineWidth = 2;
-                                    ctx.setLineDash([]);
-                                    ctx.beginPath();
-                                    ctx.moveTo(x, top);
-                                    ctx.lineTo(x, top + height);
-                                    ctx.stroke();
+                            },
+                            plugins: [
+                                ChartDataLabels,
+                                {
+                                    id: 'zeroLine',
+                                    afterDatasetsDraw(chart) {
+                                        const { ctx, chartArea: { left, top, width, height } } = chart;
+                                        const xScale = chart.scales.x;
+                                        const x = left + xScale.getPixelForValue(0);
+                                        ctx.strokeStyle = colors.accent;
+                                        ctx.lineWidth = 2;
+                                        ctx.setLineDash([]);
+                                        ctx.beginPath();
+                                        ctx.moveTo(x, top);
+                                        ctx.lineTo(x, top + height);
+                                        ctx.stroke();
+                                    }
                                 }
+                            ]
+                        });
+
+                        setTimeout(() => {
+                            if (chartContainer) {
+                                chartContainer.classList.remove('transitioning-in');
                             }
-                        ]
+                        }, 600);
+                    }
+                    
+                    // Unselect all chips with animation
+                    document.querySelectorAll('.sensitivity-chip').forEach((chip, index) => {
+                        setTimeout(() => {
+                            chip.classList.remove('active');
+                        }, index * 30);
                     });
-                }
-                
-                // Unselect all chips
-                document.querySelectorAll('.sensitivity-chip').forEach(chip => chip.classList.remove('active'));
+                }, 300);
             } else {
-                // Switch to interactive
-                currentSensitivityMode = 'interactive';
-                overviewMode.style.display = 'none';
-                interactiveMode.style.display = 'block';
-                title.innerText = 'What Changes Your Monthly Savings Most';
-                $('interactiveTitle').innerText = `Monthly Savings vs ${factor}`;
-                
-                // Highlight active chip
-                document.querySelectorAll('.sensitivity-chip').forEach(chip => {
-                    chip.classList.toggle('active', chip.innerText === factor);
-                });
-                
-                // Generate interactive data and update chart
-                const interactiveData = generateInteractiveSensitivity(factor);
-                updateInteractiveSensitivityChart(interactiveData);
+                // Switch to interactive - with smooth animation
+                if (chartContainer) {
+                    chartContainer.classList.add('transitioning');
+                }
+
+                setTimeout(() => {
+                    currentSensitivityMode = 'interactive';
+                    overviewMode.style.display = 'none';
+                    interactiveMode.style.display = 'block';
+                    title.innerText = 'What Changes Your Monthly Savings Most';
+                    $('interactiveTitle').innerText = `Monthly Savings vs ${factor}`;
+                    
+                    if (chartContainer) {
+                        chartContainer.classList.remove('transitioning');
+                        chartContainer.classList.add('transitioning-in');
+                    }
+                    
+                    // Highlight active chip with stagger
+                    document.querySelectorAll('.sensitivity-chip').forEach((chip, index) => {
+                        setTimeout(() => {
+                            chip.classList.toggle('active', chip.innerText === factor);
+                        }, index * 30);
+                    });
+                    
+                    // Generate and display interactive data
+                    const interactiveData = generateInteractiveSensitivity(factor);
+                    updateInteractiveSensitivityChart(interactiveData);
+
+                    setTimeout(() => {
+                        if (chartContainer) {
+                            chartContainer.classList.remove('transitioning-in');
+                        }
+                    }, 600);
+                }, 300);
             }
         }
 
         function generateInteractiveSensitivity(factor) {
-            const baseMonthlySavings = num('marketRent') - (num('loanAmount') > 0 ? emi(num('loanAmount'), (num('loanRate') / 100) / 12, num('loanTenure')) + num('maintenance') : num('maintenance'));
             const points = [];
             const range = 50; // ±50% range
             const step = 5;
             
+            // Use the actual calculated monthly costs from the last calculation
+            const baseMonthlyLeaseCost = lastCalculationState.monthlyLeaseCost;
+            const baseMonthlyRentCost = lastCalculationState.monthlyRentCost;
+            const LEASE_TENURE = lastCalculationState.LEASE_TENURE;
+            
             if (factor === 'Market Rent') {
+                const baseRent = num('marketRent');
                 for (let change = -range; change <= range; change += step) {
-                    const newRent = num('marketRent') * (1 + change / 100);
-                    const savings = newRent - (num('loanAmount') > 0 ? emi(num('loanAmount'), (num('loanRate') / 100) / 12, num('loanTenure')) + num('maintenance') : num('maintenance'));
+                    const newRent = baseRent * (1 + change / 100);
+                    // Proportional adjustment to rent cost
+                    const adjustedRentCost = baseMonthlyRentCost * (newRent / baseRent);
+                    const savings = adjustedRentCost - baseMonthlyLeaseCost;
                     points.push({ x: change, y: savings });
                 }
             } else if (factor === 'Interest Rate') {
+                const baseRate = (num('loanRate') / 100) / 12;
+                const loanAmount = num('loanAmount');
+                const loanTenure = num('loanTenure');
+                const baseMaintenance = num('maintenance');
+                const baseRent = num('marketRent');
+                const rentIncrement = num('rentIncrement') / 100;
+                
                 for (let change = -range; change <= range; change += step) {
-                    const newRate = (num('loanRate') * (1 + change / 100)) / 100 / 12;
-                    const newEMI = emi(num('loanAmount'), newRate, num('loanTenure'));
-                    const savings = num('marketRent') - (newEMI + num('maintenance'));
+                    const newRate = baseRate * (1 + change / 100);
+                    const newEMI = emi(loanAmount, newRate, loanTenure);
+                    const baseEMI = emi(loanAmount, baseRate, loanTenure);
+                    const emiDiff = newEMI - baseEMI;
+                    
+                    // Adjust lease cost by EMI difference
+                    const adjustedLeaseCost = baseMonthlyLeaseCost + emiDiff;
+                    const savings = baseMonthlyRentCost - adjustedLeaseCost;
                     points.push({ x: change, y: savings });
                 }
             } else if (factor === 'Loan Amount') {
+                const baseRate = (num('loanRate') / 100) / 12;
+                const baseLoan = num('loanAmount');
+                const loanTenure = num('loanTenure');
+                
                 for (let change = -range; change <= range; change += step) {
-                    const newLoan = num('loanAmount') * (1 + change / 100);
-                    const newEMI = emi(newLoan, (num('loanRate') / 100) / 12, num('loanTenure'));
-                    const savings = num('marketRent') - (newEMI + num('maintenance'));
+                    const newLoan = baseLoan * (1 + change / 100);
+                    const newEMI = emi(newLoan, baseRate, loanTenure);
+                    const baseEMI = emi(baseLoan, baseRate, loanTenure);
+                    const emiDiff = newEMI - baseEMI;
+                    
+                    // Adjust lease cost by EMI difference
+                    const adjustedLeaseCost = baseMonthlyLeaseCost + emiDiff;
+                    const savings = baseMonthlyRentCost - adjustedLeaseCost;
                     points.push({ x: change, y: savings });
                 }
             } else if (factor === 'Maintenance') {
+                const baseMaint = num('maintenance');
                 for (let change = -range; change <= range; change += step) {
-                    const newMaint = num('maintenance') * (1 + change / 100);
-                    const savings = num('marketRent') - (num('loanAmount') > 0 ? emi(num('loanAmount'), (num('loanRate') / 100) / 12, num('loanTenure')) : 0) - newMaint;
+                    const newMaint = baseMaint * (1 + change / 100);
+                    const maintDiff = newMaint - baseMaint;
+                    
+                    // Adjust lease cost by maintenance difference
+                    const adjustedLeaseCost = baseMonthlyLeaseCost + maintDiff;
+                    const savings = baseMonthlyRentCost - adjustedLeaseCost;
                     points.push({ x: change, y: savings });
                 }
             } else if (factor === 'Rent Growth') {
+                const baseRent = num('marketRent');
+                const baseGrowth = num('rentIncrement') / 100;
+                
                 for (let change = -range; change <= range; change += step) {
-                    const baseGrowth = num('rentIncrement') / 100;
                     const newGrowth = baseGrowth * (1 + change / 100);
+                    
+                    // Recalculate average rent over lease term with new growth
                     let totalRent = 0;
-                    for (let m = 1; m <= num('leaseTenure'); m++) {
+                    for (let m = 1; m <= LEASE_TENURE; m++) {
                         const year = Math.floor((m - 1) / 12);
-                        totalRent += num('marketRent') * Math.pow(1 + newGrowth, year);
+                        totalRent += baseRent * Math.pow(1 + newGrowth, year);
                     }
-                    const monthlyRent = totalRent / num('leaseTenure');
-                    const savings = monthlyRent - (num('loanAmount') > 0 ? emi(num('loanAmount'), (num('loanRate') / 100) / 12, num('loanTenure')) + num('maintenance') : num('maintenance'));
+                    const newMonthlyRent = totalRent / LEASE_TENURE;
+                    
+                    // Calculate new average based on base rent too
+                    let baseTotalRent = 0;
+                    for (let m = 1; m <= LEASE_TENURE; m++) {
+                        const year = Math.floor((m - 1) / 12);
+                        baseTotalRent += baseRent * Math.pow(1 + baseGrowth, year);
+                    }
+                    const baseMonthlyRent = baseTotalRent / LEASE_TENURE;
+                    
+                    // Proportional adjustment
+                    const adjustedRentCost = baseMonthlyRentCost * (newMonthlyRent / baseMonthlyRent);
+                    const savings = adjustedRentCost - baseMonthlyLeaseCost;
                     points.push({ x: change, y: savings });
                 }
             }
@@ -3122,43 +3969,70 @@ Chart.register(window['ChartDataLabels']);
         function updateInteractiveSensitivityChart(data) {
             const colors = getChartColors();
             
-            sensitivityHeatmapChart.type = 'line';
-            sensitivityHeatmapChart.data = {
-                labels: data.points.map(p => p.x + '%'),
-                datasets: [
-                    {
-                        label: 'Monthly Savings (₹)',
-                        data: data.points.map(p => p.y),
-                        borderColor: 'rgba(77, 179, 255, 0.9)',
-                        backgroundColor: 'rgba(77, 179, 255, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: 'rgba(77, 179, 255, 1)',
-                        pointBorderWidth: 0
-                    }
-                ]
-            };
+            // Destroy old chart if it exists
+            if (sensitivityHeatmapChart) {
+                sensitivityHeatmapChart.destroy();
+                sensitivityHeatmapChart = null;
+            }
             
-            sensitivityHeatmapChart.options.indexAxis = undefined;
-            sensitivityHeatmapChart.options.scales = {
-                x: {
-                    title: { display: true, text: `Change in ${data.factor}`, color: colors.muted },
-                    ticks: { color: colors.muted },
-                    grid: { color: colors.border }
+            // Create new line chart
+            sensitivityHeatmapChart = new Chart($('sensitivityHeatmapChart'), {
+                type: 'line',
+                data: {
+                    labels: data.points.map(p => p.x + '%'),
+                    datasets: [
+                        {
+                            label: 'Monthly Savings (₹)',
+                            data: data.points.map(p => p.y),
+                            borderColor: 'rgba(77, 179, 255, 0.9)',
+                            backgroundColor: 'rgba(77, 179, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'rgba(77, 179, 255, 1)',
+                            pointBorderWidth: 0,
+                            pointHoverRadius: 7,
+                            pointHoverBackgroundColor: 'rgba(77, 179, 255, 1)',
+                            segment: {
+                                borderColor: ctx => ctx.p0DataIndex === ctx.p1DataIndex - 1 ? 'rgba(77, 179, 255, 0.9)' : 'rgba(77, 179, 255, 0.5)',
+                                borderWidth: ctx => ctx.p0DataIndex === ctx.p1DataIndex - 1 ? 3 : 2
+                            }
+                        }
+                    ]
                 },
-                y: {
-                    title: { display: true, text: 'Monthly Savings (₹)', color: colors.muted },
-                    ticks: { callback: v => formatINR(v), color: colors.muted },
-                    grid: { color: colors.border }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    animation: {
+                        duration: 800,
+                        easing: 'easeInOutQuart',
+                        delay: (context) => {
+                            if (context.type === 'data') {
+                                return context.dataIndex * 20;
+                            }
+                            return 0;
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top' },
+                        datalabels: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: `Change in ${data.factor}`, color: colors.muted },
+                            ticks: { color: colors.muted },
+                            grid: { color: colors.border }
+                        },
+                        y: {
+                            title: { display: true, text: 'Monthly Savings (₹)', color: colors.muted },
+                            ticks: { callback: v => formatINR(v), color: colors.muted },
+                            grid: { color: colors.border }
+                        }
+                    }
                 }
-            };
-            
-            sensitivityHeatmapChart.options.plugins.legend = { display: false };
-            sensitivityHeatmapChart.options.plugins.datalabels = { display: false };
-            
-            sensitivityHeatmapChart.update();
+            });
         }
 
         /* ================= EVENT LISTENERS ================= */
@@ -3170,9 +4044,253 @@ Chart.register(window['ChartDataLabels']);
             });
         });
 
-        // Initial Calculation
-        window.addEventListener('load', calculate);
+        // ================= NUMBER COUNTER ANIMATIONS =================
+        function animateCounter(element, startValue, endValue, duration = 1000) {
+            const startTime = Date.now();
+            const difference = endValue - startValue;
+            
+            const updateCounter = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function
+                const easeProgress = progress < 0.5 
+                    ? 2 * progress * progress 
+                    : -1 + (4 - 2 * progress) * progress;
+                
+                const currentValue = startValue + (difference * easeProgress);
+                
+                // Check if element contains currency or percentage
+                if (element.textContent.includes('₹')) {
+                    element.textContent = formatINR(currentValue);
+                } else if (element.textContent.includes('%')) {
+                    element.textContent = Math.round(currentValue) + '%';
+                } else {
+                    element.textContent = Math.round(currentValue).toLocaleString('en-IN');
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            };
+            
+            updateCounter();
+        }
+
+        // VALUE CHANGE HIGHLIGHT ANIMATION
+        function highlightValueChange(element) {
+            element.classList.add('updating');
+            setTimeout(() => {
+                element.classList.remove('updating');
+            }, 600);
+        }
+
+        // UPDATE METRICS WITH ANIMATION
+        function updateMetricWithAnimation(elementId, newValue, isCounter = false) {
+            const element = $(elementId);
+            if (!element) return;
+            
+            if (isCounter) {
+                const oldValue = cleanNumber(element.textContent);
+                animateCounter(element, oldValue, cleanNumber(newValue));
+            } else {
+                element.textContent = newValue;
+            }
+            
+            highlightValueChange(element);
+        }
+
+        // PULSE EFFECT FOR IMPORTANT METRICS
+        function setPulseMetric(elementId, shouldPulse = true) {
+            const element = $(elementId);
+            if (!element) return;
+            
+            if (shouldPulse) {
+                element.classList.add('pulse');
+            } else {
+                element.classList.remove('pulse');
+            }
+        }
+
+        // ================= ENHANCED KEYBOARD NAVIGATION =================
+        document.addEventListener('keydown', (e) => {
+            // Tab key - already handled by browser, but we can add feedback
+            if (e.key === 'Tab') {
+                document.body.style.outline = 'none';
+            }
+            
+            // Arrow keys for slider navigation
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                const activeElement = document.activeElement;
+                if (activeElement.type === 'range') {
+                    e.preventDefault();
+                    const step = activeElement.step || 1;
+                    const increment = e.key === 'ArrowRight' ? step : -step;
+                    activeElement.value = parseFloat(activeElement.value) + parseFloat(increment);
+                    activeElement.dispatchEvent(new Event('input'));
+                }
+            }
+            
+            // Enter key for activation
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.onclick || activeElement.tagName === 'BUTTON') {
+                    activeElement.dispatchEvent(new Event('click'));
+                }
+            }
+        });
+
+        // ================= MICRO-INTERACTIONS & RIPPLE EFFECTS =================
+        function addRippleEffect(element) {
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            const ripple = document.createElement('span');
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.className = 'ripple-effect';
+            
+            element.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        // Add ripple listeners to all buttons
+        document.querySelectorAll('button, .sensitivity-chip, .info-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.querySelector(':not(.ripple-effect)')) {
+                    addRippleEffect(this);
+                }
+            });
+        });
+
+        // ================= SUCCESS FEEDBACK =================
+        function showSuccessFeedback(element, message = '✓') {
+            const feedback = document.createElement('div');
+            feedback.textContent = message;
+            feedback.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(46, 204, 113, 0.2);
+                color: #2ecc71;
+                font-weight: bold;
+                border-radius: inherit;
+                animation: successPop 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                pointer-events: none;
+            `;
+            
+            const style = document.createElement('style');
+            if (!document.getElementById('success-animation')) {
+                style.id = 'success-animation';
+                style.textContent = `
+                    @keyframes successPop {
+                        0% { opacity: 0; transform: scale(0.5); }
+                        50% { opacity: 1; }
+                        100% { opacity: 0; transform: scale(1.5); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            element.appendChild(feedback);
+            setTimeout(() => feedback.remove(), 600);
+        }
+
+        // ================= LAZY ANIMATION TRIGGER =================
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const animationObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-on-scroll');
+                    animationObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.metric-card, .comparison-table tbody tr').forEach(el => {
+            animationObserver.observe(el);
+        });
+
+        // ================= INITIALIZATION WITH ENHANCED FEEDBACK =================
+        window.addEventListener('load', () => {
+            calculate();
+            
+            // Add data-tooltip attributes to info buttons
+            document.querySelectorAll('.info-btn').forEach(btn => {
+                if (!btn.dataset.tooltip && btn.getAttribute('onclick')) {
+                    const fieldId = btn.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+                    if (fieldId && fieldHelp[fieldId]) {
+                        btn.dataset.tooltip = fieldHelp[fieldId].title;
+                    }
+                }
+            });
+            
+            // Pulse the confidence metric initially
+            setTimeout(() => {
+                setPulseMetric('confidence', true);
+            }, 1500);
+        });
+        
         calculate();
+
+        // ================= ACCESSIBILITY ENHANCEMENTS =================
+        document.querySelectorAll('input, button, [onclick]').forEach(el => {
+            // Ensure all interactive elements have proper ARIA labels
+            if (!el.getAttribute('aria-label') && !el.getAttribute('aria-labelledby')) {
+                if (el.name) {
+                    el.setAttribute('aria-label', el.name.replace(/([A-Z])/g, ' $1').trim());
+                } else if (el.title) {
+                    el.setAttribute('aria-label', el.title);
+                }
+            }
+        });
+
+        // Add role attributes to custom components
+        document.querySelectorAll('.metric-card').forEach(el => {
+            el.setAttribute('role', 'listitem');
+        });
+
+        document.querySelectorAll('.summary-panel').forEach(el => {
+            el.setAttribute('role', 'list');
+        });
+
+        // Announce value changes to screen readers
+        const announcer = document.createElement('div');
+        announcer.setAttribute('aria-live', 'polite');
+        announcer.setAttribute('aria-atomic', 'true');
+        announcer.style.position = 'absolute';
+        announcer.style.left = '-10000px';
+        announcer.id = 'announcer';
+        document.body.appendChild(announcer);
+
+        function announce(message) {
+            const el = $('announcer');
+            if (el) {
+                el.textContent = message;
+            }
+        }
+
+        // Announce calculation results
+        const originalCalculate = calculate;
+        calculate = function() {
+            originalCalculate();
+            const score = $('dial').textContent;
+            const savings = $('mSave').textContent;
+            announce(`Calculation updated. Score: ${score}, Monthly savings: ${savings}`);
+        };
 
     </script>
 </body>
