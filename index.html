@@ -1475,7 +1475,7 @@ Chart.register(window['ChartDataLabels']);
                     sensitivityChart.update();
                 }
                 if (costCompositionChart) {
-                    costCompositionChart.options.plugins.datalabels.color = colors.muted;
+                    costCompositionChart.options.plugins.datalabels.color = colors.text;
                     costCompositionChart.options.plugins.legend.labels.color = colors.text;
                     costCompositionChart.options.plugins.legend.labels.font = { weight: '700', size: 12 };
                     costCompositionChart.options.plugins.legend.labels.padding = 18;
@@ -2122,7 +2122,9 @@ Chart.register(window['ChartDataLabels']);
                                 display: true, 
                                 position: 'bottom',
                                 labels: {
-                                    color: colors.text,
+                                    color: window.matchMedia('(prefers-color-scheme: dark)').matches
+                                      ? '#E5E7EB'
+                                      : '#374151',
                                     padding: 18,
                                     usePointStyle: true,
                                     pointStyle: 'circle',
