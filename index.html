@@ -1212,8 +1212,22 @@
                 padding: 12px;
             }
 
+            /* ── REORDER: verdict first, then inputs, then gauge, then charts ── */
             .container {
-                gap: 16px;
+                gap: 14px;
+                display: flex;
+                flex-direction: column;
+            }
+            #verdictCard   { order: 1; }
+            #inputCard     { order: 2; }
+            #gaugeCard     { order: 3; }
+            #chartsSection { order: 4; }
+            #tableCard     { order: 5; }
+
+            /* ── INPUTS: collapse to single column ── */
+            #inputsGrid {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
             }
 
             .card, .chartCard {
@@ -1225,37 +1239,72 @@
                 margin-bottom: 14px;
             }
 
-            .chart-container {
-                height: 280px;
+            /* ── VERDICT BANNER: tighter on mobile ── */
+            .verdict-headline {
+                font-size: 17px;
+            }
+            .verdict-body {
+                font-size: 13px;
+            }
+            .verdict-stats {
+                gap: 14px;
+            }
+            .verdict-stat-value {
+                font-size: 16px;
+            }
+            .verdict-divider {
+                display: none;
             }
 
+            /* ── GAUGE ── */
             .gauge {
                 width: 180px;
                 height: 180px;
             }
-
             .gaugeInner {
                 width: 145px;
                 height: 145px;
                 font-size: 36px;
             }
 
+            .chart-container {
+                height: 260px;
+            }
+
+            /* ── HEADER ── */
             .header {
                 flex-direction: column;
                 gap: 12px;
                 padding: 12px 0;
             }
-
             .header-actions {
                 width: 100%;
                 justify-content: space-between;
             }
 
+            /* ── CHARTS ── */
             .charts-grid {
                 grid-template-columns: 1fr;
+                gap: 14px;
             }
 
+            /* ── KPI METRICS: 3 per row instead of 2 ── */
             .metricsBox {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            .metric-card {
+                padding: 10px 8px;
+            }
+            .metric-label {
+                font-size: 10px;
+            }
+            .metric-value {
+                font-size: 14px;
+            }
+
+            /* ── SUMMARY PANEL: 2 per row ── */
+            .summary-panel {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -1574,6 +1623,130 @@
             }
         }
 
+        /* ===== VERDICT BANNER ===== */
+        .verdict-banner {
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 0;
+            border: 2px solid transparent;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .verdict-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: inherit;
+            filter: blur(40px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+        .verdict-banner.lease-wins {
+            background: linear-gradient(135deg, rgba(46,204,113,0.12), rgba(0,212,255,0.08));
+            border-color: rgba(46,204,113,0.4);
+        }
+        .verdict-banner.rent-wins {
+            background: linear-gradient(135deg, rgba(255,77,77,0.12), rgba(255,140,58,0.08));
+            border-color: rgba(255,77,77,0.4);
+        }
+        .verdict-banner.neutral {
+            background: linear-gradient(135deg, rgba(241,196,15,0.12), rgba(255,140,58,0.08));
+            border-color: rgba(241,196,15,0.4);
+        }
+        body.light .verdict-banner.lease-wins { background: rgba(46,204,113,0.08); }
+        body.light .verdict-banner.rent-wins  { background: rgba(255,77,77,0.08); }
+        body.light .verdict-banner.neutral    { background: rgba(241,196,15,0.08); }
+
+        .verdict-headline {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        .verdict-body {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 780px;
+        }
+        .verdict-body strong { color: var(--text); }
+        .verdict-stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .verdict-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .verdict-stat-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+        }
+        .verdict-stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+        }
+        .verdict-stat-value.positive { color: #2ecc71; }
+        .verdict-stat-value.negative { color: #ff4d4d; }
+        .verdict-stat-value.neutral  { color: #f1c40f; }
+        .verdict-divider {
+            width: 1px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        /* ===== SHARE BUTTON ===== */
+        .share-btn {
+            background: rgba(77,179,255,0.15);
+            color: var(--accent);
+            border: 1px solid rgba(77,179,255,0.3);
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .share-btn:hover {
+            background: rgba(77,179,255,0.28);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(77,179,255,0.2);
+        }
+        body.light .share-btn {
+            background: rgba(30,64,175,0.08);
+            color: #1e40af;
+            border-color: rgba(30,64,175,0.2);
+        }
+
+        /* ===== SHARE TOAST ===== */
+        .share-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--accent);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            z-index: 9999;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+        .share-toast.show { transform: translateX(-50%) translateY(0); }
+
         /* PROGRESS BAR FILL EFFECTS */
         .progress-bar {
             width: 100%;
@@ -1607,6 +1780,7 @@
     <div class="header">
         <div class="logo">💰 Aladdin Finance BI</div>
         <div class="header-actions">
+            <button class="share-btn" onclick="shareScenario()" aria-label="Share this scenario">📤 Share</button>
             <button class="global-help-btn" onclick="showGlobalHelp()" aria-label="Show help guide">ℹ️ Help</button>
             <button class="toggle" onclick="toggleTheme()" aria-label="Toggle between dark and light theme">
                 <span id="theme-icon">🌙</span> <span id="theme-text">Dark</span>
@@ -1617,7 +1791,7 @@
     <div class="container">
 
         <!-- INPUT PANEL -->
-        <div class="card">
+        <div class="card" id="inputCard">
             <div class="card-title"><span class="card-icon">⚙️</span>Financial Parameters</div>
             
             <!-- SUMMARY PANEL -->
@@ -1640,7 +1814,7 @@
                 </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 12px;">
+            <div id="inputsGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 12px;">
                 
                 <!-- LEASE COMPONENTS -->
                 <div>
@@ -1720,6 +1894,8 @@
                                 <input id="refundDelay" type="text" value="0" aria-label="Lease Refund Delay in Months" title="Enter refund delay in months">
                             </div>
                         </div>
+
+
                     </div>
                 </div>
 
@@ -1778,6 +1954,19 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="field">
+                            <div class="field-wrapper">
+                                <div class="field-label-row">
+                                    <label>Flexibility Value (₹/mo) <span class="label-value" id="flexibilityPremiumLabel">₹0</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('flexibilityPremium')">ℹ️</button>
+                                </div>
+                                <div class="input-group">
+                                    <input id="flexibilityPremium" type="text" value="0" aria-label="Flexibility Premium" title="Monthly value you assign to renting's optionality — ability to move, no lock-in">
+                                    <input type="range" id="flexibilityPremiumRange" min="0" max="20000" step="500" value="0" aria-label="Flexibility Premium slider">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1833,12 +2022,12 @@
                     <div class="field">
                         <div class="field-wrapper">
                             <div class="field-label-row">
-                                <label>Risk Premium (%) <span class="label-value" id="riskPremiumLabel">3%</span></label>
+                                <label>Net Lease Risk (%) <span class="label-value" id="riskPremiumLabel">1.5%</span></label>
                                 <button class="info-btn" onclick="showFieldHelp('riskPremium')">ℹ️</button>
                             </div>
                             <div class="input-group">
-                                <input id="riskPremium" type="text" value="3" aria-label="Risk Premium Rate" title="Enter risk buffer percentage">
-                                <input type="range" id="riskPremiumRange" min="0" max="20" step="0.1" value="3" aria-label="Risk Premium slider">
+                                <input id="riskPremium" type="text" value="1.5" aria-label="Net Lease Risk Premium" title="Incremental risk of leasing over renting">
+                                <input type="range" id="riskPremiumRange" min="0" max="10" step="0.1" value="1.5" aria-label="Net Lease Risk Premium slider">
                             </div>
                         </div>
                     </div>
@@ -1885,8 +2074,27 @@
             </div>
         </div>
 
+        <!-- VERDICT BANNER -->
+        <div class="card" id="verdictCard" style="padding: 0; overflow: hidden;">
+            <div class="verdict-banner neutral" id="verdictBanner">
+                <div class="verdict-headline" id="verdictHeadline">⏳ Analyzing your inputs...</div>
+                <div class="verdict-body" id="verdictBody">Enter your financial parameters above to receive a clear recommendation.</div>
+                <div class="verdict-stats">
+                    <div class="verdict-stat">
+                        <div class="verdict-stat-label">Monthly Savings</div>
+                        <div class="verdict-stat-value neutral" id="verdictMonthlySaving">—</div>
+                    </div>
+                    <div class="verdict-divider"></div>
+                    <div class="verdict-stat">
+                        <div class="verdict-stat-label">Total Term Savings</div>
+                        <div class="verdict-stat-value neutral" id="verdictTermSaving">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- DECISION GAUGE & KPIs -->
-        <div class="card">
+        <div class="card" id="gaugeCard">
             <div class="card-title"><span class="card-icon">📊</span>Decision Intelligence Score</div>
             
             <div class="gauge-section">
@@ -1923,6 +2131,10 @@
                     <div id="tSave" class="metric-value">₹0</div>
                 </div>
                 <div class="metric-card">
+                    <div class="metric-label">Effective Cost</div>
+                    <div id="mEffective" class="metric-value">₹0</div>
+                </div>
+                <div class="metric-card">
                     <div class="metric-label">Confidence</div>
                     <div id="confidence" class="metric-value">0%</div>
                 </div>
@@ -1930,7 +2142,7 @@
         </div>
 
         <!-- CHARTS SECTION -->
-        <div class="charts-grid">
+        <div class="charts-grid" id="chartsSection">
             
             <div style="grid-column: 1 / -1; margin-bottom: 12px;">
                 <div class="info-banner" style="margin: 0;">
@@ -1984,17 +2196,39 @@
                     <canvas id="costCompositionChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    Which cost categories dominate: Interest, Opportunity costs, Maintenance, Withholding, Delays.
+                    Which cost categories dominate: Interest, Opportunity costs, Maintenance, Withholding, Delays, Net Lease Risk.
                 </div>
             </div>
 
             <div class="chartCard">
                 <div class="card-title"><span class="card-icon">📊</span>Rent Growth vs Fixed Lease</div>
+
+                <!-- Insight stat pills -->
+                <div id="rentInsightBar" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+                    <div style="background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);border-radius:8px;padding:8px 14px;flex:1;min-width:120px;">
+                        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;color:var(--green);margin-bottom:4px;">Monthly Saving (M1)</div>
+                        <div id="rentStatMonthly" style="font-size:18px;font-weight:800;font-family:'Courier New',monospace;color:var(--text);">—</div>
+                    </div>
+                    <div style="background:rgba(77,179,255,0.1);border:1px solid rgba(77,179,255,0.25);border-radius:8px;padding:8px 14px;flex:1;min-width:120px;">
+                        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;color:var(--accent);margin-bottom:4px;">Cumulative Saving (Total)</div>
+                        <div id="rentStatCumulative" style="font-size:18px;font-weight:800;font-family:'Courier New',monospace;color:var(--text);">—</div>
+                    </div>
+                    <div style="background:rgba(155,89,182,0.1);border:1px solid rgba(155,89,182,0.25);border-radius:8px;padding:8px 14px;flex:1;min-width:120px;">
+                        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;color:var(--purple);margin-bottom:4px;">Saving at Final Month</div>
+                        <div id="rentStatFinal" style="font-size:18px;font-weight:800;font-family:'Courier New',monospace;color:var(--text);">—</div>
+                    </div>
+                    <div id="rentCrossoverPill" style="background:rgba(241,196,15,0.1);border:1px solid rgba(241,196,15,0.25);border-radius:8px;padding:8px 14px;flex:1;min-width:120px;display:none;">
+                        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;color:var(--amber);margin-bottom:4px;">Rent Overtakes Lease At</div>
+                        <div id="rentStatCrossover" style="font-size:18px;font-weight:800;font-family:'Courier New',monospace;color:var(--text);">—</div>
+                    </div>
+                </div>
+
                 <div class="chart-container">
                     <canvas id="rentProjectionChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    Market rent escalation vs. fixed lease economics. Cumulative rent burden over time.
+                    <span style="display:inline-block;width:14px;height:3px;background:rgba(46,204,113,0.85);border-radius:2px;margin-right:5px;vertical-align:middle;"></span>Green fill = monthly saving zone where leasing costs less than renting.
+                    Right axis tracks how cumulative net savings grow over the lease term.
                 </div>
             </div>
 
@@ -2042,7 +2276,7 @@
         </div>
 
         <!-- COMPARISON TABLE -->
-        <div class="card">
+        <div class="card" id="tableCard">
             <div class="card-title"><span class="card-icon">📋</span>Financial Summary</div>
             
             <table class="comparison-table">
@@ -2070,9 +2304,50 @@
         </div>
     </div>
 
+    <!-- SHARE TOAST -->
+    <div class="share-toast" id="shareToast">✅ Link copied to clipboard!</div>
+
     <script>
 
 Chart.register(window['ChartDataLabels']);
+
+        /* ================= SHARE / LOAD FROM URL ================= */
+        const SHARE_PARAMS = [
+            'leaseAmount','loanAmount','loanRate','loanTenure','leaseTenure',
+            'maintenance','withholding','refundDelay',
+            'marketRent','rentDeposit','depositRefundDelay','rentIncrement','flexibilityPremium',
+            'oppRate','riskPremium','inflationRate','liquidityPremium','returnVol'
+        ];
+
+        function shareScenario() {
+            const params = new URLSearchParams();
+            SHARE_PARAMS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) params.set(id, el.value);
+            });
+            const url = window.location.origin + window.location.pathname + '?' + params.toString();
+            navigator.clipboard.writeText(url).then(() => {
+                const toast = document.getElementById('shareToast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2800);
+            }).catch(() => {
+                prompt('Copy this link to share your scenario:', url);
+            });
+        }
+
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            let anyLoaded = false;
+            SHARE_PARAMS.forEach(id => {
+                if (params.has(id)) {
+                    const el = document.getElementById(id);
+                    const rangeEl = document.getElementById(id + 'Range');
+                    if (el) { el.value = params.get(id); anyLoaded = true; }
+                    if (rangeEl) rangeEl.value = params.get(id);
+                }
+            });
+            return anyLoaded;
+        }
 
         /* ================= THEME ================= */
         function toggleTheme() {
@@ -2123,8 +2398,11 @@ Chart.register(window['ChartDataLabels']);
                 if (rentProjectionChart) {
                     rentProjectionChart.options.scales.y.ticks.color = colors.muted;
                     rentProjectionChart.options.scales.y.grid.color = colors.border;
+                    rentProjectionChart.options.scales.y.title.color = colors.muted;
                     rentProjectionChart.options.scales.y1.ticks.color = colors.muted;
+                    rentProjectionChart.options.scales.y1.title.color = colors.muted;
                     rentProjectionChart.options.scales.x.ticks.color = colors.muted;
+                    rentProjectionChart.options.plugins.legend.labels.color = colors.text;
                     rentProjectionChart.update();
                 }
                 if (sensitivityHeatmapChart) {
@@ -2296,6 +2574,16 @@ Chart.register(window['ChartDataLabels']);
                     { title: 'Tip', text: 'Higher growth favors leasing (locked rent). Lower growth favors renting.' }
                 ]
             },
+            flexibilityPremium: {
+                title: 'Flexibility Value',
+                subtitle: 'Monthly ₹ value you assign to renting\'s optionality.',
+                sections: [
+                    { title: 'What it is', text: 'Renting gives you something leasing doesn\'t — the freedom to move, renegotiate, or exit with short notice. If that optionality is genuinely valuable to you, this field lets you reflect it: the model subtracts it from renting\'s effective cost, making renting look cheaper on a like-for-like basis.' },
+                    { title: 'Direction', text: 'Higher value → renting becomes more attractive (the option is worth more to you). Zero → no adjustment (you don\'t value the flexibility).' },
+                    { title: 'How to use', example: 'Volatile job/life situation — value it high (₹5,000–₹10,000). Settled, unlikely to move — value it low or zero. Unsure — leave at ₹0.' },
+                    { title: 'Tip', text: 'This is a subjective input. If you set it high, you are saying the freedom to leave is worth real money to you — and the model will favour renting accordingly.' }
+                ]
+            },
             leaseTenure: {
                 title: 'Lease Tenure',
                 subtitle: 'Duration of the lease agreement in months.',
@@ -2309,54 +2597,60 @@ Chart.register(window['ChartDataLabels']);
                 title: 'Loan Tenure',
                 subtitle: 'Duration of loan repayment schedule in months.',
                 sections: [
-                    { title: 'What it is', text: 'How long you pay EMI. Can be shorter or longer than lease tenure.' },
-                    { title: 'Examples', example: '15-year loan with 20-year lease (stop EMI, then rent-free period)' },
-                    { title: 'Tip', text: 'Longer loan = lower EMI but more total interest. Shorter loan = higher EMI.' }
+                    { title: 'What it is', text: 'How long you repay the EMI. If shorter than the lease tenure, there is a rent-free EMI period at the end of the lease — you only pay maintenance. If longer, repayment is automatically capped at the lease tenure.' },
+                    { title: 'Truncation rule', text: 'Effective loan months = min(Loan Tenure, Lease Tenure). Any months beyond the lease tenure are silently dropped, since the lease itself ends. EMI and total interest are calculated on the effective (capped) duration.' },
+                    { title: 'Examples', example: '15-year loan on 20-year lease → EMI stops at year 15, maintenance-only for years 16–20. 25-year loan on 20-year lease → treated as 20-year loan.' },
+                    { title: 'Tip', text: 'Longer loan = lower EMI but more total interest. Setting loan tenure longer than lease tenure has no effect.' }
                 ]
             },
             oppRate: {
                 title: 'Opportunity Cost',
-                subtitle: 'Expected return from alternative investments.',
+                subtitle: 'Expected return from alternative investments (enter nominal rate).',
                 sections: [
-                    { title: 'What it is', text: 'What return you could earn if you invested your capital elsewhere instead of leasing.' },
-                    { title: 'Benchmarks', example: 'Stocks: 12-15% | Bonds: 6-8% | Gold: 8-10% | FDs: 6-7%' },
-                    { title: 'Tip', text: 'Higher opportunity cost = leasing becomes more expensive (lost investment gains).' }
+                    { title: 'What it is', text: 'What return you could earn if you invested your capital elsewhere instead of leasing. Enter the nominal (before-inflation) rate — the calculator converts it to a real (inflation-adjusted) rate internally using your Inflation Rate input.' },
+                    { title: 'How it is used', text: 'The model computes: Real Rate = (1 + nominal/12) ÷ (1 + inflation/12) − 1. This real rate is then used to price opportunity costs on both sides. For example, at 12% nominal and 6% inflation, the effective real rate used is ~5.7%.' },
+                    { title: 'Benchmarks (nominal)', example: 'Stocks: 12–15% | Bonds: 6–8% | Gold: 8–10% | FDs: 6–7%' },
+                    { title: 'Tip', text: 'Higher opportunity cost = leasing becomes more expensive (larger lost investment gain on your deposit). Use a rate consistent with where you\'d actually put the money.' }
                 ]
             },
             riskPremium: {
-                title: 'Risk Premium',
-                subtitle: 'Extra cost buffer for financial uncertainties.',
+                title: 'Net Lease Risk Premium',
+                subtitle: 'Incremental risk of leasing over renting — not total risk.',
                 sections: [
-                    { title: 'What it is', text: 'A safety margin accounting for unexpected costs, inflation spikes, or economic changes.' },
-                    { title: 'Examples', example: 'Conservative: 2-3% | Moderate: 3-5% | Aggressive: 5%+' },
-                    { title: 'Tip', text: 'Higher premium = more cautious (favors renting). Lower premium = optimistic (favors leasing).' }
+                    { title: 'What it is', text: 'Leasing locks up a large deposit with counterparty and illiquidity risk. Renting also carries risk (eviction, escalation) but is more flexible. This field captures only the excess risk of leasing above what renting carries.' },
+                    { title: 'Why the default is 1.5%', text: 'The old default of 3% loaded full risk onto leasing while charging renting zero — an asymmetric comparison. 1.5% represents a reasonable estimate of the net incremental risk premium.' },
+                    { title: 'Range', example: 'Conservative (high lease risk): 2–3% | Balanced: 1–1.5% | Optimistic: 0.5%' },
+                    { title: 'Tip', text: 'If the lessor is a reputable institution and the lease terms are strong, use a lower value. If deposit recovery is uncertain, use higher.' }
                 ]
             },
             inflationRate: {
                 title: 'Inflation Rate',
-                subtitle: 'Expected annual price increase.',
+                subtitle: 'Expected annual price increase, used to adjust opportunity rates.',
                 sections: [
-                    { title: 'What it is', text: 'How fast prices (including rent) will rise. Affects long-term comparisons.' },
-                    { title: 'India context', example: 'RBI target: 4% | Recent: 5-7% | Use your forecast' },
-                    { title: 'Tip', text: 'Higher inflation favors lease (fixed rent) over escalating rent.' }
+                    { title: 'What it is', text: 'The expected annual rate of price increases. In this model, inflation is used to convert the nominal Opportunity Cost into a real (purchasing-power-adjusted) rate. It does not directly affect rent — rent escalation is controlled separately by the Rent Growth input.' },
+                    { title: 'How it is used', text: 'Real Opp Rate = (1 + nominal opp rate) ÷ (1 + monthly inflation) − 1. Higher inflation reduces the real opportunity rate, which in turn reduces the opportunity cost charged on the lease deposit — mildly favouring leasing.' },
+                    { title: 'India context', example: 'RBI target: 4% | Recent range: 5–7% | Use your forecast' },
+                    { title: 'Tip', text: 'To model rent escalation due to inflation, adjust the Rent Growth input, not this field.' }
                 ]
             },
             liquidityPremium: {
                 title: 'Liquidity Premium',
-                subtitle: 'Cost of capital locked in the lease.',
+                subtitle: 'Extra cost for capital locked in the lease deposit — lease side only.',
                 sections: [
-                    { title: 'What it is', text: 'Extra cost because capital spent on lease isn\'t available for other uses.' },
-                    { title: 'Typical range', example: '1-3% (depends on how tight your cash is)' },
-                    { title: 'Tip', text: 'Higher if you need flexible capital. Lower if capital is abundant.' }
+                    { title: 'What it is', text: 'A premium added to the opportunity rate specifically for the lease deposit, reflecting that a large sum locked for years is less liquid than a short-term rent deposit. It is not applied to the rent deposit opportunity cost.' },
+                    { title: 'Why asymmetric', text: 'A ₹20L lease deposit locked for 20 years carries genuine illiquidity risk — you cannot access it mid-term. A 2-month rent deposit does not carry the same constraint. The asymmetry is intentional and defensible.' },
+                    { title: 'How it is used', text: 'LOCKED_FUNDS_RATE = Real Opp Rate + Liquidity Monthly. This combined rate prices the own-funds opportunity cost and refund-delay cost on the lease side.' },
+                    { title: 'Typical range', example: '1–3% (higher if your cash flow is tight, lower if capital is abundant)' }
                 ]
             },
             returnVol: {
                 title: 'Return Volatility',
-                subtitle: 'Variability of expected investment returns.',
+                subtitle: 'Scales the Net Lease Risk Premium upward under uncertainty.',
                 sections: [
-                    { title: 'What it is', text: 'How unpredictable your alternative investment returns are. Measures risk.' },
-                    { title: 'Examples', example: 'Low: 5-10% (bonds) | Med: 10-20% (balanced) | High: 20%+ (stocks)' },
-                    { title: 'Tip', text: 'Higher volatility = more risk. The calculator adjusts costs accordingly.' }
+                    { title: 'What it is', text: 'A measure of how unpredictable your investment returns are (annualised standard deviation of the opportunity investment). Higher volatility means you cannot reliably count on earning the projected opportunity cost rate.' },
+                    { title: 'How it is used', text: 'Applied as a certainty-equivalent penalty on the opportunity rate: CE Rate = Real Rate − ½σ². E.g. at 15% volatility the penalty is 1.1 bps/month; at 40% it is 8 bps/month. Higher volatility → lower reliable opportunity cost → reduced ownFundsOppCost → leasing looks comparatively more attractive.' },
+                    { title: 'Examples', example: 'Low uncertainty: 5–10% | Moderate: 10–20% | High (stocks/crypto): 20%+' },
+                    { title: 'Tip', text: 'If you are confident in your financial environment, lower this. If macro conditions are uncertain, raise it. It interacts with the Net Lease Risk field — check both together.' }
                 ]
             }
         };
@@ -2432,6 +2726,7 @@ Chart.register(window['ChartDataLabels']);
             { id: 'rentDeposit', label: 'rentDepositLabel', format: 'inr' },
             { id: 'depositRefundDelay', label: 'depositRefundDelayLabel', format: 'plain' },
             { id: 'rentIncrement', label: 'rentIncrementLabel', format: 'percent' },
+            { id: 'flexibilityPremium', label: 'flexibilityPremiumLabel', format: 'inr' },
             { id: 'leaseTenure', label: 'leaseTenureLabel', format: 'plain' },
             { id: 'loanTenure', label: 'loanTenureLabel', format: 'plain' },
             { id: 'oppRate', label: 'oppRateLabel', format: 'percent' },
@@ -2505,8 +2800,8 @@ Chart.register(window['ChartDataLabels']);
                                 'rgba(155, 89, 182, 0.8)',
                                 'rgba(241, 196, 15, 0.8)',
                                 'rgba(77, 179, 255, 0.8)',
-                                'rgba(255, 140, 58, 0.8)',
-                                'rgba(46, 204, 113, 0.8)'
+                                'rgba(46, 204, 113, 0.8)',
+                                'rgba(0, 212, 255, 0.8)'
                             ],
                             borderRadius: 8,
                             borderWidth: 0
@@ -2799,9 +3094,9 @@ Chart.register(window['ChartDataLabels']);
                                 'rgba(255, 77, 77, 0.9)',
                                 'rgba(155, 89, 182, 0.9)',
                                 'rgba(241, 196, 15, 0.9)',
-                                'rgba(255, 140, 58, 0.9)',
+                                'rgba(77, 179, 255, 0.9)',
                                 'rgba(46, 204, 113, 0.9)',
-                                'rgba(77, 179, 255, 0.9)'
+                                'rgba(0, 212, 255, 0.9)'
                             ],
                             borderColor: colors.card,
                             borderWidth: 3,
@@ -2809,9 +3104,9 @@ Chart.register(window['ChartDataLabels']);
                                 'rgba(255, 77, 77, 1)',
                                 'rgba(155, 89, 182, 1)',
                                 'rgba(241, 196, 15, 1)',
-                                'rgba(255, 140, 58, 1)',
+                                'rgba(77, 179, 255, 1)',
                                 'rgba(46, 204, 113, 1)',
-                                'rgba(77, 179, 255, 1)'
+                                'rgba(0, 212, 255, 1)'
                             ],
                             hoverBorderWidth: 5,
                             hoverBorderColor: colors.accent
@@ -2894,45 +3189,79 @@ Chart.register(window['ChartDataLabels']);
             }
 
             // 6. RENT PROJECTION
+            // ── RENT PROJECTION: SAVINGS ZONE + CUMULATIVE NET SAVINGS ──
+            // Update insight stat pills
+            const rp = data.rentProjection;
+            const monthlyM1Save = rp.monthlyRent[0] - rp.leaseConstant[0];
+            const finalMonthSave = rp.monthlyRent[rp.monthlyRent.length - 1] - rp.leaseConstant[rp.leaseConstant.length - 1];
+            const totalCumulSave = rp.cumulativeSavings[rp.cumulativeSavings.length - 1];
+
+            const rentStatMonthly = $('rentStatMonthly');
+            const rentStatCumulative = $('rentStatCumulative');
+            const rentStatFinal = $('rentStatFinal');
+            const rentCrossoverPill = $('rentCrossoverPill');
+            const rentStatCrossover = $('rentStatCrossover');
+
+            if (rentStatMonthly) rentStatMonthly.textContent = formatINR(monthlyM1Save);
+            if (rentStatCumulative) rentStatCumulative.textContent = formatINR(totalCumulSave);
+            if (rentStatFinal) rentStatFinal.textContent = formatINR(finalMonthSave);
+            if (rentCrossoverPill && rentStatCrossover) {
+                if (rp.crossoverMonth) {
+                    rentCrossoverPill.style.display = '';
+                    rentStatCrossover.textContent = 'M' + rp.crossoverMonth;
+                } else {
+                    rentCrossoverPill.style.display = 'none';
+                }
+            }
+
             if (!rentProjectionChart) {
                 rentProjectionChart = new Chart($('rentProjectionChart'), {
                     type: 'line',
                     data: {
-                        labels: data.rentProjection.months,
+                        labels: rp.months,
                         datasets: [
                             {
+                                // Dataset 0: Market Rent — drawn on top so fill target works
                                 label: 'Market Rent (Escalating)',
-                                data: data.rentProjection.monthlyRent,
-                                borderColor: 'rgba(46, 204, 113, 0.9)',
-                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                                borderWidth: 2,
-                                fill: false,
-                                tension: 0.4,
-                                pointRadius: 0,
-                                pointHoverRadius: 6
-                            },
-                            {
-                                label: 'Lease Economic Cost (Fixed)',
-                                data: data.rentProjection.leaseConstant,
-                                borderColor: 'rgba(255, 77, 77, 0.9)',
-                                backgroundColor: 'rgba(255, 77, 77, 0.1)',
-                                borderWidth: 2,
-                                fill: false,
-                                tension: 0.4,
+                                data: rp.monthlyRent,
+                                borderColor: 'rgba(46, 204, 113, 1)',
+                                backgroundColor: 'rgba(46, 204, 113, 0)',
+                                borderWidth: 2.5,
+                                fill: {
+                                    target: 1,
+                                    above: 'rgba(46, 204, 113, 0.15)',   // rent > lease = saving zone
+                                    below: 'rgba(255, 77, 77, 0.12)'     // rent < lease = leasing costs more
+                                },
+                                tension: 0.35,
                                 pointRadius: 0,
                                 pointHoverRadius: 6,
-                                borderDash: [5, 5]
+                                yAxisID: 'y'
                             },
                             {
-                                label: 'Cumulative Rent Burden',
-                                data: data.rentProjection.cumulativeRent,
-                                borderColor: 'rgba(255, 140, 58, 0.9)',
-                                backgroundColor: 'rgba(255, 140, 58, 0.1)',
-                                borderWidth: 3,
+                                // Dataset 1: Lease Cost — bold solid line as primary reference
+                                label: 'Lease Monthly Cost (Fixed)',
+                                data: rp.leaseConstant,
+                                borderColor: 'rgba(77, 179, 255, 1)',
+                                backgroundColor: 'rgba(77, 179, 255, 0)',
+                                borderWidth: 2.5,
+                                fill: false,
+                                tension: 0,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                yAxisID: 'y'
+                            },
+                            {
+                                // Dataset 2: Cumulative Net Savings — right axis
+                                label: 'Cumulative Net Savings',
+                                data: rp.cumulativeSavings,
+                                borderColor: 'rgba(155, 89, 182, 0.9)',
+                                backgroundColor: 'rgba(155, 89, 182, 0.08)',
+                                borderWidth: 2,
                                 fill: true,
                                 tension: 0.4,
+                                borderDash: [6, 3],
                                 pointRadius: 0,
-                                pointHoverRadius: 6,
+                                pointHoverRadius: 5,
                                 yAxisID: 'y1'
                             }
                         ]
@@ -2944,46 +3273,113 @@ Chart.register(window['ChartDataLabels']);
                         animation: {
                             duration: 1200,
                             easing: 'easeInOutQuart',
-                            delay: (context) => {
-                                if (context.type === 'data') {
-                                    return context.dataIndex * 8 + context.datasetIndex * 250;
-                                }
-                                return 0;
-                            }
+                            delay: (context) => context.type === 'data' ? context.dataIndex * 6 + context.datasetIndex * 200 : 0
                         },
                         plugins: {
-                            legend: { display: true, position: 'top' },
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: colors.text,
+                                    usePointStyle: true,
+                                    padding: 16,
+                                    generateLabels: (chart) => {
+                                        const orig = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                        // Fix legend swatch for dashed dataset
+                                        if (orig[2]) {
+                                            orig[2].lineDash = [6, 3];
+                                        }
+                                        return orig;
+                                    }
+                                }
+                            },
                             datalabels: { display: false },
                             tooltip: {
                                 callbacks: {
-                                    label: ctx => `${ctx.dataset.label}: ${formatINR(ctx.parsed.y)}`
+                                    label: (ctx) => {
+                                        if (ctx.datasetIndex === 2) {
+                                            return `Cumulative Net Saving: ${formatINR(ctx.parsed.y)}`;
+                                        }
+                                        const saving = rp.monthlyRent[ctx.dataIndex] - rp.leaseConstant[ctx.dataIndex];
+                                        if (ctx.datasetIndex === 0) return `Market Rent: ${formatINR(ctx.parsed.y)} (+${formatINR(saving)} vs lease)`;
+                                        return `Lease Cost: ${formatINR(ctx.parsed.y)}`;
+                                    },
+                                    afterBody: (items) => {
+                                        const idx = items[0].dataIndex;
+                                        const saving = rp.monthlyRent[idx] - rp.leaseConstant[idx];
+                                        return saving > 0
+                                            ? [`\n✅ You save ${formatINR(saving)} this month by leasing`]
+                                            : saving < 0
+                                            ? [`\n⚠️ Rent cheaper than lease by ${formatINR(Math.abs(saving))} this month`]
+                                            : [];
+                                    }
                                 }
                             }
                         },
                         scales: {
                             y: {
-                                title: { display: true, text: 'Monthly Cost' },
+                                title: { display: true, text: 'Monthly Cost', color: colors.muted },
                                 ticks: { callback: v => formatINR(v), color: colors.muted },
                                 grid: { color: colors.border }
                             },
                             y1: {
-                                title: { display: true, text: 'Cumulative Cost' },
+                                title: { display: true, text: 'Cumulative Net Savings', color: colors.muted },
                                 position: 'right',
                                 ticks: { callback: v => formatINR(v), color: colors.muted },
                                 grid: { drawOnChartArea: false }
                             },
                             x: {
-                                ticks: { color: colors.muted },
+                                ticks: { color: colors.muted, maxTicksLimit: 12 },
                                 grid: { display: false }
                             }
                         }
-                    }
+                    },
+                    plugins: [
+                        {
+                            // Draw crossover marker + "Savings Zone" label
+                            id: 'rentAnnotations',
+                            afterDatasetsDraw(chart) {
+                                const { ctx, chartArea: { top, bottom, left, right }, scales } = chart;
+                                const xScale = scales.x;
+                                const yScale = scales.y;
+
+                                // Savings Zone label
+                                const midY = top + (bottom - top) * 0.3;
+                                const midX = left + (right - left) * 0.5;
+                                ctx.save();
+                                ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
+                                ctx.fillStyle = 'rgba(46, 204, 113, 0.55)';
+                                ctx.textAlign = 'center';
+                                ctx.fillText('▲ Savings Zone — Leasing Cheaper', midX, midY);
+                                ctx.restore();
+
+                                // Crossover vertical line
+                                if (rp.crossoverMonth && rp.crossoverMonth <= rp.months.length) {
+                                    const crossX = xScale.getPixelForValue(rp.crossoverMonth - 1);
+                                    ctx.save();
+                                    ctx.strokeStyle = 'rgba(241, 196, 15, 0.8)';
+                                    ctx.lineWidth = 1.5;
+                                    ctx.setLineDash([4, 3]);
+                                    ctx.beginPath();
+                                    ctx.moveTo(crossX, top);
+                                    ctx.lineTo(crossX, bottom);
+                                    ctx.stroke();
+
+                                    ctx.fillStyle = 'rgba(241, 196, 15, 0.9)';
+                                    ctx.font = 'bold 10px sans-serif';
+                                    ctx.textAlign = 'center';
+                                    ctx.fillText('Rent > Lease', crossX, top + 10);
+                                    ctx.restore();
+                                }
+                            }
+                        }
+                    ]
                 });
             } else {
-                rentProjectionChart.data.labels = data.rentProjection.months;
-                rentProjectionChart.data.datasets[0].data = data.rentProjection.monthlyRent;
-                rentProjectionChart.data.datasets[1].data = data.rentProjection.leaseConstant;
-                rentProjectionChart.data.datasets[2].data = data.rentProjection.cumulativeRent;
+                rentProjectionChart.data.labels = rp.months;
+                rentProjectionChart.data.datasets[0].data = rp.monthlyRent;
+                rentProjectionChart.data.datasets[1].data = rp.leaseConstant;
+                rentProjectionChart.data.datasets[2].data = rp.cumulativeSavings;
                 rentProjectionChart.update();
             }
 
@@ -3074,9 +3470,10 @@ Chart.register(window['ChartDataLabels']);
                         {
                             id: 'tornadoLabels',
                             afterDatasetsDraw(chart) {
-                                const { ctx, data } = chart;
-                                
-                                ctx.font = 'bold 10px sans-serif';
+                                const { ctx, data, chartArea: { left, right } } = chart;
+                                const MARGIN = 8;
+
+                                ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
                                 ctx.textBaseline = 'middle';
 
                                 data.datasets.forEach((dataset, datasetIndex) => {
@@ -3088,18 +3485,17 @@ Chart.register(window['ChartDataLabels']);
                                         if (!bar) return;
 
                                         const label = formatINR(Math.abs(value));
-                                        const padding = 6;
 
                                         if (datasetIndex === 0) {
-                                            // Less Savings (negative/left bar): label to the left of bar
-                                            ctx.textAlign = 'right';
-                                            ctx.fillStyle = colors.text;
-                                            ctx.fillText(label, bar.x - padding, bar.y);
-                                        } else {
-                                            // More Savings (positive/right bar): label to the right of bar
+                                            // Less Savings — pin to far left edge
                                             ctx.textAlign = 'left';
-                                            ctx.fillStyle = colors.text;
-                                            ctx.fillText(label, bar.x + padding, bar.y);
+                                            ctx.fillStyle = 'rgba(255,77,77,0.95)';
+                                            ctx.fillText(label, left + MARGIN, bar.y);
+                                        } else {
+                                            // More Savings — pin to far right edge
+                                            ctx.textAlign = 'right';
+                                            ctx.fillStyle = 'rgba(46,204,113,0.95)';
+                                            ctx.fillText(label, right - MARGIN, bar.y);
                                         }
                                     });
                                 });
@@ -3237,6 +3633,51 @@ Chart.register(window['ChartDataLabels']);
             $('summaryTerm').innerText = Math.round(tenure) + ' yrs';
         }
 
+        /* ================= VERDICT BANNER UPDATE ================= */
+        function updateVerdictBanner(monthlySavings, termSavings, score, tenure, confidence) {
+            const banner = $('verdictBanner');
+            const headline = $('verdictHeadline');
+            const body = $('verdictBody');
+            const mSavEl = $('verdictMonthlySaving');
+            const tSavEl = $('verdictTermSaving');
+            const pill = $('verdictBreakevenPill');
+
+            const leaseBetter = monthlySavings > 0;
+            const neutral = Math.abs(monthlySavings) < 500;
+            const cls = neutral ? 'neutral' : (leaseBetter ? 'lease-wins' : 'rent-wins');
+            const valCls = neutral ? 'neutral' : (leaseBetter ? 'positive' : 'negative');
+
+            banner.className = 'verdict-banner ' + cls;
+
+            const tenureYrs = Math.round(tenure / 12 * 10) / 10;
+            const confRound = Math.round(confidence);
+            const absMonthly = formatINR(Math.abs(monthlySavings));
+            const absTerm = formatINR(Math.abs(termSavings));
+
+            if (neutral) {
+                headline.textContent = '⚖️ It\'s a close call — consider lifestyle & flexibility';
+                body.innerHTML = `Monthly costs are nearly equal (<strong>${absMonthly}/mo difference</strong>). At this margin, non-financial factors matter most: how long you plan to stay, whether you need liquidity, and local market trends.`;
+            } else if (leaseBetter) {
+                headline.textContent = score >= 80
+                    ? '🏆 Lease is the clear winner — strongly recommended'
+                    : '✅ Leasing has the economic edge';
+                body.innerHTML = `Based on your inputs, leasing saves you <strong>${absMonthly}/month</strong> — that's <strong>${absTerm}</strong> over ${tenureYrs} years. Decision confidence: <strong>${confRound}%</strong>.`;
+            } else {
+                headline.textContent = score <= 20
+                    ? '🔴 Renting is significantly more economical'
+                    : '⚠️ Renting has the economic edge';
+                body.innerHTML = `Based on your inputs, renting saves you <strong>${absMonthly}/month</strong> compared to leasing — a difference of <strong>${absTerm}</strong> over ${tenureYrs} years.`;
+            }
+
+            mSavEl.className = 'verdict-stat-value ' + valCls;
+            mSavEl.textContent = (leaseBetter ? '+' : '-') + absMonthly + '/mo';
+
+            tSavEl.className = 'verdict-stat-value ' + valCls;
+            tSavEl.textContent = (leaseBetter ? '+' : '-') + absTerm;
+
+            if (pill) pill.style.display = 'none';
+        }
+
         /* ================= MAIN CALCULATION (CODE 1 LOGIC + CODE 2 UI) ================= */
         function calculate() {
             try {
@@ -3261,8 +3702,9 @@ Chart.register(window['ChartDataLabels']);
                 const DEPOSIT_REFUND_DELAY = num('depositRefundDelay');
 
                 const OPP_RATE_ANNUAL = num('oppRate');
-                const RISK_PREMIUM = num('riskPremium') / 100;
+                const RISK_PREMIUM = num('riskPremium') / 100;  // Net incremental risk of leasing over renting
                 const RENT_INCREMENT = num('rentIncrement') / 100;
+                const FLEXIBILITY_PREMIUM = num('flexibilityPremium'); // Monthly ₹ value of renting's optionality
 
                 // Code 1 specific parameters
                 const INFLATION_ANNUAL = num('inflationRate');
@@ -3280,7 +3722,14 @@ Chart.register(window['ChartDataLabels']);
 
                 // CRITICAL: Real opportunity rate (inflation-adjusted)
                 const REAL_OPP_RATE = ((1 + OPP_RATE_NOMINAL) / (1 + INFLATION_MONTHLY)) - 1;
-                const LOCKED_FUNDS_RATE = REAL_OPP_RATE + LIQUIDITY_MONTHLY;
+
+                // Volatility penalty: high return volatility reduces the certainty-equivalent
+                // opportunity rate (CE = μ − ½σ²). A more unpredictable investment earns less
+                // in risk-adjusted terms, which weakens the opportunity-cost argument against leasing.
+                const VOLATILITY_PENALTY = 0.5 * VOLATILITY * VOLATILITY;
+                const CE_REAL_OPP_RATE = Math.max(0, REAL_OPP_RATE - VOLATILITY_PENALTY);
+
+                const LOCKED_FUNDS_RATE = CE_REAL_OPP_RATE + LIQUIDITY_MONTHLY;
 
                 // Clamping and tenure alignment
                 const WITHHOLDING_CLAMPED = Math.min(1, Math.max(0, WITHHOLDING));
@@ -3292,9 +3741,8 @@ Chart.register(window['ChartDataLabels']);
 
                 // ========== LEASE COST COMPONENTS ==========
 
-                // Withholding with damage factor (CODE 1 LOGIC)
-                const EXPECTED_DAMAGE_FACTOR = 0.5;
-                const withholdingLoss = LEASE_AMOUNT * WITHHOLDING_CLAMPED * EXPECTED_DAMAGE_FACTOR;
+                // Withholding loss — user's input is taken as their actual expected loss fraction
+                const withholdingLoss = LEASE_AMOUNT * WITHHOLDING_CLAMPED;
                 const depositRefundable = LEASE_AMOUNT * (1 - WITHHOLDING_CLAMPED);
 
                 // Own funds opportunity cost (inflation-adjusted)
@@ -3305,43 +3753,20 @@ Chart.register(window['ChartDataLabels']);
                     ? depositRefundable * (Math.pow(1 + LOCKED_FUNDS_RATE, REFUND_DELAY) - 1)
                     : 0;
 
-                // ========== CRITICAL: EMI OPPORTUNITY COST ANALYSIS (CODE 1 LOGIC) ==========
-                let emiOppLoss = 0;
-                let emiOppGain = 0;
-
-                for (let m = 1; m <= LEASE_TENURE; m++) {
-                    const yearIndex = Math.floor((m - 1) / 12);
-                    const monthlyRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
-                    const monthlyOutflow = m <= effectiveLoanMonths ? (EMI + MAINTENANCE) : MAINTENANCE;
-                    
-                    // Growth-to-end factor for discounting
-                    const growthFactor = Math.pow(1 + REAL_OPP_RATE, LEASE_TENURE - m + 1) - 1;
-                    
-                    const difference = monthlyOutflow - monthlyRent;
-                    if (difference > 0) {
-                        emiOppLoss += difference * growthFactor;
-                    } else {
-                        emiOppGain += Math.abs(difference) * growthFactor;
-                    }
-                }
-
-                const netEmiOpp = emiOppLoss - emiOppGain;
-
                 // Total maintenance
                 const totalMaintenanceCost = MAINTENANCE * LEASE_TENURE;
 
-                // ========== TOTAL LEASE COST (CODE 1 LOGIC) ==========
+                // ========== TOTAL LEASE COST ==========
+                // Sum of all actual economic costs of leasing — no comparison against rent embedded here.
                 const totalLeaseCostWithoutRisk =
                     totalInterestPaid
                   + withholdingLoss
                   + ownFundsOppCost
                   + delayCost
-                  + totalMaintenanceCost
-                  + netEmiOpp;
+                  + totalMaintenanceCost;
 
-                // Risk cost with scaling (CODE 1 LOGIC)
-                const EFFECTIVE_RISK_PREMIUM = RISK_PREMIUM * (1 + VOLATILITY);
-                const riskCost = LEASE_AMOUNT * EFFECTIVE_RISK_PREMIUM * (LEASE_TENURE / 12);
+                // Risk cost: pure lease-specific risk, independent of investment volatility
+                const riskCost = LEASE_AMOUNT * RISK_PREMIUM * (LEASE_TENURE / 12);
 
                 const riskAdjustedLeaseCost = totalLeaseCostWithoutRisk + riskCost;
                 const monthlyLeaseCost = riskAdjustedLeaseCost / LEASE_TENURE;
@@ -3353,28 +3778,40 @@ Chart.register(window['ChartDataLabels']);
                     totalRentPaidOverLeaseTerm += MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
                 }
 
-                const rentDepositOppCost = RENT_DEPOSIT * (Math.pow(1 + REAL_OPP_RATE, LEASE_TENURE) - 1);
+                const rentDepositOppCost = RENT_DEPOSIT * (Math.pow(1 + CE_REAL_OPP_RATE, LEASE_TENURE) - 1);
                 const rentDepositDelayOppCost = DEPOSIT_REFUND_DELAY > 0
-                    ? RENT_DEPOSIT * (Math.pow(1 + REAL_OPP_RATE, DEPOSIT_REFUND_DELAY) - 1)
+                    ? RENT_DEPOSIT * (Math.pow(1 + CE_REAL_OPP_RATE, DEPOSIT_REFUND_DELAY) - 1)
                     : 0;
 
-                const totalRentCostOverLeaseTerm = totalRentPaidOverLeaseTerm + rentDepositOppCost + rentDepositDelayOppCost;
+                // Flexibility premium: subtract from rent's effective cost.
+                // Higher value → renting becomes cheaper on a like-for-like basis → model favours renting.
+                // Floored so flexibility can never make rent total negative.
+                const totalFlexibilityCost = Math.min(
+                    FLEXIBILITY_PREMIUM * LEASE_TENURE,
+                    totalRentPaidOverLeaseTerm + rentDepositOppCost + rentDepositDelayOppCost
+                );
+
+                const totalRentCostOverLeaseTerm = Math.max(
+                    1,
+                    totalRentPaidOverLeaseTerm + rentDepositOppCost + rentDepositDelayOppCost - totalFlexibilityCost
+                );
                 const monthlyRentCost = totalRentCostOverLeaseTerm / LEASE_TENURE;
 
-                // ========== COMPARISON & SCORING (CODE 1 LOGIC) ==========
-                const costRatio = totalRentCostOverLeaseTerm === 0 ? 0 : riskAdjustedLeaseCost / totalRentCostOverLeaseTerm;
-
-                // Logarithmic transformation (CODE 1 LOGIC)
-                const stabilizedRatio = Math.log(1 + costRatio) / Math.log(2);
-                const NEUTRAL_BAND = 0.05;
-                const finalRatio = Math.abs(costRatio - 1) < NEUTRAL_BAND ? 1 : stabilizedRatio;
-                const score = Math.max(0, Math.min(100, 50 + 50 * (1 - finalRatio)));
+                // ========== COMPARISON & SCORING ==========
+                // Symmetric score: lease saving fraction mapped to 0–100.
+                // savingFraction = (rentTotal - leaseTotal) / max(rentTotal, leaseTotal)
+                // Ranges from -1 (lease 2× more expensive) to +1 (lease costs nothing vs rent)
+                // Score = 50 + 50 × savingFraction → 50 at parity, 100 when lease dominates, 0 when rent dominates.
+                const savingFraction = (totalRentCostOverLeaseTerm - riskAdjustedLeaseCost) /
+                    Math.max(totalRentCostOverLeaseTerm, riskAdjustedLeaseCost);
+                const score = Math.max(0, Math.min(100, 50 + 50 * savingFraction));
 
                 // Metrics
                 const monthlySavings = monthlyRentCost - monthlyLeaseCost;
                 const yearlySavings = monthlySavings * 12;
                 const termSavings = monthlySavings * LEASE_TENURE;
-                const confidence = Math.max(0, Math.min(100, Math.abs(costRatio - 1) * 100));
+                // Confidence: how far from parity (0% = tied, 100% = one side clearly dominates)
+                const confidence = Math.max(0, Math.min(100, Math.abs(savingFraction) * 100));
 
                 // Interpretation
                 let color = '#f1c40f';
@@ -3429,18 +3866,26 @@ Chart.register(window['ChartDataLabels']);
                 $('confidence').textContent = Math.round(confidence) + '%';
                 highlightValueChange($('confidence'));
 
+                // ========== UPDATE EFFECTIVE MONTHLY COST METRIC ==========
+                const oldEffective = cleanNumber($('mEffective').textContent);
+                animateCounter($('mEffective'), oldEffective, monthlyLeaseCost, 800);
+                highlightValueChange($('mEffective'));
+
+                // ========== UPDATE VERDICT BANNER ==========
+                updateVerdictBanner(monthlySavings, termSavings, score, LEASE_TENURE, confidence);
+
                 // ========== CHART DATA ==========
 
                 // 1. TCO Data
                 const tcoData = {
-                    labels: ['Interest Paid', 'Withholding Loss', 'Own Funds Opp Cost', 'Refund Delay Cost', 'EMI Opp Cost', 'Total Maintenance'],
+                    labels: ['Interest Paid', 'Withholding Loss', 'Own Funds Opp Cost', 'Refund Delay Cost', 'Total Maintenance', 'Net Lease Risk Cost'],
                     values: [
                         Math.max(0, totalInterestPaid),
                         Math.max(0, withholdingLoss),
                         Math.max(0, ownFundsOppCost),
                         Math.max(0, delayCost),
-                        Math.max(0, netEmiOpp),
-                        Math.max(0, totalMaintenanceCost)
+                        Math.max(0, totalMaintenanceCost),
+                        Math.max(0, riskCost)
                     ]
                 };
 
@@ -3510,14 +3955,14 @@ Chart.register(window['ChartDataLabels']);
 
                 // 5. Composition Data
                 const compositionData = {
-                    labels: ['Interest', 'Withholding', 'Own Funds Opp', 'Refund Delay', 'EMI Opp Cost', 'Maintenance'],
+                    labels: ['Interest', 'Withholding', 'Own Funds Opp', 'Refund Delay', 'Maintenance', 'Net Lease Risk'],
                     values: [
                         Math.max(1, totalInterestPaid),
                         Math.max(1, withholdingLoss),
                         Math.max(1, ownFundsOppCost),
                         Math.max(1, delayCost),
-                        Math.max(1, netEmiOpp),
-                        Math.max(1, totalMaintenanceCost)
+                        Math.max(1, totalMaintenanceCost),
+                        Math.max(1, riskCost)
                     ]
                 };
 
@@ -3525,25 +3970,39 @@ Chart.register(window['ChartDataLabels']);
                 const rentMonthlyRent = [];
                 const leaseConstantRent = [];
                 const rentCumulativeRent = [];
+                const cumulativeLease = [];
+                const cumulativeSavings = [];
                 const rentMonths = [];
                 let rentTotal = 0;
+                let leaseTotal = 0;
+                let crossoverMonth = null;
 
                 for (let m = 1; m <= LEASE_TENURE; m++) {
                     const yearIndex = Math.floor((m - 1) / 12);
                     const monthlyRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
                     rentTotal += monthlyRent;
+                    leaseTotal += monthlyLeaseCost;
                     
                     rentMonthlyRent.push(monthlyRent);
                     leaseConstantRent.push(monthlyLeaseCost);
                     rentCumulativeRent.push(rentTotal);
+                    cumulativeLease.push(leaseTotal);
+                    cumulativeSavings.push(rentTotal - leaseTotal);
                     rentMonths.push('M' + m);
+
+                    // Detect first month rent > lease on a monthly basis
+                    if (crossoverMonth === null && monthlyRent > monthlyLeaseCost) {
+                        crossoverMonth = m;
+                    }
                 }
 
                 const rentProjectionData = {
                     months: rentMonths,
                     monthlyRent: rentMonthlyRent,
                     leaseConstant: leaseConstantRent,
-                    cumulativeRent: rentCumulativeRent
+                    cumulativeRent: rentCumulativeRent,
+                    cumulativeSavings: cumulativeSavings,
+                    crossoverMonth: crossoverMonth
                 };
 
                 // 7. SENSITIVITY IMPACT (TORNADO) DATA - What changes monthly savings most
@@ -3864,9 +4323,10 @@ Chart.register(window['ChartDataLabels']);
                                 {
                                     id: 'tornadoLabels',
                                     afterDatasetsDraw(chart) {
-                                        const { ctx, data } = chart;
-                                        
-                                        ctx.font = 'bold 10px sans-serif';
+                                        const { ctx, data, chartArea: { left, right } } = chart;
+                                        const MARGIN = 8;
+
+                                        ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
                                         ctx.textBaseline = 'middle';
 
                                         data.datasets.forEach((dataset, datasetIndex) => {
@@ -3878,16 +4338,15 @@ Chart.register(window['ChartDataLabels']);
                                                 if (!bar) return;
 
                                                 const label = formatINR(Math.abs(value));
-                                                const padding = 6;
 
                                                 if (datasetIndex === 0) {
-                                                    ctx.textAlign = 'right';
-                                                    ctx.fillStyle = colors.text;
-                                                    ctx.fillText(label, bar.x - padding, bar.y);
-                                                } else {
                                                     ctx.textAlign = 'left';
-                                                    ctx.fillStyle = colors.text;
-                                                    ctx.fillText(label, bar.x + padding, bar.y);
+                                                    ctx.fillStyle = 'rgba(255,77,77,0.95)';
+                                                    ctx.fillText(label, left + MARGIN, bar.y);
+                                                } else {
+                                                    ctx.textAlign = 'right';
+                                                    ctx.fillStyle = 'rgba(46,204,113,0.95)';
+                                                    ctx.fillText(label, right - MARGIN, bar.y);
                                                 }
                                             });
                                         });
@@ -4344,6 +4803,9 @@ Chart.register(window['ChartDataLabels']);
             }, 1500);
         });
         
+        // Load URL params if present (for shared scenarios)
+        loadFromURL();
+
         calculate();
 
         // ================= ACCESSIBILITY ENHANCEMENTS =================
