@@ -7,10 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
-        /* ============================= */
         /* ===== ELITE FINTECH BI UI ==== */
-        /* ============================= */
-
         :root {
             --bg: #060d15;
             --card: #0e1a27;
@@ -27,12 +24,12 @@
         }
 
         body.light {
-            --bg: #f4f7fb;
+            --bg: #f8fafb;
             --card: #ffffff;
-            --text: #0b1622;
-            --accent: #1f4e79;
-            --muted: #5c6c7a;
-            --border: #e0e8f0;
+            --text: #0f172a;
+            --accent: #1e40af;
+            --muted: #475569;
+            --border: #cbd5e1;
         }
 
         * {
@@ -58,7 +55,6 @@
             gap: 24px;
         }
 
-        /* ===== HEADER ===== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -78,7 +74,13 @@
             background-clip: text;
         }
 
-        .toggle {
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .toggle, .global-help-btn {
             background: var(--accent);
             color: #060d15;
             padding: 8px 16px;
@@ -90,7 +92,14 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .toggle:hover {
+        .global-help-btn {
+            padding: 8px 12px;
+            background: rgba(77, 179, 255, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(77, 179, 255, 0.3);
+        }
+
+        .toggle:hover, .global-help-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(77, 179, 255, 0.25);
         }
@@ -99,7 +108,6 @@
             transform: translateY(0);
         }
 
-        /* ===== CARDS ===== */
         .card, .chartCard {
             background: linear-gradient(135deg, var(--card), rgba(30, 40, 50, 0.5));
             padding: 24px;
@@ -109,6 +117,13 @@
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.light .card,
+        body.light .chartCard {
+            background: #ffffff;
+            border: 1.5px solid #d0dce6;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .card.show, .chartCard.show {
@@ -138,7 +153,6 @@
             display: inline-flex;
         }
 
-        /* ===== GRID LAYOUT ===== */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -152,7 +166,6 @@
             }
         }
 
-        /* ===== FORM FIELDS ===== */
         .field {
             display: flex;
             flex-direction: column;
@@ -165,6 +178,13 @@
             gap: 4px;
         }
 
+        .field-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
         label {
             font-size: 11px;
             color: var(--muted);
@@ -174,6 +194,11 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            flex: 1;
+        }
+
+        body.light label {
+            color: #374151;
         }
 
         .label-value {
@@ -181,6 +206,39 @@
             color: var(--accent);
             font-weight: 700;
             font-family: 'Courier New', monospace;
+        }
+
+        body.light .label-value {
+            color: #1e40af;
+        }
+
+        .info-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(77, 179, 255, 0.15);
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: bold;
+            cursor: help;
+            border: 1px solid rgba(77, 179, 255, 0.3);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        body.light .info-btn {
+            background: rgba(30, 64, 175, 0.1);
+            border-color: rgba(30, 64, 175, 0.2);
+            color: #1e40af;
+        }
+
+        .info-btn:hover {
+            background: rgba(77, 179, 255, 0.25);
+            border-color: var(--accent);
+            transform: scale(1.15);
         }
 
         .input-group {
@@ -204,13 +262,21 @@
 
         body.light input[type="text"],
         body.light input[type="number"] {
-            background: rgba(240, 245, 250, 0.8);
+            background: #f9fafb;
+            border: 1.5px solid #d1d5db;
+            color: #0f172a;
         }
 
         input[type="text"]:hover,
         input[type="number"]:hover {
             border-color: var(--border);
             background: var(--card);
+        }
+
+        body.light input[type="text"]:hover,
+        body.light input[type="number"]:hover {
+            background: #ffffff;
+            border-color: #9ca3af;
         }
 
         input[type="text"]:focus,
@@ -221,7 +287,13 @@
             box-shadow: 0 0 0 3px rgba(77, 179, 255, 0.1);
         }
 
-        /* ===== SLIDERS - ENHANCED ===== */
+        body.light input[type="text"]:focus,
+        body.light input[type="number"]:focus {
+            border-color: #1e40af;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
         input[type="range"] {
             width: 100%;
             height: 4px;
@@ -303,15 +375,11 @@
             box-shadow: 0 0 0 3px rgba(77, 179, 255, 0.2), 0 4px 12px rgba(77, 179, 255, 0.5);
         }
 
-        .micro {
-            font-size: 11px;
-            color: var(--muted);
-            font-weight: 500;
-            min-height: 14px;
-            transition: 0.25s;
+        /* HIDDEN HELP TEXT */
+        .help-text, .field-hint, .section-description {
+            display: none;
         }
 
-        /* ===== DECISION GAUGE ===== */
         .gauge-section {
             text-align: center;
             padding: 16px 0;
@@ -380,7 +448,6 @@
             font-weight: 500;
         }
 
-        /* ===== METRICS ===== */
         .metricsBox {
             margin-top: 20px;
             display: grid;
@@ -397,10 +464,20 @@
             cursor: pointer;
         }
 
+        body.light .metric-card {
+            background: #f0f7ff;
+            border: 1px solid #bfdbfe;
+        }
+
         .metric-card:hover {
             background: rgba(77, 179, 255, 0.12);
             border-color: var(--accent);
             transform: translateY(-1px);
+        }
+
+        body.light .metric-card:hover {
+            background: #e0efff;
+            border-color: #60a5fa;
         }
 
         .metric-label {
@@ -420,7 +497,6 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* ===== CHARTS ===== */
         .chartCard {
             position: relative;
         }
@@ -456,7 +532,6 @@
             line-height: 1.6;
         }
 
-        /* ===== CHARTS GRID ===== */
         .charts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
@@ -473,7 +548,6 @@
             }
         }
 
-        /* ===== COMPARATIVE TABLE ===== */
         .comparison-table {
             width: 100%;
             margin-top: 16px;
@@ -513,7 +587,6 @@
             font-weight: 700;
         }
 
-        /* ===== SECTION HEADERS ===== */
         .section-header {
             font-size: 13px;
             font-weight: 700;
@@ -536,7 +609,268 @@
             margin: 20px 0;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* SUMMARY PANEL */
+        .summary-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            padding: 16px;
+            background: rgba(77, 179, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        body.light .summary-panel {
+            background: #f0f7ff;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .summary-label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .summary-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+        }
+
+        body.light .summary-value {
+            color: #1e40af;
+        }
+
+        /* MODAL SYSTEM */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            max-width: 520px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        body.light .modal-content {
+            background: #ffffff;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s ease;
+            width: 32px;
+            height: 32px;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+            padding-right: 32px;
+        }
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .modal-section {
+            margin-bottom: 16px;
+        }
+
+        .modal-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 8px;
+        }
+
+        .modal-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .modal-example {
+            background: rgba(77, 179, 255, 0.08);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+            font-size: 12px;
+            color: var(--text);
+            margin-top: 8px;
+        }
+
+        body.light .modal-example {
+            background: #f0f7ff;
+        }
+
+        .info-banner {
+            background: rgba(30, 64, 175, 0.08);
+            border: 1px solid rgba(30, 64, 175, 0.2);
+            border-left: 4px solid var(--accent);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        body.light .info-banner {
+            background: #f0f7ff;
+            border-color: #bfdbfe;
+        }
+
+        /* SENSITIVITY CHART SELECTOR */
+        .sensitivity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: rgba(77, 179, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(77, 179, 255, 0.1);
+        }
+
+        body.light .sensitivity-controls {
+            background: #f0f7ff;
+            border-color: #bfdbfe;
+        }
+
+        .sensitivity-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .sensitivity-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .sensitivity-chip {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        body.light .sensitivity-chip {
+            border-color: #d1d5db;
+        }
+
+        .sensitivity-chip:hover {
+            border-color: var(--accent);
+            background: rgba(77, 179, 255, 0.1);
+        }
+
+        body.light .sensitivity-chip:hover {
+            background: #f0f7ff;
+        }
+
+        .sensitivity-chip.active {
+            background: var(--accent);
+            color: #060d15;
+            border-color: var(--accent);
+        }
+
+        .sensitivity-back-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sensitivity-back-btn:hover {
+            background: var(--accent);
+            color: #060d15;
+        }
+
+        .sensitivity-chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 12px;
@@ -576,6 +910,11 @@
                 padding: 12px 0;
             }
 
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
             .charts-grid {
                 grid-template-columns: 1fr;
             }
@@ -585,7 +924,6 @@
             }
         }
 
-        /* ===== ANIMATIONS ===== */
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -614,7 +952,6 @@
             animation: pulse 2s infinite;
         }
 
-        /* ===== FOCUS VISIBLE - Keyboard Navigation ===== */
         *:focus-visible {
             outline: 2px solid var(--accent);
             outline-offset: 2px;
@@ -629,12 +966,14 @@
 
 <body>
 
-    <!-- HEADER -->
     <div class="header">
         <div class="logo">💰 Aladdin Finance BI</div>
-        <button class="toggle" onclick="toggleTheme()" aria-label="Toggle between dark and light theme">
-            <span id="theme-icon">🌙</span> <span id="theme-text">Dark</span>
-        </button>
+        <div class="header-actions">
+            <button class="global-help-btn" onclick="showGlobalHelp()" aria-label="Show help guide">ℹ️ Help</button>
+            <button class="toggle" onclick="toggleTheme()" aria-label="Toggle between dark and light theme">
+                <span id="theme-icon">🌙</span> <span id="theme-text">Dark</span>
+            </button>
+        </div>
     </div>
 
     <div class="container">
@@ -643,7 +982,26 @@
         <div class="card">
             <div class="card-title"><span class="card-icon">⚙️</span>Financial Parameters</div>
             
-            <!-- Two-Column Layout for Lease and Rent Components -->
+            <!-- SUMMARY PANEL -->
+            <div class="summary-panel">
+                <div class="summary-item">
+                    <div class="summary-label">Asset Price</div>
+                    <div class="summary-value" id="summaryAsset">₹20L</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Loan Amount</div>
+                    <div class="summary-value" id="summaryLoan">₹15L</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Monthly Rent</div>
+                    <div class="summary-value" id="summaryRent">₹45K</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Lease Term</div>
+                    <div class="summary-value" id="summaryTerm">20 yrs</div>
+                </div>
+            </div>
+            
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 12px;">
                 
                 <!-- LEASE COMPONENTS -->
@@ -655,12 +1013,12 @@
                     <div class="grid">
                         <div class="field">
                             <div class="field-wrapper">
-                                <label>
-                                    Lease Amount (₹)
-                                    <span class="label-value" id="leaseAmountLabel">₹2,000,000</span>
-                                </label>
+                                <div class="field-label-row">
+                                    <label>Lease Amount (₹) <span class="label-value" id="leaseAmountLabel">₹2,000,000</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('leaseAmount')">ℹ️</button>
+                                </div>
                                 <div class="input-group">
-                                    <input id="leaseAmount" type="text" value="2000000" aria-label="Lease Amount">
+                                    <input id="leaseAmount" type="text" value="2000000" aria-label="Lease Amount" title="Enter total lease asset value">
                                     <input type="range" id="leaseAmountRange" min="100000" max="5000000" step="50000" value="2000000" aria-label="Lease Amount slider">
                                 </div>
                             </div>
@@ -668,12 +1026,12 @@
 
                         <div class="field">
                             <div class="field-wrapper">
-                                <label>
-                                    Loan Amount (₹)
-                                    <span class="label-value" id="loanAmountLabel">₹1,500,000</span>
-                                </label>
+                                <div class="field-label-row">
+                                    <label>Loan Amount (₹) <span class="label-value" id="loanAmountLabel">₹1,500,000</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('loanAmount')">ℹ️</button>
+                                </div>
                                 <div class="input-group">
-                                    <input id="loanAmount" type="text" value="1500000" aria-label="Loan Amount">
+                                    <input id="loanAmount" type="text" value="1500000" aria-label="Loan Amount" title="Enter loan amount">
                                     <input type="range" id="loanAmountRange" min="0" max="5000000" step="50000" value="1500000" aria-label="Loan Amount slider">
                                 </div>
                             </div>
@@ -681,12 +1039,12 @@
 
                         <div class="field">
                             <div class="field-wrapper">
-                                <label>
-                                    Loan Interest Rate (%)
-                                    <span class="label-value" id="loanRateLabel">8.5%</span>
-                                </label>
+                                <div class="field-label-row">
+                                    <label>Interest Rate (%) <span class="label-value" id="loanRateLabel">8.5%</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('loanRate')">ℹ️</button>
+                                </div>
                                 <div class="input-group">
-                                    <input id="loanRate" type="text" value="8.5" aria-label="Loan Interest Rate">
+                                    <input id="loanRate" type="text" value="8.5" aria-label="Loan Interest Rate" title="Enter annual interest rate">
                                     <input type="range" id="loanRateRange" min="1" max="20" step="0.1" value="8.5" aria-label="Loan Interest Rate slider">
                                 </div>
                             </div>
@@ -694,25 +1052,35 @@
 
                         <div class="field">
                             <div class="field-wrapper">
-                                <label>
-                                    Monthly Maintenance (₹)
-                                    <span class="label-value" id="maintenanceLabel">₹5,000</span>
-                                </label>
+                                <div class="field-label-row">
+                                    <label>Maintenance (₹) <span class="label-value" id="maintenanceLabel">₹5,000</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('maintenance')">ℹ️</button>
+                                </div>
                                 <div class="input-group">
-                                    <input id="maintenance" type="text" value="5000" aria-label="Monthly Maintenance">
+                                    <input id="maintenance" type="text" value="5000" aria-label="Monthly Maintenance" title="Enter monthly maintenance cost">
                                     <input type="range" id="maintenanceRange" min="0" max="20000" step="500" value="5000" aria-label="Monthly Maintenance slider">
                                 </div>
                             </div>
                         </div>
 
                         <div class="field">
-                            <label for="withholding">Lease Withholding (%)</label>
-                            <input id="withholding" type="text" value="0" aria-label="Lease Withholding Percentage">
+                            <div class="field-wrapper">
+                                <div class="field-label-row">
+                                    <label>Withholding (%) <span class="label-value" id="withholdingLabel">0%</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('withholding')">ℹ️</button>
+                                </div>
+                                <input id="withholding" type="text" value="0" aria-label="Lease Withholding Percentage" title="Percentage of deposit that may be withheld">
+                            </div>
                         </div>
 
                         <div class="field">
-                            <label for="refundDelay">Lease Refund Delay (Months)</label>
-                            <input id="refundDelay" type="text" value="0" aria-label="Lease Refund Delay in Months">
+                            <div class="field-wrapper">
+                                <div class="field-label-row">
+                                    <label>Refund Delay (Mo) <span class="label-value" id="refundDelayLabel">0</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('refundDelay')">ℹ️</button>
+                                </div>
+                                <input id="refundDelay" type="text" value="0" aria-label="Lease Refund Delay in Months" title="Enter refund delay in months">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -726,12 +1094,12 @@
                     <div class="grid">
                         <div class="field">
                             <div class="field-wrapper">
-                                <label>
-                                    Market Rent (₹)
-                                    <span class="label-value" id="marketRentLabel">₹45,000</span>
-                                </label>
+                                <div class="field-label-row">
+                                    <label>Market Rent (₹) <span class="label-value" id="marketRentLabel">₹45,000</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('marketRent')">ℹ️</button>
+                                </div>
                                 <div class="input-group">
-                                    <input id="marketRent" type="text" value="45000" aria-label="Market Rent">
+                                    <input id="marketRent" type="text" value="45000" aria-label="Market Rent" title="Enter current market rental rate">
                                     <input type="range" id="marketRentRange" min="5000" max="200000" step="1000" value="45000" aria-label="Market Rent slider">
                                 </div>
                             </div>
@@ -739,12 +1107,12 @@
 
                         <div class="field">
                             <div class="field-wrapper">
-                                <label>
-                                    Rent Deposit (₹)
-                                    <span class="label-value" id="rentDepositLabel">₹0</span>
-                                </label>
+                                <div class="field-label-row">
+                                    <label>Rent Deposit (₹) <span class="label-value" id="rentDepositLabel">₹0</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('rentDeposit')">ℹ️</button>
+                                </div>
                                 <div class="input-group">
-                                    <input id="rentDeposit" type="text" value="0" aria-label="Rent Deposit">
+                                    <input id="rentDeposit" type="text" value="0" aria-label="Rent Deposit" title="Enter security deposit amount">
                                     <input type="range" id="rentDepositRange" min="0" max="500000" step="10000" value="0" aria-label="Rent Deposit slider">
                                 </div>
                             </div>
@@ -752,25 +1120,22 @@
 
                         <div class="field">
                             <div class="field-wrapper">
-                                <label>
-                                    Deposit Refund Delay (Months)
-                                    <span class="label-value" id="depositRefundDelayLabel">0</span>
-                                </label>
-                                <div class="input-group">
-                                    <input id="depositRefundDelay" type="text" value="0" aria-label="Deposit Refund Delay">
-                                    <input type="range" id="depositRefundDelayRange" min="0" max="12" step="1" value="0" aria-label="Deposit Refund Delay slider">
+                                <div class="field-label-row">
+                                    <label>Refund delay (Mo) <span class="label-value" id="depositRefundDelayLabel">0</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('depositRefundDelay')">ℹ️</button>
                                 </div>
+                                <input id="depositRefundDelay" type="text" value="0" aria-label="Deposit Refund Delay" title="Enter refund delay months">
                             </div>
                         </div>
 
                         <div class="field">
                             <div class="field-wrapper">
-                                <label>
-                                    Rent Increment (%)
-                                    <span class="label-value" id="rentIncrementLabel">5%</span>
-                                </label>
+                                <div class="field-label-row">
+                                    <label>Rent Growth (%) <span class="label-value" id="rentIncrementLabel">5%</span></label>
+                                    <button class="info-btn" onclick="showFieldHelp('rentIncrement')">ℹ️</button>
+                                </div>
                                 <div class="input-group">
-                                    <input id="rentIncrement" type="text" value="5" aria-label="Rent Increment Percentage">
+                                    <input id="rentIncrement" type="text" value="5" aria-label="Rent Increment Percentage" title="Enter annual rent increase percentage">
                                     <input type="range" id="rentIncrementRange" min="0" max="10" step="0.5" value="5" aria-label="Rent Increment slider">
                                 </div>
                             </div>
@@ -785,43 +1150,43 @@
             <div>
                 <div class="section-header">
                     <span class="section-header-icon">⚖️</span>
-                    Common Parameters
+                    Economic Assumptions
                 </div>
                 <div class="grid">
                     <div class="field">
                         <div class="field-wrapper">
-                            <label>
-                                Lease Tenure (Months)
-                                <span class="label-value" id="leaseTenureLabel">240</span>
-                            </label>
+                            <div class="field-label-row">
+                                <label>Lease Tenure (Mo) <span class="label-value" id="leaseTenureLabel">24</span></label>
+                                <button class="info-btn" onclick="showFieldHelp('leaseTenure')">ℹ️</button>
+                            </div>
                             <div class="input-group">
-                                <input id="leaseTenure" type="text" value="240" aria-label="Lease Tenure in Months">
-                                <input type="range" id="leaseTenureRange" min="12" max="360" step="12" value="240" aria-label="Lease Tenure slider">
+                                <input id="leaseTenure" type="text" value="24" aria-label="Lease Tenure in Months" title="Enter lease duration in months">
+                                <input type="range" id="leaseTenureRange" min="12" max="360" step="12" value="24" aria-label="Lease Tenure slider">
                             </div>
                         </div>
                     </div>
 
                     <div class="field">
                         <div class="field-wrapper">
-                            <label>
-                                Loan Tenure (Months)
-                                <span class="label-value" id="loanTenureLabel">240</span>
-                            </label>
+                            <div class="field-label-row">
+                                <label>Loan Tenure (Mo) <span class="label-value" id="loanTenureLabel">24</span></label>
+                                <button class="info-btn" onclick="showFieldHelp('loanTenure')">ℹ️</button>
+                            </div>
                             <div class="input-group">
-                                <input id="loanTenure" type="text" value="240" aria-label="Loan Tenure in Months">
-                                <input type="range" id="loanTenureRange" min="12" max="360" step="12" value="240" aria-label="Loan Tenure slider">
+                                <input id="loanTenure" type="text" value="24" aria-label="Loan Tenure in Months" title="Enter loan repayment duration">
+                                <input type="range" id="loanTenureRange" min="12" max="360" step="12" value="24" aria-label="Loan Tenure slider">
                             </div>
                         </div>
                     </div>
 
                     <div class="field">
                         <div class="field-wrapper">
-                            <label>
-                                Opportunity Cost (%)
-                                <span class="label-value" id="oppRateLabel">12%</span>
-                            </label>
+                            <div class="field-label-row">
+                                <label>Opportunity Cost (%) <span class="label-value" id="oppRateLabel">12%</span></label>
+                                <button class="info-btn" onclick="showFieldHelp('oppRate')">ℹ️</button>
+                            </div>
                             <div class="input-group">
-                                <input id="oppRate" type="text" value="12" aria-label="Opportunity Cost Rate">
+                                <input id="oppRate" type="text" value="12" aria-label="Opportunity Cost Rate" title="Enter expected investment return">
                                 <input type="range" id="oppRateRange" min="1" max="20" step="0.1" value="12" aria-label="Opportunity Cost slider">
                             </div>
                         </div>
@@ -829,13 +1194,52 @@
 
                     <div class="field">
                         <div class="field-wrapper">
-                            <label>
-                                Risk Premium (%)
-                                <span class="label-value" id="riskPremiumLabel">3%</span>
-                            </label>
+                            <div class="field-label-row">
+                                <label>Risk Premium (%) <span class="label-value" id="riskPremiumLabel">3%</span></label>
+                                <button class="info-btn" onclick="showFieldHelp('riskPremium')">ℹ️</button>
+                            </div>
                             <div class="input-group">
-                                <input id="riskPremium" type="text" value="3" aria-label="Risk Premium Rate">
+                                <input id="riskPremium" type="text" value="3" aria-label="Risk Premium Rate" title="Enter risk buffer percentage">
                                 <input type="range" id="riskPremiumRange" min="0" max="20" step="0.1" value="3" aria-label="Risk Premium slider">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-wrapper">
+                            <div class="field-label-row">
+                                <label>Inflation Rate (%) <span class="label-value" id="inflationRateLabel">6%</span></label>
+                                <button class="info-btn" onclick="showFieldHelp('inflationRate')">ℹ️</button>
+                            </div>
+                            <div class="input-group">
+                                <input id="inflationRate" type="text" value="6" aria-label="Inflation Rate" title="Enter expected annual inflation">
+                                <input type="range" id="inflationRateRange" min="0" max="15" step="0.5" value="6" aria-label="Inflation Rate slider">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-wrapper">
+                            <div class="field-label-row">
+                                <label>Liquidity Premium (%) <span class="label-value" id="liquidityPremiumLabel">2%</span></label>
+                                <button class="info-btn" onclick="showFieldHelp('liquidityPremium')">ℹ️</button>
+                            </div>
+                            <div class="input-group">
+                                <input id="liquidityPremium" type="text" value="2" aria-label="Liquidity Premium" title="Enter liquidity premium percentage">
+                                <input type="range" id="liquidityPremiumRange" min="0" max="10" step="0.5" value="2" aria-label="Liquidity Premium slider">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-wrapper">
+                            <div class="field-label-row">
+                                <label>Return Volatility (%) <span class="label-value" id="returnVolLabel">15%</span></label>
+                                <button class="info-btn" onclick="showFieldHelp('returnVol')">ℹ️</button>
+                            </div>
+                            <div class="input-group">
+                                <input id="returnVol" type="text" value="15" aria-label="Return Volatility" title="Enter return volatility percentage">
+                                <input type="range" id="returnVolRange" min="0" max="40" step="1" value="15" aria-label="Return Volatility slider">
                             </div>
                         </div>
                     </div>
@@ -846,6 +1250,7 @@
         <!-- DECISION GAUGE & KPIs -->
         <div class="card">
             <div class="card-title"><span class="card-icon">📊</span>Decision Intelligence Score</div>
+            
             <div class="gauge-section">
                 <div class="gaugeWrap">
                     <div id="gauge" class="gauge" role="img" aria-label="Decision score gauge">
@@ -888,41 +1293,43 @@
 
         <!-- CHARTS SECTION -->
         <div class="charts-grid">
+            
+            <div style="grid-column: 1 / -1; margin-bottom: 12px;">
+                <div class="info-banner" style="margin: 0;">
+                    <strong>📊 About the Charts:</strong> <strong>TCO Chart</strong> shows cost components. <strong>Monthly Comparison</strong> compares direct outflows. <strong>Cumulative Impact</strong> shows total spending over time. Study the spread between lease and rent lines.
+                </div>
+            </div>
 
-            <!-- 1. Total Cost of Ownership Waterfall -->
             <div class="chartCard">
                 <div class="card-title"><span class="card-icon">💾</span>Total Economic Cost Drivers</div>
                 <div class="chart-container">
                     <canvas id="tcoChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    All cost components when leasing. Shows interest, opportunity costs, and maintenance.
+                    All lease cost components: interest, opportunity costs, maintenance, withholding, and delays.
                 </div>
             </div>
 
-            <!-- 2. Monthly Cost Comparison Waterfall -->
             <div class="chartCard">
                 <div class="card-title"><span class="card-icon">💰</span>Monthly Cost Comparison</div>
                 <div class="chart-container">
                     <canvas id="monthlyCostChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    Direct comparison of monthly outflows: Risk-Adjusted Lease Cost vs. Market Rent.
+                    Direct comparison of monthly outflows: risk-adjusted lease cost vs. market rent.
                 </div>
             </div>
 
-            <!-- 3. 10-Year Cumulative Impact (Full Width) -->
             <div class="chartCard chart-full">
                 <div class="card-title"><span class="card-icon">📈</span>Cumulative Cost Impact Over Time</div>
                 <div class="chart-container">
                     <canvas id="cumulativeImpactChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    Total accumulated costs: Lease vs. Market Rent. The spread between lines is your financial advantage.
+                    Total accumulated costs. The spread between lines is your financial advantage.
                 </div>
             </div>
 
-            <!-- 4. Sensitivity Analysis Heatmap -->
             <div class="chartCard">
                 <div class="card-title"><span class="card-icon">🔥</span>Decision Robustness Matrix</div>
                 <div class="chart-container">
@@ -933,25 +1340,64 @@
                 </div>
             </div>
 
-            <!-- 5. Cost Composition Pie -->
             <div class="chartCard">
                 <div class="card-title"><span class="card-icon">🥧</span>Economic Cost Distribution</div>
                 <div class="chart-container">
                     <canvas id="costCompositionChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    Which cost categories dominate: Interest, Opportunity costs, Maintenance, etc.
+                    Which cost categories dominate: Interest, Opportunity costs, Maintenance, Withholding, Delays.
                 </div>
             </div>
 
-            <!-- 6. Rent Escalation Forecast -->
             <div class="chartCard">
                 <div class="card-title"><span class="card-icon">📊</span>Rent Growth vs Fixed Lease</div>
                 <div class="chart-container">
                     <canvas id="rentProjectionChart"></canvas>
                 </div>
                 <div class="chart-description">
-                    Market rent escalation vs. fixed lease economics. Shows cumulative rent burden over time.
+                    Market rent escalation vs. fixed lease economics. Cumulative rent burden over time.
+                </div>
+            </div>
+
+            <div class="chartCard">
+                <div class="card-title"><span class="card-icon">🎯</span><span id="sensitivityTitle">What Changes Your Monthly Savings Most</span></div>
+                
+                <div id="sensitivityOverviewMode">
+                    <div class="sensitivity-controls">
+                        <span class="sensitivity-label">Explore Factor:</span>
+                        <div class="sensitivity-chips">
+                            <button class="sensitivity-chip" onclick="switchSensitivityMode('Market Rent')">Market Rent</button>
+                            <button class="sensitivity-chip" onclick="switchSensitivityMode('Interest Rate')">Interest Rate</button>
+                            <button class="sensitivity-chip" onclick="switchSensitivityMode('Loan Amount')">Loan Amount</button>
+                            <button class="sensitivity-chip" onclick="switchSensitivityMode('Maintenance')">Maintenance</button>
+                            <button class="sensitivity-chip" onclick="switchSensitivityMode('Rent Growth')">Rent Growth</button>
+                        </div>
+                    </div>
+                    <div class="chart-description" style="margin-bottom: 12px;">
+                        Right = more savings, Left = less savings. Based on ±10% change.
+                    </div>
+                </div>
+
+                <div id="sensitivityInteractiveMode" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span class="sensitivity-chart-title" id="interactiveTitle"></span>
+                        <button class="sensitivity-back-btn" onclick="switchSensitivityMode()">← Back to Overview</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="sensitivityHeatmapChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chartCard chart-full">
+                <div class="card-title"><span class="card-icon">📊</span>Loan Payment Breakdown Over Time</div>
+                <div class="chart-container">
+                    <canvas id="amortizationChart"></canvas>
+                </div>
+                <div class="chart-description">
+                    Stacked bars show principal vs. interest portions of each EMI. Line shows remaining loan balance declining over time. Small summary above chart shows total EMI, total interest, and loan duration.
                 </div>
             </div>
 
@@ -960,6 +1406,7 @@
         <!-- COMPARISON TABLE -->
         <div class="card">
             <div class="card-title"><span class="card-icon">📋</span>Financial Summary</div>
+            
             <table class="comparison-table">
                 <thead>
                     <tr>
@@ -977,24 +1424,86 @@
 
     </div>
 
+    <!-- HELP MODALS -->
+    <div class="modal-overlay" id="helpModal" onclick="closeHelpModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeHelpModal()">✕</button>
+            <div id="helpContent"></div>
+        </div>
+    </div>
+
     <script>
+
+Chart.register(window['ChartDataLabels']);
 
         /* ================= THEME ================= */
         function toggleTheme() {
             const isDark = !document.body.classList.contains('light');
             document.body.classList.toggle('light');
-            
             localStorage.setItem('theme', isDark ? 'light' : 'dark');
             updateThemeUI();
-            
-            // Redraw charts with new colors
             setTimeout(() => {
-                if (tcoChart) tcoChart.update();
-                if (monthlyCostChart) monthlyCostChart.update();
-                if (cumulativeImpactChart) cumulativeImpactChart.update();
-                if (sensitivityChart) sensitivityChart.update();
-                if (costCompositionChart) costCompositionChart.update();
-                if (rentProjectionChart) rentProjectionChart.update();
+                const colors = getChartColors();
+                
+                if (tcoChart) {
+                    tcoChart.options.plugins.datalabels.color = colors.text;
+                    tcoChart.options.scales.x.ticks.color = colors.muted;
+                    tcoChart.options.scales.x.grid.color = colors.border;
+                    tcoChart.options.scales.y.ticks.color = colors.muted;
+                    tcoChart.update();
+                }
+                if (monthlyCostChart) {
+                    monthlyCostChart.options.plugins.datalabels.color = colors.text;
+                    monthlyCostChart.options.scales.y.ticks.color = colors.muted;
+                    monthlyCostChart.options.scales.y.grid.color = colors.border;
+                    monthlyCostChart.options.scales.x.ticks.color = colors.muted;
+                    monthlyCostChart.update();
+                }
+                if (cumulativeImpactChart) {
+                    cumulativeImpactChart.options.scales.y.ticks.color = colors.muted;
+                    cumulativeImpactChart.options.scales.y.grid.color = colors.border;
+                    cumulativeImpactChart.options.scales.x.ticks.color = colors.muted;
+                    cumulativeImpactChart.update();
+                }
+                if (sensitivityChart) {
+                    sensitivityChart.options.scales.x.ticks.color = colors.muted;
+                    sensitivityChart.options.scales.x.title.color = colors.muted;
+                    sensitivityChart.options.scales.y.ticks.color = colors.muted;
+                    sensitivityChart.options.scales.y.title.color = colors.muted;
+                    sensitivityChart.options.scales.y.grid.color = colors.border;
+                    sensitivityChart.options.scales.x.grid.color = colors.border;
+                    sensitivityChart.update();
+                }
+                if (costCompositionChart) {
+                    costCompositionChart.options.plugins.datalabels.color = colors.text;
+                    costCompositionChart.options.plugins.legend.labels.color = colors.text;
+                    costCompositionChart.options.plugins.legend.labels.font = { weight: '700', size: 12 };
+                    costCompositionChart.options.plugins.legend.labels.padding = 18;
+                    costCompositionChart.options.plugins.legend.labels.pointRadius = 6;
+                    costCompositionChart.update();
+                }
+                if (rentProjectionChart) {
+                    rentProjectionChart.options.scales.y.ticks.color = colors.muted;
+                    rentProjectionChart.options.scales.y.grid.color = colors.border;
+                    rentProjectionChart.options.scales.y1.ticks.color = colors.muted;
+                    rentProjectionChart.options.scales.x.ticks.color = colors.muted;
+                    rentProjectionChart.update();
+                }
+                if (sensitivityHeatmapChart) {
+                    sensitivityHeatmapChart.options.plugins.datalabels.color = colors.text;
+                    sensitivityHeatmapChart.options.scales.x.ticks.color = colors.muted;
+                    sensitivityHeatmapChart.options.scales.x.grid.color = colors.border;
+                    sensitivityHeatmapChart.options.scales.y.ticks.color = colors.muted;
+                    sensitivityHeatmapChart.options.scales.y.grid.color = colors.border;
+                    sensitivityHeatmapChart.update();
+                }
+                if (amortizationChart) {
+                    amortizationChart.options.plugins.legend.labels.color = colors.text;
+                    amortizationChart.options.scales.y.ticks.color = colors.muted;
+                    amortizationChart.options.scales.y.grid.color = colors.border;
+                    amortizationChart.options.scales.x.ticks.color = colors.muted;
+                    amortizationChart.update();
+                }
             }, 100);
         }
 
@@ -1004,7 +1513,6 @@
             document.getElementById('theme-text').textContent = isDark ? 'Dark' : 'Light';
         }
 
-        // Load saved theme
         if (localStorage.getItem('theme') === 'light') {
             document.body.classList.add('light');
             updateThemeUI();
@@ -1013,9 +1521,7 @@
         /* ================= SCROLL REVEAL ================= */
         const observer = new IntersectionObserver(entries => {
             entries.forEach(e => {
-                if (e.isIntersecting) {
-                    e.target.classList.add('show');
-                }
+                if (e.isIntersecting) e.target.classList.add('show');
             });
         }, { threshold: 0.1 });
 
@@ -1049,6 +1555,7 @@
                 text: isDark ? '#eaf2f9' : '#0b1622',
                 muted: isDark ? '#94a8bd' : '#5c6c7a',
                 border: isDark ? '#1a2a38' : '#e0e8f0',
+                card: isDark ? '#0e1a27' : '#ffffff',
                 primary: '#4db3ff',
                 secondary: '#9b59b6',
                 success: '#2ecc71',
@@ -1059,12 +1566,230 @@
             };
         }
 
-        /* ================= INPUT SYNC WITH LABELS ================= */
+        /* ================= HELP MODAL SYSTEM ================= */
+        const fieldHelp = {
+            leaseAmount: {
+                title: 'Lease Amount',
+                subtitle: 'Total purchase or lease price of the asset.',
+                sections: [
+                    { title: 'What it is', text: 'The total cost or value of the asset you plan to lease. This could be equipment, real estate, or any other asset.' },
+                    { title: 'Examples', example: 'Equipment ₹20L, Real estate ₹50L+, Vehicle ₹10L' },
+                    { title: 'Tip', text: 'Ensure this matches the actual market value of the asset you\'re comparing.' }
+                ]
+            },
+            loanAmount: {
+                title: 'Loan Amount',
+                subtitle: 'Portion of lease amount financed through a loan.',
+                sections: [
+                    { title: 'What it is', text: 'The amount you borrow from a lender. The difference (Asset - Loan) is your own capital.' },
+                    { title: 'Example', example: 'If asset is ₹20L and loan is ₹15L, your capital is ₹5L' },
+                    { title: 'Tip', text: 'Lower loan = higher own capital required. Higher loan = higher interest costs.' }
+                ]
+            },
+            loanRate: {
+                title: 'Loan Interest Rate',
+                subtitle: 'Annual interest rate (APR) charged by the lender.',
+                sections: [
+                    { title: 'What it is', text: 'The yearly percentage cost of borrowing. Higher rates increase your EMI.' },
+                    { title: 'India benchmarks', example: 'HDFC: 7-9%, ICICI: 7-10%, SBI: 6-8%' },
+                    { title: 'Tip', text: 'Use your bank\'s actual rate for accuracy.' }
+                ]
+            },
+            maintenance: {
+                title: 'Monthly Maintenance',
+                subtitle: 'Recurring upkeep, repairs, and servicing costs.',
+                sections: [
+                    { title: 'What it is', text: 'Monthly cost to keep the asset in working condition. Includes repairs, spare parts, and support.' },
+                    { title: 'Examples', example: 'Equipment service: ₹5K-10K/month | Real estate: ₹2K-5K/month' },
+                    { title: 'Tip', text: 'Be realistic. Underestimating maintenance skews your decision.' }
+                ]
+            },
+            withholding: {
+                title: 'Lease Withholding %',
+                subtitle: 'Percentage of deposit the landlord may retain.',
+                sections: [
+                    { title: 'What it is', text: 'The deposit fraction the landlord can keep for damages, cleaning, or maintenance after the lease ends.' },
+                    { title: 'Typical range', example: '5-10% of lease amount' },
+                    { title: 'Tip', text: 'This represents expected loss. Input 0 if you expect full deposit recovery.' }
+                ]
+            },
+            refundDelay: {
+                title: 'Lease Refund Delay',
+                subtitle: 'Months to recover deposit after lease ends.',
+                sections: [
+                    { title: 'What it is', text: 'Time lag between lease end and deposit refund. Your money is locked during this period.' },
+                    { title: 'Typical range', example: '1-3 months for inspection and settlement' },
+                    { title: 'Tip', text: 'Enter 0 if you get refund immediately, or 3 months for a conservative estimate.' }
+                ]
+            },
+            marketRent: {
+                title: 'Market Rent',
+                subtitle: 'Current monthly rental rate in the market.',
+                sections: [
+                    { title: 'What it is', text: 'The actual monthly rent you would pay if renting instead of leasing.' },
+                    { title: 'How to find', example: 'Check OLX, 99acres, property portals, or comparable nearby properties' },
+                    { title: 'Tip', text: 'Use current market rates, not negotiated rates.' }
+                ]
+            },
+            rentDeposit: {
+                title: 'Rent Deposit',
+                subtitle: 'Security deposit required to start renting.',
+                sections: [
+                    { title: 'What it is', text: 'One-time deposit held by landlord for damage/cleaning. Usually refundable.' },
+                    { title: 'Typical range', example: '1-3 months of rent (₹50K-150K for ₹50K/month rent)' },
+                    { title: 'Tip', text: 'This is your cash outlay, so it affects cash flow.' }
+                ]
+            },
+            depositRefundDelay: {
+                title: 'Deposit Refund Delay',
+                subtitle: 'Months to recover rent deposit after lease ends.',
+                sections: [
+                    { title: 'What it is', text: 'Time to get your rent security deposit back. Your capital is locked during this period.' },
+                    { title: 'Typical range', example: '1-2 months for inspection and settlement' },
+                    { title: 'Tip', text: 'Longer delays = more opportunity cost.' }
+                ]
+            },
+            rentIncrement: {
+                title: 'Annual Rent Growth',
+                subtitle: 'Expected yearly increase in market rent.',
+                sections: [
+                    { title: 'What it is', text: 'How much rent typically increases per year. Reflects inflation and demand.' },
+                    { title: 'India baseline', example: 'Typically 3-8% annually, varies by city' },
+                    { title: 'Tip', text: 'Higher growth favors leasing (locked rent). Lower growth favors renting.' }
+                ]
+            },
+            leaseTenure: {
+                title: 'Lease Tenure',
+                subtitle: 'Duration of the lease agreement in months.',
+                sections: [
+                    { title: 'What it is', text: 'How long you commit to the lease. 240 months = 20 years (standard equipment leases).' },
+                    { title: 'Examples', example: '60 mo = 5 years (short), 240 mo = 20 years (long)' },
+                    { title: 'Tip', text: 'Longer tenure increases total cost but spreads it over more time.' }
+                ]
+            },
+            loanTenure: {
+                title: 'Loan Tenure',
+                subtitle: 'Duration of loan repayment schedule in months.',
+                sections: [
+                    { title: 'What it is', text: 'How long you pay EMI. Can be shorter or longer than lease tenure.' },
+                    { title: 'Examples', example: '15-year loan with 20-year lease (stop EMI, then rent-free period)' },
+                    { title: 'Tip', text: 'Longer loan = lower EMI but more total interest. Shorter loan = higher EMI.' }
+                ]
+            },
+            oppRate: {
+                title: 'Opportunity Cost',
+                subtitle: 'Expected return from alternative investments.',
+                sections: [
+                    { title: 'What it is', text: 'What return you could earn if you invested your capital elsewhere instead of leasing.' },
+                    { title: 'Benchmarks', example: 'Stocks: 12-15% | Bonds: 6-8% | Gold: 8-10% | FDs: 6-7%' },
+                    { title: 'Tip', text: 'Higher opportunity cost = leasing becomes more expensive (lost investment gains).' }
+                ]
+            },
+            riskPremium: {
+                title: 'Risk Premium',
+                subtitle: 'Extra cost buffer for financial uncertainties.',
+                sections: [
+                    { title: 'What it is', text: 'A safety margin accounting for unexpected costs, inflation spikes, or economic changes.' },
+                    { title: 'Examples', example: 'Conservative: 2-3% | Moderate: 3-5% | Aggressive: 5%+' },
+                    { title: 'Tip', text: 'Higher premium = more cautious (favors renting). Lower premium = optimistic (favors leasing).' }
+                ]
+            },
+            inflationRate: {
+                title: 'Inflation Rate',
+                subtitle: 'Expected annual price increase.',
+                sections: [
+                    { title: 'What it is', text: 'How fast prices (including rent) will rise. Affects long-term comparisons.' },
+                    { title: 'India context', example: 'RBI target: 4% | Recent: 5-7% | Use your forecast' },
+                    { title: 'Tip', text: 'Higher inflation favors lease (fixed rent) over escalating rent.' }
+                ]
+            },
+            liquidityPremium: {
+                title: 'Liquidity Premium',
+                subtitle: 'Cost of capital locked in the lease.',
+                sections: [
+                    { title: 'What it is', text: 'Extra cost because capital spent on lease isn\'t available for other uses.' },
+                    { title: 'Typical range', example: '1-3% (depends on how tight your cash is)' },
+                    { title: 'Tip', text: 'Higher if you need flexible capital. Lower if capital is abundant.' }
+                ]
+            },
+            returnVol: {
+                title: 'Return Volatility',
+                subtitle: 'Variability of expected investment returns.',
+                sections: [
+                    { title: 'What it is', text: 'How unpredictable your alternative investment returns are. Measures risk.' },
+                    { title: 'Examples', example: 'Low: 5-10% (bonds) | Med: 10-20% (balanced) | High: 20%+ (stocks)' },
+                    { title: 'Tip', text: 'Higher volatility = more risk. The calculator adjusts costs accordingly.' }
+                ]
+            }
+        };
+
+        function showFieldHelp(fieldId) {
+            const help = fieldHelp[fieldId] || { title: 'Help', subtitle: 'Information not available.' };
+            const sections = help.sections || [];
+            
+            let html = `<div class="modal-title">${help.title}</div>`;
+            html += `<div class="modal-subtitle">${help.subtitle}</div>`;
+            
+            sections.forEach(section => {
+                html += `<div class="modal-section">`;
+                if (section.title) html += `<div class="modal-section-title">${section.title}</div>`;
+                if (section.text) html += `<div class="modal-text">${section.text}</div>`;
+                if (section.example) html += `<div class="modal-example">📌 ${section.example}</div>`;
+                html += `</div>`;
+            });
+            
+            $('helpContent').innerHTML = html;
+            $('helpModal').classList.add('active');
+        }
+
+        function showGlobalHelp() {
+            const html = `
+                <div class="modal-title">💡 How to Use This Calculator</div>
+                <div class="modal-subtitle">Quick guide to comparing lease vs. rent options.</div>
+                
+                <div class="modal-section">
+                    <div class="modal-section-title">Step 1: Enter Your Numbers</div>
+                    <div class="modal-text">Fill in the asset price, loan terms, and market rent. Use the ⓘ buttons next to each field for explanations.</div>
+                </div>
+                
+                <div class="modal-section">
+                    <div class="modal-section-title">Step 2: Set Economic Assumptions</div>
+                    <div class="modal-text">Define your investment returns, inflation, and risk comfort. These affect long-term comparisons.</div>
+                </div>
+                
+                <div class="modal-section">
+                    <div class="modal-section-title">Step 3: Read the Score</div>
+                    <div class="modal-text"><strong>0-35:</strong> Rent is better | <strong>35-50:</strong> Neutral | <strong>50-85:</strong> Lease is better | <strong>85-100:</strong> Strong lease advantage</div>
+                </div>
+                
+                <div class="modal-section">
+                    <div class="modal-section-title">Step 4: Study the Charts</div>
+                    <div class="modal-text">Charts show cost breakdown, monthly comparison, and long-term impact. The spread between lease and rent lines is your advantage.</div>
+                </div>
+                
+                <div class="modal-section">
+                    <div class="modal-section-title">What the Score Includes</div>
+                    <div class="modal-text">Interest paid, opportunity costs, maintenance, deposit withholding, inflation, risk premium, and timing delays. A complete economic comparison.</div>
+                </div>
+            `;
+            
+            $('helpContent').innerHTML = html;
+            $('helpModal').classList.add('active');
+        }
+
+        function closeHelpModal(event) {
+            if (event && event.target !== $('helpModal')) return;
+            $('helpModal').classList.remove('active');
+        }
+
+        /* ================= INPUT SYNC ================= */
         const syncInputs = [
             { id: 'leaseAmount', label: 'leaseAmountLabel', format: 'inr' },
             { id: 'loanAmount', label: 'loanAmountLabel', format: 'inr' },
             { id: 'loanRate', label: 'loanRateLabel', format: 'percent' },
             { id: 'maintenance', label: 'maintenanceLabel', format: 'inr' },
+            { id: 'withholding', label: 'withholdingLabel', format: 'percent' },
+            { id: 'refundDelay', label: 'refundDelayLabel', format: 'plain' },
             { id: 'marketRent', label: 'marketRentLabel', format: 'inr' },
             { id: 'rentDeposit', label: 'rentDepositLabel', format: 'inr' },
             { id: 'depositRefundDelay', label: 'depositRefundDelayLabel', format: 'plain' },
@@ -1072,15 +1797,16 @@
             { id: 'leaseTenure', label: 'leaseTenureLabel', format: 'plain' },
             { id: 'loanTenure', label: 'loanTenureLabel', format: 'plain' },
             { id: 'oppRate', label: 'oppRateLabel', format: 'percent' },
-            { id: 'riskPremium', label: 'riskPremiumLabel', format: 'percent' }
+            { id: 'riskPremium', label: 'riskPremiumLabel', format: 'percent' },
+            { id: 'inflationRate', label: 'inflationRateLabel', format: 'percent' },
+            { id: 'liquidityPremium', label: 'liquidityPremiumLabel', format: 'percent' },
+            { id: 'returnVol', label: 'returnVolLabel', format: 'percent' }
         ];
 
         syncInputs.forEach(({ id, label, format }) => {
             const input = $(id);
             const range = $(id + 'Range');
             const labelEl = label ? $(label) : null;
-
-            if (!range) return;
 
             const updateLabel = () => {
                 if (!labelEl) return;
@@ -1090,15 +1816,19 @@
                 else labelEl.innerText = val;
             };
 
-            range.addEventListener('input', () => {
-                input.value = range.value;
-                updateLabel();
-                calculate();
-            });
+            // Handle range input if it exists
+            if (range) {
+                range.addEventListener('input', () => {
+                    input.value = range.value;
+                    updateLabel();
+                    calculate();
+                });
+            }
 
+            // Always add input event listener
             input.addEventListener('input', () => {
                 const clean = cleanNumber(input.value);
-                range.value = clean;
+                if (range) range.value = clean;
                 updateLabel();
                 calculate();
             });
@@ -1111,12 +1841,12 @@
         }
 
         /* ================= CHARTS ================= */
-        let tcoChart, monthlyCostChart, cumulativeImpactChart, sensitivityChart, costCompositionChart, rentProjectionChart;
+        let tcoChart, monthlyCostChart, cumulativeImpactChart, sensitivityChart, costCompositionChart, rentProjectionChart, sensitivityHeatmapChart, amortizationChart;
 
         function initCharts(data) {
             const colors = getChartColors();
 
-            // 1. TCO CHART (Horizontal Bar - Waterfall Style)
+            // 1. TCO CHART
             if (!tcoChart) {
                 tcoChart = new Chart($('tcoChart'), {
                     type: 'bar',
@@ -1170,7 +1900,7 @@
                 tcoChart.update();
             }
 
-            // 2. MONTHLY COST CHART (Grouped Bar)
+            // 2. MONTHLY COST CHART
             if (!monthlyCostChart) {
                 monthlyCostChart = new Chart($('monthlyCostChart'), {
                     type: 'bar',
@@ -1242,7 +1972,7 @@
                 monthlyCostChart.update();
             }
 
-            // 3. CUMULATIVE IMPACT (Line Chart - Most Important)
+            // 3. CUMULATIVE IMPACT
             if (!cumulativeImpactChart) {
                 cumulativeImpactChart = new Chart($('cumulativeImpactChart'), {
                     type: 'line',
@@ -1300,7 +2030,7 @@
                 cumulativeImpactChart.update();
             }
 
-            // 4. SENSITIVITY CHART (Bubble/Scatter for Decision Robustness)
+            // 4. SENSITIVITY CHART
             if (!sensitivityChart) {
                 sensitivityChart = new Chart($('sensitivityChart'), {
                     type: 'bubble',
@@ -1358,27 +2088,95 @@
                         datasets: [{
                             data: data.composition.values,
                             backgroundColor: [
-                                'rgba(255, 77, 77, 0.8)',
-                                'rgba(155, 89, 182, 0.8)',
-                                'rgba(241, 196, 15, 0.8)',
-                                'rgba(255, 140, 58, 0.8)'
+                                'rgba(255, 77, 77, 0.9)',
+                                'rgba(155, 89, 182, 0.9)',
+                                'rgba(241, 196, 15, 0.9)',
+                                'rgba(255, 140, 58, 0.9)',
+                                'rgba(46, 204, 113, 0.9)',
+                                'rgba(77, 179, 255, 0.9)'
                             ],
                             borderColor: colors.card,
-                            borderWidth: 3
+                            borderWidth: 3,
+                            hoverBackgroundColor: [
+                                'rgba(255, 77, 77, 1)',
+                                'rgba(155, 89, 182, 1)',
+                                'rgba(241, 196, 15, 1)',
+                                'rgba(255, 140, 58, 1)',
+                                'rgba(46, 204, 113, 1)',
+                                'rgba(77, 179, 255, 1)'
+                            ],
+                            hoverBorderWidth: 5,
+                            hoverBorderColor: colors.accent
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: { mode: 'nearest', intersect: false },
+                        animation: {
+                            animateRotate: true,
+                            animateScale: false
+                        },
                         plugins: {
-                            legend: { display: true, position: 'bottom' },
+                            legend: { 
+                                display: true, 
+                                position: 'bottom',
+                                labels: {
+                                    color: colors.text,
+                                    padding: 18,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    pointRadius: 6,
+                                    font: { weight: '700', size: 12 },
+                                    generateLabels: function(chart) {
+                                        const dataset = chart.data.datasets[0];
+                                        const labels = chart.data.labels;
+                                        return labels.map((label, i) => ({
+                                            text: label,
+                                            fillStyle: dataset.backgroundColor[i],
+                                            strokeStyle: colors.border,
+                                            lineWidth: 2,
+                                            hidden: false,
+                                            index: i
+                                        }));
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: colors.card,
+                                padding: 14,
+                                titleColor: colors.text,
+                                bodyColor: colors.text,
+                                borderColor: colors.accent,
+                                borderWidth: 2,
+                                displayColors: true,
+                                callbacks: {
+                                    title: function(context) {
+                                        return context[0].label;
+                                    },
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percent = ((context.parsed / total) * 100).toFixed(1);
+                                        const amount = formatINR(context.parsed);
+                                        return `${amount} (${percent}%)`;
+                                    },
+                                    afterLabel: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percent = ((context.parsed / total) * 100).toFixed(1);
+                                        if (percent > 20) return '← Major driver';
+                                        else if (percent > 10) return '← Significant';
+                                        else return '← Minor component';
+                                    }
+                                }
+                            },
                             datalabels: {
-                                color: colors.text,
-                                font: { weight: 'bold', size: 11 },
+                                color: '#ffffff',
+                                font: { weight: 'bold', size: 13 },
                                 formatter: (v, ctx) => {
                                     const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percent = ((v / total) * 100).toFixed(1);
-                                    return percent + '%';
+                                    const percent = ((v / total) * 100).toFixed(0);
+                                    return percent > 5 ? percent + '%' : '';
                                 }
                             }
                         }
@@ -1466,16 +2264,207 @@
                 rentProjectionChart.data.datasets[2].data = data.rentProjection.cumulativeRent;
                 rentProjectionChart.update();
             }
+
+            // 7. SENSITIVITY IMPACT (TORNADO) CHART
+            if (!sensitivityHeatmapChart) {
+                sensitivityHeatmapChart = new Chart($('sensitivityHeatmapChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.sensitivityHeatmap.factors,
+                        datasets: [
+                            {
+                                label: 'Less Savings',
+                                data: data.sensitivityHeatmap.negativeImpact,
+                                backgroundColor: 'rgba(255, 77, 77, 0.75)',
+                                borderRadius: [6, 0, 0, 6],
+                                borderWidth: 0
+                            },
+                            {
+                                label: 'More Savings',
+                                data: data.sensitivityHeatmap.positiveImpact,
+                                backgroundColor: 'rgba(46, 204, 113, 0.75)',
+                                borderRadius: [0, 6, 6, 0],
+                                borderWidth: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                display: true, 
+                                position: 'top',
+                                labels: { color: colors.text, usePointStyle: true, padding: 16 }
+                            },
+                            datalabels: {
+                                anchor: 'end',
+                                align: (context) => context.datasetIndex === 0 ? 'right' : 'left',
+                                color: colors.text,
+                                font: { weight: 'bold', size: 10 },
+                                formatter: v => v !== 0 ? formatINR(Math.abs(v)) : ''
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                type: 'linear',
+                                min: (ctx) => {
+                                    const min = Math.min(...ctx.chart.data.datasets[0].data);
+                                    return min * 1.2; // Soften axis for better visibility
+                                },
+                                max: (ctx) => {
+                                    const max = Math.max(...ctx.chart.data.datasets[1].data);
+                                    return max * 1.2;
+                                },
+                                ticks: { 
+                                    callback: v => v !== 0 ? formatINR(Math.abs(v)) : '₹0', 
+                                    color: colors.muted,
+                                    font: { size: 10 }
+                                },
+                                grid: { 
+                                    color: colors.border,
+                                    drawBorder: false
+                                }
+                            },
+                            y: {
+                                stacked: true,
+                                ticks: { color: colors.muted, font: { size: 11, weight: '600' }, padding: 12 },
+                                grid: { display: false }
+                            }
+                        }
+                    },
+                    plugins: [
+                        ChartDataLabels,
+                        {
+                            id: 'zeroLine',
+                            afterDatasetsDraw(chart) {
+                                const { ctx, chartArea: { left, top, width, height } } = chart;
+                                const xScale = chart.scales.x;
+                                const x = left + xScale.getPixelForValue(0);
+                                ctx.strokeStyle = colors.accent;
+                                ctx.lineWidth = 2;
+                                ctx.setLineDash([]);
+                                ctx.beginPath();
+                                ctx.moveTo(x, top);
+                                ctx.lineTo(x, top + height);
+                                ctx.stroke();
+                            }
+                        }
+                    ]
+                });
+                lastSensitivityData = data.sensitivityHeatmap;
+            } else {
+                sensitivityHeatmapChart.data.labels = data.sensitivityHeatmap.factors;
+                sensitivityHeatmapChart.data.datasets[0].data = data.sensitivityHeatmap.negativeImpact;
+                sensitivityHeatmapChart.data.datasets[1].data = data.sensitivityHeatmap.positiveImpact;
+                lastSensitivityData = data.sensitivityHeatmap;
+                sensitivityHeatmapChart.update();
+            }
+
+            // 8. LOAN AMORTIZATION CHART (Stacked Bars + Balance Line)
+            if (!amortizationChart) {
+                amortizationChart = new Chart($('amortizationChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.amortization.months,
+                        datasets: [
+                            {
+                                label: 'Principal',
+                                type: 'bar',
+                                data: data.amortization.principal,
+                                backgroundColor: 'rgba(46, 204, 113, 0.8)',
+                                borderRadius: 0,
+                                borderWidth: 0,
+                                stack: 'Stack 0'
+                            },
+                            {
+                                label: 'Interest',
+                                type: 'bar',
+                                data: data.amortization.interest,
+                                backgroundColor: 'rgba(255, 77, 77, 0.8)',
+                                borderRadius: 0,
+                                borderWidth: 0,
+                                stack: 'Stack 0'
+                            },
+                            {
+                                label: 'Remaining Balance',
+                                type: 'line',
+                                data: data.amortization.balance,
+                                borderColor: 'rgba(77, 179, 255, 1)',
+                                backgroundColor: 'transparent',
+                                borderWidth: 3,
+                                fill: false,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { display: true, position: 'top', labels: { color: colors.text } },
+                            datalabels: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                stacked: true,
+                                title: { display: true, text: 'Monthly EMI Breakdown' },
+                                ticks: { callback: v => formatINR(v), color: colors.muted },
+                                grid: { color: colors.border }
+                            },
+                            y1: {
+                                type: 'linear',
+                                position: 'right',
+                                title: { display: true, text: 'Remaining Loan Balance' },
+                                ticks: { callback: v => formatINR(v), color: colors.muted },
+                                grid: { drawOnChartArea: false }
+                            },
+                            x: {
+                                ticks: { color: colors.muted },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            } else {
+                amortizationChart.data.labels = data.amortization.months;
+                amortizationChart.data.datasets[0].data = data.amortization.principal;
+                amortizationChart.data.datasets[1].data = data.amortization.interest;
+                amortizationChart.data.datasets[2].data = data.amortization.balance;
+                amortizationChart.update();
+            }
         }
 
-        /* ================= MAIN CALCULATION ================= */
+        /* ================= UPDATE SUMMARY PANEL ================= */
+        function updateSummary() {
+            const asset = num('leaseAmount');
+            const loan = num('loanAmount');
+            const rent = num('marketRent');
+            const tenure = num('leaseTenure') / 12;
+
+            $('summaryAsset').innerText = formatINR(asset);
+            $('summaryLoan').innerText = formatINR(loan);
+            $('summaryRent').innerText = formatINR(rent);
+            $('summaryTerm').innerText = Math.round(tenure) + ' yrs';
+        }
+
+        /* ================= MAIN CALCULATION (CODE 1 LOGIC + CODE 2 UI) ================= */
         function calculate() {
             try {
+                updateSummary();
+                
+                // ========== INPUTS ==========
                 const LEASE_AMOUNT = num('leaseAmount');
                 const LOAN_AMOUNT = num('loanAmount');
                 const OWN_FUNDS = Math.max(0, LEASE_AMOUNT - LOAN_AMOUNT);
 
-                const LOAN_INTEREST_RATE = (num('loanRate') / 100) / 12;
+                const LOAN_RATE_ANNUAL = num('loanRate');
                 const LOAN_TENURE = num('loanTenure');
                 const LEASE_TENURE = num('leaseTenure');
 
@@ -1485,98 +2474,126 @@
                 const MAINTENANCE = num('maintenance');
                 const MARKET_RENT = num('marketRent');
                 
-                // Rent Deposit Parameters
                 const RENT_DEPOSIT = num('rentDeposit');
                 const DEPOSIT_REFUND_DELAY = num('depositRefundDelay');
 
-                const OPP_RATE = (num('oppRate') / 100) / 12;
+                const OPP_RATE_ANNUAL = num('oppRate');
                 const RISK_PREMIUM = num('riskPremium') / 100;
                 const RENT_INCREMENT = num('rentIncrement') / 100;
 
-                // Validation
-                if (LEASE_AMOUNT <= 0) return;
-                if (LEASE_TENURE <= 0) return;
-                if (LOAN_TENURE <= 0) return;
-                if (MARKET_RENT <= 0) return;
+                // Code 1 specific parameters
+                const INFLATION_ANNUAL = num('inflationRate');
+                const LIQUIDITY_ANNUAL = num('liquidityPremium');
+                const VOLATILITY = num('returnVol') / 100;
 
-                // 1. INPUTS & DERIVED BASICS
-                // Clamp withholding to [0,1]
+                // Validation
+                if (LEASE_AMOUNT <= 0 || LEASE_TENURE <= 0 || LOAN_TENURE <= 0 || MARKET_RENT <= 0) return;
+
+                // ========== RATE CONVERSIONS ==========
+                const LOAN_RATE_MONTHLY = (LOAN_RATE_ANNUAL / 100) / 12;
+                const OPP_RATE_NOMINAL = (OPP_RATE_ANNUAL / 100) / 12;
+                const INFLATION_MONTHLY = (INFLATION_ANNUAL / 100) / 12;
+                const LIQUIDITY_MONTHLY = (LIQUIDITY_ANNUAL / 100) / 12;
+
+                // CRITICAL: Real opportunity rate (inflation-adjusted)
+                const REAL_OPP_RATE = ((1 + OPP_RATE_NOMINAL) / (1 + INFLATION_MONTHLY)) - 1;
+                const LOCKED_FUNDS_RATE = REAL_OPP_RATE + LIQUIDITY_MONTHLY;
+
+                // Clamping and tenure alignment
                 const WITHHOLDING_CLAMPED = Math.min(1, Math.max(0, WITHHOLDING));
-                // Prevent negative OWN_FUNDS if loan > lease amount
-                const OWN_FUNDS_SAFE = Math.max(0, OWN_FUNDS);
-                // Align loan tenure — cannot exceed lease tenure
                 const effectiveLoanMonths = Math.min(LOAN_TENURE, LEASE_TENURE);
 
-                // 2. EMI — zero-interest guard already handled by emi() function
-                const EMI = emi(LOAN_AMOUNT, LOAN_INTEREST_RATE, effectiveLoanMonths);
-
-                // 3. LEASE COST COMPONENTS
+                // ========== EMI & INTEREST ==========
+                const EMI = emi(LOAN_AMOUNT, LOAN_RATE_MONTHLY, effectiveLoanMonths);
                 const totalInterestPaid = (EMI * effectiveLoanMonths) - LOAN_AMOUNT;
-                const withholdingLoss = LEASE_AMOUNT * WITHHOLDING_CLAMPED;
+
+                // ========== LEASE COST COMPONENTS ==========
+
+                // Withholding with damage factor (CODE 1 LOGIC)
+                const EXPECTED_DAMAGE_FACTOR = 0.5;
+                const withholdingLoss = LEASE_AMOUNT * WITHHOLDING_CLAMPED * EXPECTED_DAMAGE_FACTOR;
                 const depositRefundable = LEASE_AMOUNT * (1 - WITHHOLDING_CLAMPED);
 
-                // Opportunity cost of own funds locked in lease deposit (compound)
-                const ownFundsOppCost = OWN_FUNDS_SAFE * (Math.pow(1 + OPP_RATE, LEASE_TENURE) - 1);
+                // Own funds opportunity cost (inflation-adjusted)
+                const ownFundsOppCost = OWN_FUNDS * (Math.pow(1 + LOCKED_FUNDS_RATE, LEASE_TENURE) - 1);
 
-                // Delay cost — compound (consistent with ownFundsOppCost)
+                // Delay cost
                 const delayCost = REFUND_DELAY > 0
-                    ? depositRefundable * (Math.pow(1 + OPP_RATE, REFUND_DELAY) - 1)
+                    ? depositRefundable * (Math.pow(1 + LOCKED_FUNDS_RATE, REFUND_DELAY) - 1)
                     : 0;
 
-                // Alias for chart use
-                const totalLeasePaymentOppCost = ownFundsOppCost;
+                // ========== CRITICAL: EMI OPPORTUNITY COST ANALYSIS (CODE 1 LOGIC) ==========
+                let emiOppLoss = 0;
+                let emiOppGain = 0;
 
-                // 4. TOTAL LEASE COST
-                // Maintenance is a real monthly cash outflow over the full lease tenure
-                const totalMaintenanceCost = MAINTENANCE * LEASE_TENURE;
-                const totalLeaseCostWithoutRisk = totalInterestPaid + withholdingLoss + ownFundsOppCost + delayCost + totalMaintenanceCost;
-
-                // Risk premium applied to lease amount directly — treats X% of total deposit value
-                // as a risk buffer, always visible and meaningful regardless of other inputs
-                const riskAdjustedLeaseCost = totalLeaseCostWithoutRisk + LEASE_AMOUNT * RISK_PREMIUM;
-
-                // Single source of truth — monthly lease cost
-                const monthlyLeaseCost = riskAdjustedLeaseCost / LEASE_TENURE;
-                const riskRent = monthlyLeaseCost; // alias used in charts
-
-                // 5. RENT COST COMPONENTS
-                // Annual increment: Y = floor((month-1)/12), applied as (1+RENT_INCREMENT)^Y
-                let totalRentPaidOverLeaseTerm = 0;
-                for (let month = 1; month <= LEASE_TENURE; month++) {
-                    const Y = Math.floor((month - 1) / 12);
-                    totalRentPaidOverLeaseTerm += MARKET_RENT * Math.pow(1 + RENT_INCREMENT, Y);
+                for (let m = 1; m <= LEASE_TENURE; m++) {
+                    const yearIndex = Math.floor((m - 1) / 12);
+                    const monthlyRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
+                    const monthlyOutflow = m <= effectiveLoanMonths ? (EMI + MAINTENANCE) : MAINTENANCE;
+                    
+                    // Growth-to-end factor for discounting
+                    const growthFactor = Math.pow(1 + REAL_OPP_RATE, LEASE_TENURE - m + 1) - 1;
+                    
+                    const difference = monthlyOutflow - monthlyRent;
+                    if (difference > 0) {
+                        emiOppLoss += difference * growthFactor;
+                    } else {
+                        emiOppGain += Math.abs(difference) * growthFactor;
+                    }
                 }
 
-                // Rent deposit opp cost — compound over full lease tenure
-                const rentDepositOppCost = RENT_DEPOSIT * (Math.pow(1 + OPP_RATE, LEASE_TENURE) - 1);
+                const netEmiOpp = emiOppLoss - emiOppGain;
 
-                // Rent deposit delay opp cost — compound (consistent)
+                // Total maintenance
+                const totalMaintenanceCost = MAINTENANCE * LEASE_TENURE;
+
+                // ========== TOTAL LEASE COST (CODE 1 LOGIC) ==========
+                const totalLeaseCostWithoutRisk =
+                    totalInterestPaid
+                  + withholdingLoss
+                  + ownFundsOppCost
+                  + delayCost
+                  + totalMaintenanceCost
+                  + netEmiOpp;
+
+                // Risk cost with scaling (CODE 1 LOGIC)
+                const EFFECTIVE_RISK_PREMIUM = RISK_PREMIUM * (1 + VOLATILITY);
+                const riskCost = LEASE_AMOUNT * EFFECTIVE_RISK_PREMIUM * (LEASE_TENURE / 12);
+
+                const riskAdjustedLeaseCost = totalLeaseCostWithoutRisk + riskCost;
+                const monthlyLeaseCost = riskAdjustedLeaseCost / LEASE_TENURE;
+
+                // ========== RENT COST ==========
+                let totalRentPaidOverLeaseTerm = 0;
+                for (let m = 1; m <= LEASE_TENURE; m++) {
+                    const yearIndex = Math.floor((m - 1) / 12);
+                    totalRentPaidOverLeaseTerm += MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
+                }
+
+                const rentDepositOppCost = RENT_DEPOSIT * (Math.pow(1 + REAL_OPP_RATE, LEASE_TENURE) - 1);
                 const rentDepositDelayOppCost = DEPOSIT_REFUND_DELAY > 0
-                    ? RENT_DEPOSIT * (Math.pow(1 + OPP_RATE, DEPOSIT_REFUND_DELAY) - 1)
+                    ? RENT_DEPOSIT * (Math.pow(1 + REAL_OPP_RATE, DEPOSIT_REFUND_DELAY) - 1)
                     : 0;
 
                 const totalRentCostOverLeaseTerm = totalRentPaidOverLeaseTerm + rentDepositOppCost + rentDepositDelayOppCost;
-
-                // Single source of truth — monthly rent cost
                 const monthlyRentCost = totalRentCostOverLeaseTerm / LEASE_TENURE;
 
-                // 6. COMPARISON & SCORE
-                const costAdvantage = totalRentCostOverLeaseTerm - riskAdjustedLeaseCost;
-
-                // Division safety
+                // ========== COMPARISON & SCORING (CODE 1 LOGIC) ==========
                 const costRatio = totalRentCostOverLeaseTerm === 0 ? 0 : riskAdjustedLeaseCost / totalRentCostOverLeaseTerm;
 
-                // Simplified score — mathematically equivalent to previous two-branch logic, cleaner
-                const score = Math.max(0, Math.min(100, 100 - 50 * costRatio));
+                // Logarithmic transformation (CODE 1 LOGIC)
+                const stabilizedRatio = Math.log(1 + costRatio) / Math.log(2);
+                const NEUTRAL_BAND = 0.05;
+                const finalRatio = Math.abs(costRatio - 1) < NEUTRAL_BAND ? 1 : stabilizedRatio;
+                const score = Math.max(0, Math.min(100, 50 + 50 * (1 - finalRatio)));
 
-                // 7. DISPLAY METRICS — all derived from the two monthly costs above
+                // Metrics
                 const monthlySavings = monthlyRentCost - monthlyLeaseCost;
                 const yearlySavings = monthlySavings * 12;
                 const termSavings = monthlySavings * LEASE_TENURE;
-
-                // Stabilized confidence: scale-independent, based on costRatio distance from 1
                 const confidence = Math.max(0, Math.min(100, Math.abs(costRatio - 1) * 100));
 
+                // Interpretation
                 let color = '#f1c40f';
                 let interpretation = '📊 Balanced decision - Consider other factors';
 
@@ -1597,14 +2614,14 @@
                     interpretation = '❌ Strong Renting Advantage - Renting is significantly more economical';
                 }
 
-                // Update Gauge
+                // Update gauge
                 const gaugeDegrees = score * 3.6;
                 $('gauge').style.background = `conic-gradient(${color} ${gaugeDegrees}deg, #1a2a38 ${gaugeDegrees}deg)`;
                 $('dial').style.color = color;
                 $('dial').innerText = Math.round(score);
                 $('interpretation').innerText = interpretation;
 
-                // Update Metrics
+                // Update metrics
                 $('mEMI').innerText = formatINR(EMI);
                 $('mMaintenance').innerText = formatINR(MAINTENANCE);
                 $('mSave').innerText = formatINR(monthlySavings);
@@ -1612,30 +2629,31 @@
                 $('tSave').innerText = formatINR(termSavings);
                 $('confidence').innerText = Math.round(confidence) + '%';
 
-                // ========== PREPARE CHART DATA ==========
+                // ========== CHART DATA ==========
 
-                // 1. TCO Data - The 5 components that make up total economic lease cost
+                // 1. TCO Data
                 const tcoData = {
-                    labels: ['Interest Paid', 'Withholding Loss', 'Own Funds Opp Cost', 'Refund Delay Cost', 'Total Maintenance'],
+                    labels: ['Interest Paid', 'Withholding Loss', 'Own Funds Opp Cost', 'Refund Delay Cost', 'EMI Opp Cost', 'Total Maintenance'],
                     values: [
                         Math.max(0, totalInterestPaid),
                         Math.max(0, withholdingLoss),
-                        Math.max(0, totalLeasePaymentOppCost),
+                        Math.max(0, ownFundsOppCost),
                         Math.max(0, delayCost),
+                        Math.max(0, netEmiOpp),
                         Math.max(0, totalMaintenanceCost)
                     ]
                 };
 
-                // 2. Monthly Cost Data
+                // 2. Monthly Data
                 const monthlyData = {
                     emi: EMI,
                     maintenance: MAINTENANCE,
                     rent: MARKET_RENT,
-                    riskRent: riskRent,
+                    riskRent: monthlyLeaseCost,
                     advantage: monthlySavings
                 };
 
-                // 3. Cumulative Data - month-by-month running totals
+                // 3. Cumulative Data
                 let cumulativeLeaseCosts = [];
                 let cumulativeRentCosts = [];
                 let cumulativeMonths = [];
@@ -1643,10 +2661,7 @@
                 let cumulativeRentTotal = 0;
 
                 for (let m = 1; m <= LEASE_TENURE; m++) {
-                    // Lease: spread risk-adjusted cost evenly across months
-                    cumulativeLeaseTotal += riskRent;
-                    
-                    // Rent: apply annual escalation
+                    cumulativeLeaseTotal += monthlyLeaseCost;
                     const yearIndex = Math.floor((m - 1) / 12);
                     const monthlyMarketRent = MARKET_RENT * Math.pow(1 + RENT_INCREMENT, yearIndex);
                     cumulativeRentTotal += monthlyMarketRent;
@@ -1662,18 +2677,16 @@
                     buyCosts: cumulativeRentCosts
                 };
 
-                // 4. Sensitivity Data - varying rent levels vs fixed lease monthly cost
+                // 4. Sensitivity Data
                 const sensitivityLeaseAdvantage = [];
                 const sensitivityRentAdvantage = [];
 
                 for (let rateChange = -15; rateChange <= 15; rateChange += 3) {
                     for (let rentChange = -15; rentChange <= 15; rentChange += 3) {
                         const adjRent = MARKET_RENT * (1 + rentChange / 100);
-                        // Savings = Adjusted Rent - Risk-Adjusted Lease monthly equivalent
-                        const adjustedSavings = adjRent - riskRent;
+                        const adjustedSavings = adjRent - monthlyLeaseCost;
                         const netDifference = Math.abs(adjustedSavings);
                         
-                        // Positive savings = Rent > Lease cost = Lease advantage
                         if (adjustedSavings > 0) {
                             sensitivityLeaseAdvantage.push({
                                 x: rateChange,
@@ -1695,19 +2708,20 @@
                     rentAdvantage: sensitivityRentAdvantage
                 };
 
-                // 5. Cost Composition - same 5 components as TCO
+                // 5. Composition Data
                 const compositionData = {
-                    labels: ['Interest', 'Withholding', 'Own Funds Opp Cost', 'Refund Delay', 'Maintenance'],
+                    labels: ['Interest', 'Withholding', 'Own Funds Opp', 'Refund Delay', 'EMI Opp Cost', 'Maintenance'],
                     values: [
                         Math.max(1, totalInterestPaid),
                         Math.max(1, withholdingLoss),
-                        Math.max(1, totalLeasePaymentOppCost),
+                        Math.max(1, ownFundsOppCost),
                         Math.max(1, delayCost),
+                        Math.max(1, netEmiOpp),
                         Math.max(1, totalMaintenanceCost)
                     ]
                 };
 
-                // 6. Rent Projection - monthly rent escalation vs constant lease cost
+                // 6. Rent Projection Data
                 const rentMonthlyRent = [];
                 const leaseConstantRent = [];
                 const rentCumulativeRent = [];
@@ -1720,7 +2734,7 @@
                     rentTotal += monthlyRent;
                     
                     rentMonthlyRent.push(monthlyRent);
-                    leaseConstantRent.push(riskRent);
+                    leaseConstantRent.push(monthlyLeaseCost);
                     rentCumulativeRent.push(rentTotal);
                     rentMonths.push('M' + m);
                 }
@@ -1732,18 +2746,139 @@
                     cumulativeRent: rentCumulativeRent
                 };
 
-                // Initialize all charts
+                // 7. SENSITIVITY IMPACT (TORNADO) DATA - What changes monthly savings most
+                const baseMonthlySavings = monthlyRentCost - monthlyLeaseCost;
+                
+                const impactFactors = [];
+                
+                // Factor 1: Interest Rate (±10%)
+                {
+                    const upRate = LOAN_RATE_MONTHLY * 1.1;
+                    const downRate = LOAN_RATE_MONTHLY * 0.9;
+                    const upEMI = emi(LOAN_AMOUNT, upRate, effectiveLoanMonths);
+                    const downEMI = emi(LOAN_AMOUNT, downRate, effectiveLoanMonths);
+                    const upSavings = monthlyRentCost - (monthlyLeaseCost + (upEMI - EMI));
+                    const downSavings = monthlyRentCost - (monthlyLeaseCost - (EMI - downEMI));
+                    impactFactors.push({
+                        name: 'Interest Rate',
+                        negative: baseMonthlySavings - upSavings,
+                        positive: downSavings - baseMonthlySavings
+                    });
+                }
+                
+                // Factor 2: Market Rent (±10%)
+                {
+                    const upRent = MARKET_RENT * 1.1;
+                    const downRent = MARKET_RENT * 0.9;
+                    const upSavings = upRent - monthlyLeaseCost;
+                    const downSavings = downRent - monthlyLeaseCost;
+                    impactFactors.push({
+                        name: 'Market Rent',
+                        negative: baseMonthlySavings - upSavings,
+                        positive: downSavings - baseMonthlySavings
+                    });
+                }
+                
+                // Factor 3: Maintenance Cost (±10%)
+                {
+                    const upMaint = MAINTENANCE * 1.1;
+                    const downMaint = MAINTENANCE * 0.9;
+                    const upCost = monthlyLeaseCost + (upMaint - MAINTENANCE);
+                    const downCost = monthlyLeaseCost - (MAINTENANCE - downMaint);
+                    const upSavings = monthlyRentCost - upCost;
+                    const downSavings = monthlyRentCost - downCost;
+                    impactFactors.push({
+                        name: 'Maintenance',
+                        negative: baseMonthlySavings - upSavings,
+                        positive: downSavings - baseMonthlySavings
+                    });
+                }
+                
+                // Factor 4: Loan Amount (±10%)
+                {
+                    const upLoan = LOAN_AMOUNT * 1.1;
+                    const downLoan = LOAN_AMOUNT * 0.9;
+                    const upEMI = emi(upLoan, LOAN_RATE_MONTHLY, effectiveLoanMonths);
+                    const downEMI = emi(downLoan, LOAN_RATE_MONTHLY, effectiveLoanMonths);
+                    const upSavings = monthlyRentCost - (monthlyLeaseCost + (upEMI - EMI));
+                    const downSavings = monthlyRentCost - (monthlyLeaseCost - (EMI - downEMI));
+                    impactFactors.push({
+                        name: 'Loan Amount',
+                        negative: baseMonthlySavings - upSavings,
+                        positive: downSavings - baseMonthlySavings
+                    });
+                }
+                
+                // Factor 5: Rent Growth (±10%)
+                {
+                    const upGrowth = RENT_INCREMENT * 1.1;
+                    const downGrowth = RENT_INCREMENT * 0.9;
+                    let upRentTotal = 0, downRentTotal = 0;
+                    for (let m = 1; m <= LEASE_TENURE; m++) {
+                        const year = Math.floor((m - 1) / 12);
+                        upRentTotal += MARKET_RENT * Math.pow(1 + upGrowth, year);
+                        downRentTotal += MARKET_RENT * Math.pow(1 + downGrowth, year);
+                    }
+                    const upMonthlyRent = upRentTotal / LEASE_TENURE;
+                    const downMonthlyRent = downRentTotal / LEASE_TENURE;
+                    const upSavings = upMonthlyRent - monthlyLeaseCost;
+                    const downSavings = downMonthlyRent - monthlyLeaseCost;
+                    impactFactors.push({
+                        name: 'Rent Growth',
+                        negative: baseMonthlySavings - upSavings,
+                        positive: downSavings - baseMonthlySavings
+                    });
+                }
+                
+                // Sort by total impact (descending)
+                impactFactors.sort((a, b) => (Math.abs(b.negative) + Math.abs(b.positive)) - (Math.abs(a.negative) + Math.abs(a.positive)));
+                
+                const sensitivityHeatmapData = {
+                    factors: impactFactors.map(f => f.name),
+                    negativeImpact: impactFactors.map(f => -f.negative),
+                    positiveImpact: impactFactors.map(f => f.positive)
+                };
+
+                // 8. LOAN AMORTIZATION DATA
+                const amortMonths = [];
+                const amortPrincipal = [];
+                const amortInterest = [];
+                const amortBalance = [];
+                
+                let remainingBalance = LOAN_AMOUNT;
+                
+                for (let m = 1; m <= effectiveLoanMonths && m <= LEASE_TENURE; m++) {
+                    const interestPayment = remainingBalance * LOAN_RATE_MONTHLY;
+                    const principalPayment = EMI - interestPayment;
+                    remainingBalance = Math.max(0, remainingBalance - principalPayment);
+                    
+                    amortMonths.push('M' + m);
+                    amortPrincipal.push(principalPayment);
+                    amortInterest.push(interestPayment);
+                    amortBalance.push(remainingBalance);
+                }
+
+                const amortizationData = {
+                    months: amortMonths,
+                    principal: amortPrincipal,
+                    interest: amortInterest,
+                    balance: amortBalance
+                };
+
+                // Initialize charts
                 initCharts({
                     tco: tcoData,
                     monthly: monthlyData,
                     cumulative: cumulativeData,
                     sensitivity: sensitivityData,
                     composition: compositionData,
-                    rentProjection: rentProjectionData
+                    rentProjection: rentProjectionData,
+                    sensitivityHeatmap: sensitivityHeatmapData,
+                    amortization: amortizationData
                 });
 
-                // Update Comparison Table
-                updateComparisonTable(EMI, MAINTENANCE, riskRent, MARKET_RENT, monthlySavings, termSavings, LEASE_TENURE);
+                // Update comparison table
+                updateComparisonTable(EMI, MAINTENANCE, monthlyLeaseCost, monthlyRentCost, monthlySavings, termSavings, LEASE_TENURE);
 
             } catch (error) {
                 console.error('Calculation error:', error);
@@ -1799,6 +2934,231 @@
                     <td class="${advantage >= 0 ? 'metric-positive' : 'metric-negative'}">${formatINR(Math.abs(termAdvantage))}</td>
                 </tr>
             `;
+        }
+
+        /* ================= SENSITIVITY MODE SWITCHING ================= */
+        let currentSensitivityMode = 'overview';
+        let lastSensitivityData = null;
+
+        function switchSensitivityMode(factor) {
+            const overviewMode = $('sensitivityOverviewMode');
+            const interactiveMode = $('sensitivityInteractiveMode');
+            const title = $('sensitivityTitle');
+            
+            if (!factor) {
+                // Back to overview
+                currentSensitivityMode = 'overview';
+                overviewMode.style.display = 'block';
+                interactiveMode.style.display = 'none';
+                title.innerText = 'What Changes Your Monthly Savings Most';
+                
+                if (lastSensitivityData && sensitivityHeatmapChart) {
+                    // Reset to bar chart
+                    sensitivityHeatmapChart.destroy();
+                    sensitivityHeatmapChart = null;
+                    
+                    // Recreate the overview chart
+                    const colors = getChartColors();
+                    sensitivityHeatmapChart = new Chart($('sensitivityHeatmapChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: lastSensitivityData.factors,
+                            datasets: [
+                                {
+                                    label: 'Less Savings',
+                                    data: lastSensitivityData.negativeImpact,
+                                    backgroundColor: 'rgba(255, 77, 77, 0.75)',
+                                    borderRadius: [6, 0, 0, 6],
+                                    borderWidth: 0
+                                },
+                                {
+                                    label: 'More Savings',
+                                    data: lastSensitivityData.positiveImpact,
+                                    backgroundColor: 'rgba(46, 204, 113, 0.75)',
+                                    borderRadius: [0, 6, 6, 0],
+                                    borderWidth: 0
+                                }
+                            ]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { 
+                                    display: true, 
+                                    position: 'top',
+                                    labels: { color: colors.text, usePointStyle: true, padding: 16 }
+                                },
+                                datalabels: {
+                                    anchor: 'end',
+                                    align: (context) => context.datasetIndex === 0 ? 'right' : 'left',
+                                    color: colors.text,
+                                    font: { weight: 'bold', size: 10 },
+                                    formatter: v => v !== 0 ? formatINR(Math.abs(v)) : ''
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    stacked: true,
+                                    type: 'linear',
+                                    min: (ctx) => {
+                                        const min = Math.min(...ctx.chart.data.datasets[0].data);
+                                        return min * 1.2;
+                                    },
+                                    max: (ctx) => {
+                                        const max = Math.max(...ctx.chart.data.datasets[1].data);
+                                        return max * 1.2;
+                                    },
+                                    ticks: { 
+                                        callback: v => v !== 0 ? formatINR(Math.abs(v)) : '₹0', 
+                                        color: colors.muted,
+                                        font: { size: 10 }
+                                    },
+                                    grid: { 
+                                        color: colors.border,
+                                        drawBorder: false
+                                    }
+                                },
+                                y: {
+                                    stacked: true,
+                                    ticks: { color: colors.muted, font: { size: 11, weight: '600' }, padding: 12 },
+                                    grid: { display: false }
+                                }
+                            }
+                        },
+                        plugins: [
+                            ChartDataLabels,
+                            {
+                                id: 'zeroLine',
+                                afterDatasetsDraw(chart) {
+                                    const { ctx, chartArea: { left, top, width, height } } = chart;
+                                    const xScale = chart.scales.x;
+                                    const x = left + xScale.getPixelForValue(0);
+                                    ctx.strokeStyle = colors.accent;
+                                    ctx.lineWidth = 2;
+                                    ctx.setLineDash([]);
+                                    ctx.beginPath();
+                                    ctx.moveTo(x, top);
+                                    ctx.lineTo(x, top + height);
+                                    ctx.stroke();
+                                }
+                            }
+                        ]
+                    });
+                }
+                
+                // Unselect all chips
+                document.querySelectorAll('.sensitivity-chip').forEach(chip => chip.classList.remove('active'));
+            } else {
+                // Switch to interactive
+                currentSensitivityMode = 'interactive';
+                overviewMode.style.display = 'none';
+                interactiveMode.style.display = 'block';
+                title.innerText = 'What Changes Your Monthly Savings Most';
+                $('interactiveTitle').innerText = `Monthly Savings vs ${factor}`;
+                
+                // Highlight active chip
+                document.querySelectorAll('.sensitivity-chip').forEach(chip => {
+                    chip.classList.toggle('active', chip.innerText === factor);
+                });
+                
+                // Generate interactive data and update chart
+                const interactiveData = generateInteractiveSensitivity(factor);
+                updateInteractiveSensitivityChart(interactiveData);
+            }
+        }
+
+        function generateInteractiveSensitivity(factor) {
+            const baseMonthlySavings = num('marketRent') - (num('loanAmount') > 0 ? emi(num('loanAmount'), (num('loanRate') / 100) / 12, num('loanTenure')) + num('maintenance') : num('maintenance'));
+            const points = [];
+            const range = 50; // ±50% range
+            const step = 5;
+            
+            if (factor === 'Market Rent') {
+                for (let change = -range; change <= range; change += step) {
+                    const newRent = num('marketRent') * (1 + change / 100);
+                    const savings = newRent - (num('loanAmount') > 0 ? emi(num('loanAmount'), (num('loanRate') / 100) / 12, num('loanTenure')) + num('maintenance') : num('maintenance'));
+                    points.push({ x: change, y: savings });
+                }
+            } else if (factor === 'Interest Rate') {
+                for (let change = -range; change <= range; change += step) {
+                    const newRate = (num('loanRate') * (1 + change / 100)) / 100 / 12;
+                    const newEMI = emi(num('loanAmount'), newRate, num('loanTenure'));
+                    const savings = num('marketRent') - (newEMI + num('maintenance'));
+                    points.push({ x: change, y: savings });
+                }
+            } else if (factor === 'Loan Amount') {
+                for (let change = -range; change <= range; change += step) {
+                    const newLoan = num('loanAmount') * (1 + change / 100);
+                    const newEMI = emi(newLoan, (num('loanRate') / 100) / 12, num('loanTenure'));
+                    const savings = num('marketRent') - (newEMI + num('maintenance'));
+                    points.push({ x: change, y: savings });
+                }
+            } else if (factor === 'Maintenance') {
+                for (let change = -range; change <= range; change += step) {
+                    const newMaint = num('maintenance') * (1 + change / 100);
+                    const savings = num('marketRent') - (num('loanAmount') > 0 ? emi(num('loanAmount'), (num('loanRate') / 100) / 12, num('loanTenure')) : 0) - newMaint;
+                    points.push({ x: change, y: savings });
+                }
+            } else if (factor === 'Rent Growth') {
+                for (let change = -range; change <= range; change += step) {
+                    const baseGrowth = num('rentIncrement') / 100;
+                    const newGrowth = baseGrowth * (1 + change / 100);
+                    let totalRent = 0;
+                    for (let m = 1; m <= num('leaseTenure'); m++) {
+                        const year = Math.floor((m - 1) / 12);
+                        totalRent += num('marketRent') * Math.pow(1 + newGrowth, year);
+                    }
+                    const monthlyRent = totalRent / num('leaseTenure');
+                    const savings = monthlyRent - (num('loanAmount') > 0 ? emi(num('loanAmount'), (num('loanRate') / 100) / 12, num('loanTenure')) + num('maintenance') : num('maintenance'));
+                    points.push({ x: change, y: savings });
+                }
+            }
+            
+            return { factor, points };
+        }
+
+        function updateInteractiveSensitivityChart(data) {
+            const colors = getChartColors();
+            
+            sensitivityHeatmapChart.type = 'line';
+            sensitivityHeatmapChart.data = {
+                labels: data.points.map(p => p.x + '%'),
+                datasets: [
+                    {
+                        label: 'Monthly Savings (₹)',
+                        data: data.points.map(p => p.y),
+                        borderColor: 'rgba(77, 179, 255, 0.9)',
+                        backgroundColor: 'rgba(77, 179, 255, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: 'rgba(77, 179, 255, 1)',
+                        pointBorderWidth: 0
+                    }
+                ]
+            };
+            
+            sensitivityHeatmapChart.options.indexAxis = undefined;
+            sensitivityHeatmapChart.options.scales = {
+                x: {
+                    title: { display: true, text: `Change in ${data.factor}`, color: colors.muted },
+                    ticks: { color: colors.muted },
+                    grid: { color: colors.border }
+                },
+                y: {
+                    title: { display: true, text: 'Monthly Savings (₹)', color: colors.muted },
+                    ticks: { callback: v => formatINR(v), color: colors.muted },
+                    grid: { color: colors.border }
+                }
+            };
+            
+            sensitivityHeatmapChart.options.plugins.legend = { display: false };
+            sensitivityHeatmapChart.options.plugins.datalabels = { display: false };
+            
+            sensitivityHeatmapChart.update();
         }
 
         /* ================= EVENT LISTENERS ================= */
