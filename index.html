@@ -2534,6 +2534,11 @@ Chart.register(window['ChartDataLabels']);
                                 color: colors.text,
                                 font: { weight: 'bold', size: 11 },
                                 formatter: v => formatINR(v)
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `${ctx.label}: ${formatINR(ctx.parsed.x)}`
+                                }
                             }
                         },
                         scales: {
@@ -2613,6 +2618,11 @@ Chart.register(window['ChartDataLabels']);
                                 color: colors.text,
                                 font: { weight: 'bold', size: 10 },
                                 formatter: v => v ? formatINR(v) : ''
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ctx.parsed.y != null ? `${ctx.dataset.label}: ${formatINR(ctx.parsed.y)}` : ''
+                                }
                             }
                         },
                         scales: {
@@ -2692,7 +2702,12 @@ Chart.register(window['ChartDataLabels']);
                         },
                         plugins: {
                             legend: { display: true, position: 'top' },
-                            datalabels: { display: false }
+                            datalabels: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `${ctx.dataset.label}: ${formatINR(ctx.parsed.y)}`
+                                }
+                            }
                         },
                         scales: {
                             y: {
@@ -2938,7 +2953,12 @@ Chart.register(window['ChartDataLabels']);
                         },
                         plugins: {
                             legend: { display: true, position: 'top' },
-                            datalabels: { display: false }
+                            datalabels: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `${ctx.dataset.label}: ${formatINR(ctx.parsed.y)}`
+                                }
+                            }
                         },
                         scales: {
                             y: {
@@ -3010,7 +3030,16 @@ Chart.register(window['ChartDataLabels']);
                                 position: 'top',
                                 labels: { color: colors.text, usePointStyle: true, padding: 16 }
                             },
-                            datalabels: { display: false }
+                            datalabels: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw;
+                                        const label = context.dataset.label;
+                                        return `${label}: ${formatINR(Math.abs(value))}`;
+                                    }
+                                }
+                            }
                         },
                         scales: {
                             x: {
@@ -3045,13 +3074,9 @@ Chart.register(window['ChartDataLabels']);
                         {
                             id: 'tornadoLabels',
                             afterDatasetsDraw(chart) {
-                                const { ctx, data, chartArea: { left, right, top, bottom, width, height } } = chart;
-                                const xScale = chart.scales.x;
-                                const yScale = chart.scales.y;
+                                const { ctx, data } = chart;
                                 
                                 ctx.font = 'bold 10px sans-serif';
-                                ctx.fillStyle = colors.text;
-                                ctx.textAlign = 'center';
                                 ctx.textBaseline = 'middle';
 
                                 data.datasets.forEach((dataset, datasetIndex) => {
@@ -3063,10 +3088,19 @@ Chart.register(window['ChartDataLabels']);
                                         if (!bar) return;
 
                                         const label = formatINR(Math.abs(value));
-                                        const x = bar.x + (datasetIndex === 0 ? -8 : 8);
-                                        const y = bar.y;
+                                        const padding = 6;
 
-                                        ctx.fillText(label, x, y);
+                                        if (datasetIndex === 0) {
+                                            // Less Savings (negative/left bar): label to the left of bar
+                                            ctx.textAlign = 'right';
+                                            ctx.fillStyle = colors.text;
+                                            ctx.fillText(label, bar.x - padding, bar.y);
+                                        } else {
+                                            // More Savings (positive/right bar): label to the right of bar
+                                            ctx.textAlign = 'left';
+                                            ctx.fillStyle = colors.text;
+                                            ctx.fillText(label, bar.x + padding, bar.y);
+                                        }
                                     });
                                 });
                             }
@@ -3153,7 +3187,12 @@ Chart.register(window['ChartDataLabels']);
                         },
                         plugins: {
                             legend: { display: true, position: 'top', labels: { color: colors.text } },
-                            datalabels: { display: false }
+                            datalabels: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `${ctx.dataset.label}: ${formatINR(ctx.parsed.y ?? ctx.raw)}`
+                                }
+                            }
                         },
                         scales: {
                             y: {
@@ -3781,7 +3820,16 @@ Chart.register(window['ChartDataLabels']);
                                         position: 'top',
                                         labels: { color: colors.text, usePointStyle: true, padding: 16 }
                                     },
-                                    datalabels: { display: false }
+                                    datalabels: { display: false },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const value = context.raw;
+                                                const label = context.dataset.label;
+                                                return `${label}: ${formatINR(Math.abs(value))}`;
+                                            }
+                                        }
+                                    }
                                 },
                                 scales: {
                                     x: {
@@ -3816,13 +3864,9 @@ Chart.register(window['ChartDataLabels']);
                                 {
                                     id: 'tornadoLabels',
                                     afterDatasetsDraw(chart) {
-                                        const { ctx, data, chartArea: { left, right, top, bottom, width, height } } = chart;
-                                        const xScale = chart.scales.x;
-                                        const yScale = chart.scales.y;
+                                        const { ctx, data } = chart;
                                         
                                         ctx.font = 'bold 10px sans-serif';
-                                        ctx.fillStyle = colors.text;
-                                        ctx.textAlign = 'center';
                                         ctx.textBaseline = 'middle';
 
                                         data.datasets.forEach((dataset, datasetIndex) => {
@@ -3834,10 +3878,17 @@ Chart.register(window['ChartDataLabels']);
                                                 if (!bar) return;
 
                                                 const label = formatINR(Math.abs(value));
-                                                const x = bar.x + (datasetIndex === 0 ? -8 : 8);
-                                                const y = bar.y;
+                                                const padding = 6;
 
-                                                ctx.fillText(label, x, y);
+                                                if (datasetIndex === 0) {
+                                                    ctx.textAlign = 'right';
+                                                    ctx.fillStyle = colors.text;
+                                                    ctx.fillText(label, bar.x - padding, bar.y);
+                                                } else {
+                                                    ctx.textAlign = 'left';
+                                                    ctx.fillStyle = colors.text;
+                                                    ctx.fillText(label, bar.x + padding, bar.y);
+                                                }
                                             });
                                         });
                                     }
@@ -4061,7 +4112,12 @@ Chart.register(window['ChartDataLabels']);
                     },
                     plugins: {
                         legend: { display: true, position: 'top' },
-                        datalabels: { display: false }
+                        datalabels: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `${ctx.dataset.label}: ${formatINR(ctx.parsed.y)}`
+                            }
+                        }
                     },
                     scales: {
                         x: {
