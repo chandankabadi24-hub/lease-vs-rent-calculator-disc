@@ -2122,9 +2122,7 @@ Chart.register(window['ChartDataLabels']);
                                 display: true, 
                                 position: 'bottom',
                                 labels: {
-                                    color: window.matchMedia('(prefers-color-scheme: dark)').matches
-                                      ? '#E5E7EB'
-                                      : '#374151',
+                                    color: document.body.classList.contains('dark') ? '#E5E7EB' : '#374151',
                                     padding: 18,
                                     usePointStyle: true,
                                     pointStyle: 'circle',
