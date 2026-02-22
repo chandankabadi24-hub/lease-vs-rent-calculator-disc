@@ -3010,13 +3010,7 @@ Chart.register(window['ChartDataLabels']);
                                 position: 'top',
                                 labels: { color: colors.text, usePointStyle: true, padding: 16 }
                             },
-                            datalabels: {
-                                anchor: 'end',
-                                align: (context) => context.datasetIndex === 0 ? 'right' : 'left',
-                                color: colors.text,
-                                font: { weight: 'bold', size: 10 },
-                                formatter: v => v !== 0 ? formatINR(Math.abs(v)) : ''
-                            }
+                            datalabels: { display: false }
                         },
                         scales: {
                             x: {
@@ -3048,7 +3042,35 @@ Chart.register(window['ChartDataLabels']);
                         }
                     },
                     plugins: [
-                        ChartDataLabels,
+                        {
+                            id: 'tornadoLabels',
+                            afterDatasetsDraw(chart) {
+                                const { ctx, data, chartArea: { left, right, top, bottom, width, height } } = chart;
+                                const xScale = chart.scales.x;
+                                const yScale = chart.scales.y;
+                                
+                                ctx.font = 'bold 10px sans-serif';
+                                ctx.fillStyle = colors.text;
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+
+                                data.datasets.forEach((dataset, datasetIndex) => {
+                                    dataset.data.forEach((value, index) => {
+                                        if (value === null || value === undefined || value === 0) return;
+
+                                        const meta = chart.getDatasetMeta(datasetIndex);
+                                        const bar = meta.data[index];
+                                        if (!bar) return;
+
+                                        const label = formatINR(Math.abs(value));
+                                        const x = bar.x + (datasetIndex === 0 ? -8 : 8);
+                                        const y = bar.y;
+
+                                        ctx.fillText(label, x, y);
+                                    });
+                                });
+                            }
+                        },
                         {
                             id: 'zeroLine',
                             afterDatasetsDraw(chart) {
@@ -3759,13 +3781,7 @@ Chart.register(window['ChartDataLabels']);
                                         position: 'top',
                                         labels: { color: colors.text, usePointStyle: true, padding: 16 }
                                     },
-                                    datalabels: {
-                                        anchor: 'end',
-                                        align: (context) => context.datasetIndex === 0 ? 'right' : 'left',
-                                        color: colors.text,
-                                        font: { weight: 'bold', size: 10 },
-                                        formatter: v => v !== 0 ? formatINR(Math.abs(v)) : ''
-                                    }
+                                    datalabels: { display: false }
                                 },
                                 scales: {
                                     x: {
@@ -3797,7 +3813,35 @@ Chart.register(window['ChartDataLabels']);
                                 }
                             },
                             plugins: [
-                                ChartDataLabels,
+                                {
+                                    id: 'tornadoLabels',
+                                    afterDatasetsDraw(chart) {
+                                        const { ctx, data, chartArea: { left, right, top, bottom, width, height } } = chart;
+                                        const xScale = chart.scales.x;
+                                        const yScale = chart.scales.y;
+                                        
+                                        ctx.font = 'bold 10px sans-serif';
+                                        ctx.fillStyle = colors.text;
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'middle';
+
+                                        data.datasets.forEach((dataset, datasetIndex) => {
+                                            dataset.data.forEach((value, index) => {
+                                                if (value === null || value === undefined || value === 0) return;
+
+                                                const meta = chart.getDatasetMeta(datasetIndex);
+                                                const bar = meta.data[index];
+                                                if (!bar) return;
+
+                                                const label = formatINR(Math.abs(value));
+                                                const x = bar.x + (datasetIndex === 0 ? -8 : 8);
+                                                const y = bar.y;
+
+                                                ctx.fillText(label, x, y);
+                                            });
+                                        });
+                                    }
+                                },
                                 {
                                     id: 'zeroLine',
                                     afterDatasetsDraw(chart) {
