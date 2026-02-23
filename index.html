@@ -787,10 +787,11 @@
         <div class="validation-banner warning" id="validationWarnings" role="status" aria-live="polite"></div>
 
         <div class="summary-panel">
-            <div class="summary-item"><div class="summary-label">Asset Price</div><div class="summary-value" id="summaryAsset">₹20L</div></div>
-            <div class="summary-item"><div class="summary-label">Loan Amount</div><div class="summary-value" id="summaryLoan">₹15L</div></div>
-            <div class="summary-item"><div class="summary-label">Monthly Rent</div><div class="summary-value" id="summaryRent">₹45K</div></div>
-            <div class="summary-item"><div class="summary-label">Lease Term</div><div class="summary-value" id="summaryTerm">20 yrs</div></div>
+            <div class="summary-item"><div class="summary-label">Lease Deposit</div><div class="summary-value" id="summaryAsset">₹20L</div></div>
+            <div class="summary-item"><div class="summary-label">Loan Against It</div><div class="summary-value" id="summaryLoan">₹15L</div></div>
+            <div class="summary-item"><div class="summary-label">Own Funds Locked</div><div class="summary-value" id="summaryOwnFunds" style="color:var(--orange)">₹5L</div></div>
+            <div class="summary-item"><div class="summary-label">Equivalent Rent</div><div class="summary-value" id="summaryRent">₹45K</div></div>
+            <div class="summary-item"><div class="summary-label">Lease Term</div><div class="summary-value" id="summaryTerm">2 yrs</div></div>
         </div>
 
         <div id="inputsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px;">
@@ -801,15 +802,28 @@
                     <span class="toggle-arrow">▼</span>
                 </button>
                 <div class="collapsible-body" id="leaseBody" style="margin-top:14px;">
+
+                <!-- Own-funds indicator — derived live from deposit minus loan -->
+                <div id="ownFundsBadge" style="
+                    display:flex; align-items:center; gap:10px; padding:10px 14px;
+                    background:rgba(255,140,58,0.08); border:1px solid rgba(255,140,58,0.25);
+                    border-radius:8px; margin-bottom:14px; flex-wrap:wrap;">
+                    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--orange);">💰 Your Own Funds Locked In</span>
+                    <span id="ownFundsValue" style="font-size:18px;font-weight:900;font-family:'Courier New',monospace;color:var(--orange);">₹5,00,000</span>
+                    <span style="font-size:11px;color:var(--muted);flex:1;">— this capital earns nothing while tied up. The opportunity cost on this is your biggest hidden lease cost.</span>
+                </div>
+
                 <div class="grid">
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Lease Amount (₹) <span class="label-value" id="leaseAmountLabel">₹2,000,000</span></label><button class="info-btn" aria-label="Help for Lease Amount" onclick="showFieldHelp('leaseAmount')">ℹ</button></div>
-                        <div class="input-group"><input id="leaseAmount" type="text" value="2000000"><input type="range" id="leaseAmountRange" aria-label="Lease amount in rupees" aria-valuemin="100000" aria-valuemax="5000000" aria-valuenow="2000000" min="100000" max="5000000" step="50000" value="2000000"></div>
+                        <div class="field-label-row"><label>Lease Deposit (₹) <span class="label-value" id="leaseAmountLabel">₹20,00,000</span></label><button class="info-btn" aria-label="Help for Lease Deposit" onclick="showFieldHelp('leaseAmount')">ℹ</button></div>
+                        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Total security deposit paid upfront — loan + your own money</div>
+                        <div class="input-group"><input id="leaseAmount" type="text" value="2000000"><input type="range" id="leaseAmountRange" aria-label="Total lease deposit in rupees" aria-valuemin="100000" aria-valuemax="10000000" aria-valuenow="2000000" min="100000" max="10000000" step="50000" value="2000000"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Loan Amount (₹) <span class="label-value" id="loanAmountLabel">₹1,500,000</span></label><button class="info-btn" aria-label="Help for Loan Amount" onclick="showFieldHelp('loanAmount')">ℹ</button></div>
-                        <div class="input-group"><input id="loanAmount" type="text" value="1500000"><input type="range" id="loanAmountRange" aria-label="Loan amount in rupees" aria-valuemin="0" aria-valuemax="5000000" aria-valuenow="1500000" min="0" max="5000000" step="50000" value="1500000"></div>
+                        <div class="field-label-row"><label>Loan Against Deposit (₹) <span class="label-value" id="loanAmountLabel">₹15,00,000</span></label><button class="info-btn" aria-label="Help for Loan Against Deposit" onclick="showFieldHelp('loanAmount')">ℹ</button></div>
+                        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Borrowed portion — enter 0 if fully self-funded</div>
+                        <div class="input-group"><input id="loanAmount" type="text" value="1500000"><input type="range" id="loanAmountRange" aria-label="Loan against deposit in rupees" aria-valuemin="0" aria-valuemax="10000000" aria-valuenow="1500000" min="0" max="10000000" step="50000" value="1500000"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
@@ -1166,21 +1180,28 @@ function getChartColors() {
 /* ================= HELP MODAL ================= */
 const fieldHelp = {
     leaseAmount: {
-        title: 'Lease Amount',
-        subtitle: 'The total deposit amount paid, not the loan.',
+        title: 'Lease Deposit',
+        subtitle: 'The total security deposit you pay upfront to the lessor — your own money plus any loan. This is NOT the property\'s market value.',
         sections: [
-            { title: 'What it is', text: 'This is the lease amount of the property you are leasing. Every other cost in the model — interest, opportunity cost, withholding, risk — is calculated as a fraction of this number.' }
+            { title: 'What it is', text: 'In a lease arrangement, you hand over a large refundable deposit to the lessor instead of paying monthly rent. This field is that total deposit amount — the sum of whatever you borrowed (loan) plus what you put in from your own savings. The model charges you cost on this locked capital for the entire lease term.' },
+            { title: 'Common mistake — DO NOT enter property value', text: 'This is the most frequent error. If a flat is worth ₹80L and the lessor asks for a ₹15L deposit, enter ₹15L here — not ₹80L. Entering the property value overstates all costs by 5× and produces completely wrong results.' },
+            { title: 'Residential property', text: 'Metro residential lease deposits in India typically range from ₹8L–₹30L depending on the city, locality, and flat size. Bengaluru is on the higher end (often 2–3 years of equivalent rent as deposit). Mumbai and Delhi leases are less common and deposits are smaller.' },
+            { title: 'Retail / shop space', text: 'Shop lease deposits range from ₹10L–₹80L depending on location and size. A prime MG Road shop commanding ₹1L/month rent might require a ₹40–60L deposit. A smaller suburban shop may ask ₹10–20L. Get the actual deposit demand in writing before entering.' },
+            { title: 'Office / workspace', text: 'Office lease deposits are typically 6–24 months of equivalent rent. A 2,000 sq ft office at ₹1.5L/month might carry a ₹20–30L deposit. Institutional landlords (IT parks, REITs) quote deposits more predictably than individual landlords.' },
+            { title: 'Industrial / warehouse', text: 'Warehouse deposits range from ₹20L–₹2Cr depending on size. A 5,000 sq ft warehouse at ₹1.5L/month rent might require ₹30–50L deposit. Purpose-built cold-storage or specialised facilities have higher deposits.' },
+            { title: 'Example', example: 'Flat worth ₹1Cr, lessor demands ₹20L deposit, you borrow ₹15L via personal loan → Lease Deposit = ₹20L. Loan = ₹15L. Own Funds = ₹5L. Do NOT enter ₹1Cr.' }
         ]
     },
     loanAmount: {
-        title: 'Loan Amount',
-        subtitle: 'The portion of the lease deposit financed through a bank or lender — the rest is your own capital bearing an opportunity cost.',
+        title: 'Loan Against Deposit',
+        subtitle: 'The portion of the lease deposit you borrowed from a bank or lender. Your own contribution is the deposit minus this loan.',
         sections: [
-            { title: 'What it is', text: 'Most lessees do not pay the full deposit from savings. They borrow part of it via a personal loan, LAP, or business credit line. This is the borrowed portion. Your own contribution — the difference — is locked and the model charges you opportunity cost on it for the full lease term.' },
-            { title: 'Residential property', text: 'If you are paying a ₹15L deposit on a ₹75L flat and borrowed ₹10L via a personal loan, enter ₹10L. The remaining ₹5L from your savings bears opportunity cost. No loan? Enter zero — the entire deposit amount bears opportunity cost at your set rate.' },
-            { title: 'Retail / shop space', text: 'Shop leases often require large deposits (₹5L–₹25L+). Business owners frequently fund these via a working capital overdraft or LAP. Enter only the borrowed portion. If you dipped into business reserves for the full amount, enter zero and set the opportunity rate to your business return rate.' },
-            { title: 'Office / workspace', text: 'Corporate office leases are sometimes funded via company treasury or business loans. Enter the external borrowing only. If it is a mix — say ₹20L from a bank and ₹5L from personal funds — enter ₹20L. The ₹5L personal contribution will bear opportunity cost automatically.' },
-            { title: 'Example', example: 'Lease amount ₹50L, Loan ₹35L → Own funds = ₹15L bearing opp cost. Loan ₹0 → Full ₹50L bears opp cost at your chosen rate.' }
+            { title: 'What it is', text: 'Few people pay a large lease deposit entirely from savings. Many take a personal loan, LAP, or business credit line to fund part of it. Enter only the borrowed portion here. The rest — your own savings contribution — is automatically calculated as "Own Funds Locked" and displayed at the top of this section. That own-funds amount bears opportunity cost for the full lease term.' },
+            { title: 'No loan? Enter zero', text: 'If you are funding the entire deposit from your own savings or business capital, set this to zero. The full deposit amount then bears opportunity cost. This is often the scenario for cash-rich businesses paying shop or warehouse deposits from reserves.' },
+            { title: 'Residential property', text: 'A ₹20L residential lease deposit is commonly funded via a personal loan of ₹12–16L, with ₹4–8L from savings. If you have a home loan already, a top-up loan is cheaper. If not, an unsecured personal loan is typical. Enter just the borrowed portion — ₹12L in this example.' },
+            { title: 'Retail / shop space', text: 'Shop deposits of ₹20–50L are frequently funded via working capital OD, business loans, or LAP. Enter the loan drawn specifically to fund this deposit. If you used a revolving credit line, enter the amount actually drawn and held for the deposit.' },
+            { title: 'Office / workspace', text: 'Corporate office deposits can be funded via company treasury (loan = 0), business term loans, or OD facilities. Enter the external borrowing. If the company is funding internally, enter 0 and set the opportunity rate to your company\'s cost of capital.' },
+            { title: 'Example', example: 'Deposit = ₹20L. Took ₹14L personal loan. Own funds = ₹6L. → Enter Loan = ₹14L. Own Funds badge shows ₹6L automatically. That ₹6L is what the model prices as locked capital.' }
         ]
     },
     loanRate: {
@@ -1780,11 +1801,17 @@ function initCharts(data) {
 
 /* ================= SUMMARY PANEL ================= */
 function updateSummary() {
-    const asset = num('leaseAmount'), loan = num('loanAmount'), rent = num('marketRent'), tenure = num('leaseTenure') / 12;
-    $('summaryAsset').innerText = formatINR(asset);
+    const deposit = num('leaseAmount'), loan = num('loanAmount');
+    const ownFunds = Math.max(0, deposit - loan);
+    const rent = num('marketRent'), tenure = num('leaseTenure') / 12;
+    $('summaryAsset').innerText = formatINR(deposit);
     $('summaryLoan').innerText = formatINR(loan);
+    $('summaryOwnFunds').innerText = formatINR(ownFunds);
     $('summaryRent').innerText = formatINR(rent);
-    $('summaryTerm').innerText = Math.round(tenure) + ' yrs';
+    $('summaryTerm').innerText = Math.round(tenure * 10) / 10 + ' yrs';
+    // Live own-funds badge
+    const badge = $('ownFundsValue');
+    if (badge) badge.innerText = formatINR(ownFunds);
 }
 
 /* ================= VERDICT BANNER ================= */
@@ -1824,7 +1851,7 @@ function validateInputs(vals) {
 
     // Hard errors — block calculation
     if (LOAN_AMOUNT > LEASE_AMOUNT)
-        errors.push(`Loan amount (${formatINR(LOAN_AMOUNT)}) exceeds lease amount (${formatINR(LEASE_AMOUNT)}). You cannot borrow more than the property value.`);
+        errors.push(`Loan (${formatINR(LOAN_AMOUNT)}) exceeds the total deposit (${formatINR(LEASE_AMOUNT)}). You cannot borrow more than the deposit you are paying.`);
     if (LOAN_TENURE > LEASE_TENURE)
         errors.push(`Loan tenure (${LOAN_TENURE} mo) is longer than lease tenure (${LEASE_TENURE} mo). Loan has been capped to lease tenure automatically.`);
     if (LEASE_TENURE < 6)
@@ -1904,7 +1931,7 @@ function calculate() {
             MARKET_RENT, OPP_RATE_ANNUAL, RENT_INCREMENT, WITHHOLDING, VOLATILITY, LOAN_RATE_ANNUAL };
         const { errors, warnings } = validateInputs(validationVals);
         renderValidation(errors, warnings);
-        if (errors.some(e => e.includes('exceeds lease amount') || e.includes('at least 6 months') || e.includes('greater than zero'))) return;
+        if (errors.some(e => e.includes('exceeds the total deposit') || e.includes('at least 6 months') || e.includes('greater than zero'))) return;
 
         const LOAN_RATE_MONTHLY = (LOAN_RATE_ANNUAL / 100) / 12;
         const OPP_RATE_NOMINAL = (OPP_RATE_ANNUAL / 100) / 12;
@@ -2325,11 +2352,11 @@ function toggleSection(btn, bodyId) {
 
 /* ================= RESET DEFAULTS ================= */
 const DEFAULTS = {
-    leaseAmount: 2000000, loanAmount: 1500000, loanRate: 8.5, maintenance: 5000,
+    leaseAmount: 2000000, loanAmount: 1400000, loanRate: 11, maintenance: 4000,
     withholding: 0, refundDelay: 0,
-    marketRent: 45000, rentDeposit: 0, depositRefundDelay: 0, rentIncrement: 5, flexibilityPremium: 0,
-    leaseTenure: 24, loanTenure: 24, oppRate: 12, riskPremium: 1.5,
-    inflationRate: 6, liquidityPremium: 2, returnVol: 15
+    marketRent: 38000, rentDeposit: 0, depositRefundDelay: 0, rentIncrement: 5, flexibilityPremium: 0,
+    leaseTenure: 36, loanTenure: 24, oppRate: 11, riskPremium: 1.5,
+    inflationRate: 6, liquidityPremium: 2, returnVol: 14
 };
 
 function resetDefaults() {
@@ -2350,19 +2377,19 @@ function resetDefaults() {
 /* ================= PRESET SCENARIOS ================= */
 const PRESETS = {
     'metro-apartment': {
-        // 2BHK flat in a metro, 11-month renewable modelled over 3 years
-        // High deposit city (Bengaluru-style), moderate loan, active investor
-        leaseAmount: 8000000, loanAmount: 5000000, loanRate: 11, maintenance: 5000,
+        // Bengaluru 2BHK: ₹20L lease deposit (equivalent to ~18 months rent), ₹14L personal loan
+        // No monthly rent paid under lease. Compared against ₹38K/month rental + 6-month deposit.
+        leaseAmount: 2000000, loanAmount: 1400000, loanRate: 11, maintenance: 4000,
         withholding: 5, refundDelay: 2,
-        marketRent: 40000, rentDeposit: 280000, depositRefundDelay: 2,
+        marketRent: 38000, rentDeposit: 228000, depositRefundDelay: 2,
         rentIncrement: 8, flexibilityPremium: 3000,
         leaseTenure: 36, loanTenure: 24,
         oppRate: 11, riskPremium: 1.5, inflationRate: 6, liquidityPremium: 2, returnVol: 14
     },
     'high-street-retail': {
-        // 500 sq ft shop on a prime high street, 5-year lock-in, high deposit, fit-out withholding
-        // Established business, high rent growth, capital tied up has high biz opportunity cost
-        leaseAmount: 15000000, loanAmount: 8000000, loanRate: 13, maintenance: 12000,
+        // Prime high-street shop: ₹50L lease deposit, ₹30L business OD, heavy fit-out withholding
+        // No monthly rent. Compared against ₹1.2L/month rental + 4-month deposit.
+        leaseAmount: 5000000, loanAmount: 3000000, loanRate: 13, maintenance: 12000,
         withholding: 12, refundDelay: 3,
         marketRent: 120000, rentDeposit: 480000, depositRefundDelay: 3,
         rentIncrement: 8, flexibilityPremium: 2000,
@@ -2370,19 +2397,19 @@ const PRESETS = {
         oppRate: 22, riskPremium: 2.5, inflationRate: 6, liquidityPremium: 3, returnVol: 30
     },
     'office-space': {
-        // 2,000 sq ft Grade-B office, 3-year lease, funded via business OD
-        // Growing company, moderate rent growth, weighing against co-working alternative
-        leaseAmount: 20000000, loanAmount: 12000000, loanRate: 12, maintenance: 25000,
+        // Grade-B office, 2000 sq ft: ₹30L lease deposit, ₹20L business OD
+        // No monthly rent. Compared against ₹1.5L/month rental (co-working alternative valued as flexibility).
+        leaseAmount: 3000000, loanAmount: 2000000, loanRate: 12, maintenance: 20000,
         withholding: 6, refundDelay: 2,
-        marketRent: 160000, rentDeposit: 480000, depositRefundDelay: 1,
+        marketRent: 150000, rentDeposit: 450000, depositRefundDelay: 1,
         rentIncrement: 6, flexibilityPremium: 8000,
         leaseTenure: 36, loanTenure: 24,
         oppRate: 18, riskPremium: 1.5, inflationRate: 6, liquidityPremium: 2.5, returnVol: 22
     },
     'warehouse': {
-        // 10,000 sq ft warehouse near a logistics corridor, 5-year lease
-        // Large deposit, low maintenance per sq ft, high rent growth on NH corridors
-        leaseAmount: 30000000, loanAmount: 20000000, loanRate: 11.5, maintenance: 35000,
+        // 10,000 sq ft warehouse, NH corridor: ₹75L lease deposit, ₹50L term loan
+        // No monthly rent. Compared against ₹2.5L/month rental + 3-month deposit.
+        leaseAmount: 7500000, loanAmount: 5000000, loanRate: 11.5, maintenance: 35000,
         withholding: 3, refundDelay: 2,
         marketRent: 250000, rentDeposit: 750000, depositRefundDelay: 2,
         rentIncrement: 9, flexibilityPremium: 0,
