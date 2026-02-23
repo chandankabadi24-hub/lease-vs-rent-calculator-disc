@@ -1167,13 +1167,9 @@ function getChartColors() {
 const fieldHelp = {
     leaseAmount: {
         title: 'Lease Amount',
-        subtitle: 'The total market value of the property — not the deposit you paid, not the loan. The full price as if you were buying it outright.',
+        subtitle: 'The total deposit amount paid, not the loan.',
         sections: [
-            { title: 'What it is', text: 'This is the sticker price of the property you are leasing. Every other cost in the model — interest, opportunity cost, withholding, risk — is calculated as a fraction of this number. Getting it right matters.' },
-            { title: 'Residential property', text: 'Use the current market value of the unit — what a buyer would pay today. For a 2BHK flat in a metro where you are paying a large deposit, the flat is worth ₹50L–₹1.5Cr. Do not enter the deposit amount. If the lessor took ₹8L as deposit on a ₹80L flat, enter ₹80L.' },
-            { title: 'Retail / shop space', text: 'Enter the market value of the shop or ground-floor unit. High-street shops in metro areas are valued at ₹60L–₹5Cr depending on size and location. If the deposit is a fixed sum (e.g. ₹10L on a ₹1Cr shop), enter ₹1Cr here.' },
-            { title: 'Office / workspace', text: 'Use the market capital value of the office floor plate or unit. Grade-A office space in Bengaluru or Mumbai is valued at ₹8,000–₹20,000 per sq ft. A 1,000 sq ft office at ₹12,000/sq ft = ₹1.2Cr lease amount.' },
-            { title: 'Industrial / warehouse', text: 'Warehouses and industrial sheds trade at ₹2,000–₹6,000 per sq ft on the outskirts of metros. A 5,000 sq ft warehouse at ₹3,000/sq ft = ₹1.5Cr. For cold-storage or specialised facilities, values can be 2–3× higher.' }
+            { title: 'What it is', text: 'This is the lease amount of the property you are leasing. Every other cost in the model — interest, opportunity cost, withholding, risk — is calculated as a fraction of this number.' }
         ]
     },
     loanAmount: {
