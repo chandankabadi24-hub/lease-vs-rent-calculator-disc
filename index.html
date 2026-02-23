@@ -13,6 +13,129 @@
             backface-visibility: hidden;
         }
 
+        /* Validation warning banner */
+        .validation-banner {
+            display: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            border-left: 4px solid;
+        }
+        .validation-banner.error {
+            background: rgba(255,77,77,0.1);
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .validation-banner.warning {
+            background: rgba(241,196,15,0.1);
+            border-color: var(--amber);
+            color: var(--amber);
+        }
+        .validation-banner.show { display: block; }
+        .validation-banner ul { margin: 4px 0 0 16px; }
+        .validation-banner li { margin: 2px 0; }
+
+        /* Skip to content */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 8px;
+            background: var(--accent);
+            color: #060d15;
+            padding: 8px 16px;
+            border-radius: 0 0 8px 8px;
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 10000;
+            transition: top 0.2s;
+            text-decoration: none;
+        }
+        .skip-link:focus { top: 0; }
+
+        /* Direction indicator chips for color-blind support */
+        .dir-indicator {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 900;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        /* Scenario preset buttons */
+        .presets-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(77,179,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+        .presets-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+        .preset-btn {
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        .preset-btn:hover { border-color: var(--accent); background: rgba(77,179,255,0.1); transform: translateY(-2px); }
+        .preset-btn:focus-visible { outline: 3px dashed var(--accent); outline-offset: 3px; }
+
+        /* Collapsible sections */
+        .section-toggle {
+            width: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 0;
+        }
+        .section-toggle .toggle-arrow { font-size: 12px; transition: transform 0.3s ease; color: var(--muted); }
+        .section-toggle.collapsed .toggle-arrow { transform: rotate(-90deg); }
+        .collapsible-body { overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease; max-height: 2000px; opacity: 1; }
+        .collapsible-body.collapsed { max-height: 0; opacity: 0; }
+
+        /* Input validation */
+        input.input-error { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(255,77,77,0.15) !important; }
+        .field-error-msg { font-size: 10px; color: var(--red); font-weight: 600; margin-top: 2px; display: none; }
+        .field-error-msg.show { display: block; }
+
+        /* Keyboard shortcut hint */
+        .kbd-hint {
+            font-size: 10px;
+            color: var(--muted);
+            opacity: 0.7;
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 5px;
+            margin-left: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .presets-bar { gap: 6px; padding: 8px 10px; }
+            .preset-btn { font-size: 11px; padding: 4px 10px; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             * {
                 animation-duration: 0.01ms !important;
@@ -630,22 +753,38 @@
 
 <body>
 
-<div class="header">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="header" role="banner">
     <div class="logo">💰 Aladdin Finance BI</div>
     <div class="header-actions">
-        <button class="share-btn" onclick="shareScenario()" aria-label="Share this scenario">📤 Share</button>
-        <button class="global-help-btn" onclick="showGlobalHelp()" aria-label="Show help guide">ℹ️ Help</button>
+        <button class="share-btn" onclick="shareScenario()" aria-label="Share this scenario via URL">📤 Share</button>
+        <button class="share-btn" onclick="resetDefaults()" aria-label="Reset all inputs to default values" style="background:rgba(255,77,77,0.12);color:var(--red);border-color:rgba(255,77,77,0.3);" title="Reset to defaults (R)">↺ Reset</button>
+        <button class="global-help-btn" onclick="showGlobalHelp()" aria-label="Show help guide (press ? for keyboard shortcut)">ℹ️ Help <span class="kbd-hint">?</span></button>
         <button class="toggle" onclick="toggleTheme()" aria-label="Toggle between dark and light theme">
             <span id="theme-icon">🌙</span> <span id="theme-text">Dark</span>
         </button>
     </div>
 </div>
 
-<div class="container">
+<div class="container" id="main-content">
+
+    <!-- PRESET SCENARIOS -->
+    <div class="presets-bar" role="group" aria-label="Preset scenarios">
+        <span class="presets-label">⚡ Quick Scenarios:</span>
+        <button class="preset-btn" onclick="loadPreset('metro-apartment')" title="2BHK flat in a metro — Bengaluru-style high deposit, 3-year horizon, active investor">🏠 Metro Apartment</button>
+        <button class="preset-btn" onclick="loadPreset('high-street-retail')" title="500 sq ft high-street shop — 5-year lock-in, high fit-out withholding, profitable business">🏪 High-Street Retail</button>
+        <button class="preset-btn" onclick="loadPreset('office-space')" title="2,000 sq ft Grade-B office — 3-year lease vs co-working, growing company">🏢 Office Space</button>
+        <button class="preset-btn" onclick="loadPreset('warehouse')" title="10,000 sq ft logistics warehouse — 5-year lease, NH corridor, high rent growth">🏭 Warehouse / Industrial</button>
+    </div>
 
     <!-- INPUT PANEL -->
     <div class="card" id="inputCard">
         <div class="card-title"><span class="card-icon">⚙️</span>Financial Parameters</div>
+
+        <!-- Validation banners -->
+        <div class="validation-banner error" id="validationErrors" role="alert" aria-live="assertive"></div>
+        <div class="validation-banner warning" id="validationWarnings" role="status" aria-live="polite"></div>
 
         <div class="summary-panel">
             <div class="summary-item"><div class="summary-label">Asset Price</div><div class="summary-value" id="summaryAsset">₹20L</div></div>
@@ -657,117 +796,132 @@
         <div id="inputsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px;">
 
             <div>
-                <div class="section-header"><span>📋</span> Lease Components</div>
+                <button class="section-toggle" onclick="toggleSection(this,'leaseBody')" aria-expanded="true" aria-controls="leaseBody">
+                    <span><span>📋</span> Lease Components</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                <div class="collapsible-body" id="leaseBody" style="margin-top:14px;">
                 <div class="grid">
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Lease Amount (₹) <span class="label-value" id="leaseAmountLabel">₹2,000,000</span></label><button class="info-btn" onclick="showFieldHelp('leaseAmount')">ℹ️</button></div>
-                        <div class="input-group"><input id="leaseAmount" type="text" value="2000000"><input type="range" id="leaseAmountRange" min="100000" max="5000000" step="50000" value="2000000"></div>
+                        <div class="field-label-row"><label>Lease Amount (₹) <span class="label-value" id="leaseAmountLabel">₹2,000,000</span></label><button class="info-btn" aria-label="Help for Lease Amount" onclick="showFieldHelp('leaseAmount')">ℹ</button></div>
+                        <div class="input-group"><input id="leaseAmount" type="text" value="2000000"><input type="range" id="leaseAmountRange" aria-label="Lease amount in rupees" aria-valuemin="100000" aria-valuemax="5000000" aria-valuenow="2000000" min="100000" max="5000000" step="50000" value="2000000"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Loan Amount (₹) <span class="label-value" id="loanAmountLabel">₹1,500,000</span></label><button class="info-btn" onclick="showFieldHelp('loanAmount')">ℹ️</button></div>
-                        <div class="input-group"><input id="loanAmount" type="text" value="1500000"><input type="range" id="loanAmountRange" min="0" max="5000000" step="50000" value="1500000"></div>
+                        <div class="field-label-row"><label>Loan Amount (₹) <span class="label-value" id="loanAmountLabel">₹1,500,000</span></label><button class="info-btn" aria-label="Help for Loan Amount" onclick="showFieldHelp('loanAmount')">ℹ</button></div>
+                        <div class="input-group"><input id="loanAmount" type="text" value="1500000"><input type="range" id="loanAmountRange" aria-label="Loan amount in rupees" aria-valuemin="0" aria-valuemax="5000000" aria-valuenow="1500000" min="0" max="5000000" step="50000" value="1500000"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Interest Rate (%) <span class="label-value" id="loanRateLabel">8.5%</span></label><button class="info-btn" onclick="showFieldHelp('loanRate')">ℹ️</button></div>
-                        <div class="input-group"><input id="loanRate" type="text" value="8.5"><input type="range" id="loanRateRange" min="1" max="20" step="0.1" value="8.5"></div>
+                        <div class="field-label-row"><label>Interest Rate (%) <span class="label-value" id="loanRateLabel">8.5%</span></label><button class="info-btn" aria-label="Help for Interest Rate" onclick="showFieldHelp('loanRate')">ℹ</button></div>
+                        <div class="input-group"><input id="loanRate" type="text" value="8.5"><input type="range" id="loanRateRange" aria-label="Loan interest rate percent" aria-valuemin="1" aria-valuemax="20" aria-valuenow="8.5" min="1" max="20" step="0.1" value="8.5"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Maintenance (₹) <span class="label-value" id="maintenanceLabel">₹5,000</span></label><button class="info-btn" onclick="showFieldHelp('maintenance')">ℹ️</button></div>
-                        <div class="input-group"><input id="maintenance" type="text" value="5000"><input type="range" id="maintenanceRange" min="0" max="20000" step="500" value="5000"></div>
+                        <div class="field-label-row"><label>Maintenance (₹) <span class="label-value" id="maintenanceLabel">₹5,000</span></label><button class="info-btn" aria-label="Help for Maintenance" onclick="showFieldHelp('maintenance')">ℹ</button></div>
+                        <div class="input-group"><input id="maintenance" type="text" value="5000"><input type="range" id="maintenanceRange" aria-label="Monthly maintenance cost" aria-valuemin="0" aria-valuemax="20000" aria-valuenow="5000" min="0" max="20000" step="500" value="5000"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Withholding (%) <span class="label-value" id="withholdingLabel">0%</span></label><button class="info-btn" onclick="showFieldHelp('withholding')">ℹ️</button></div>
-                        <input id="withholding" type="text" value="0">
+                        <div class="field-label-row"><label>Withholding (%) <span class="label-value" id="withholdingLabel">0%</span></label><button class="info-btn" aria-label="Help for Withholding" onclick="showFieldHelp('withholding')">ℹ</button></div>
+                        <div class="input-group"><input id="withholding" type="text" value="0"><input type="range" id="withholdingRange" aria-label="Withholding percent" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0" min="0" max="30" step="0.5" value="0"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Refund Delay (Mo) <span class="label-value" id="refundDelayLabel">0</span></label><button class="info-btn" onclick="showFieldHelp('refundDelay')">ℹ️</button></div>
-                        <input id="refundDelay" type="text" value="0">
+                        <div class="field-label-row"><label>Refund Delay (Mo) <span class="label-value" id="refundDelayLabel">0</span></label><button class="info-btn" aria-label="Help for Refund Delay" onclick="showFieldHelp('refundDelay')">ℹ</button></div>
+                        <div class="input-group"><input id="refundDelay" type="text" value="0"><input type="range" id="refundDelayRange" aria-label="Refund delay in months" aria-valuemin="0" aria-valuemax="24" aria-valuenow="0" min="0" max="24" step="1" value="0"></div>
                     </div></div>
                 </div>
+                </div><!-- end leaseBody -->
             </div>
 
             <div>
-                <div class="section-header"><span>🏠</span> Rent Components</div>
+                <button class="section-toggle" onclick="toggleSection(this,'rentBody')" aria-expanded="true" aria-controls="rentBody">
+                    <span><span>🏠</span> Rent Components</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                <div class="collapsible-body" id="rentBody" style="margin-top:14px;">
                 <div class="grid">
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Market Rent (₹) <span class="label-value" id="marketRentLabel">₹45,000</span></label><button class="info-btn" onclick="showFieldHelp('marketRent')">ℹ️</button></div>
-                        <div class="input-group"><input id="marketRent" type="text" value="45000"><input type="range" id="marketRentRange" min="5000" max="200000" step="1000" value="45000"></div>
+                        <div class="field-label-row"><label>Market Rent (₹) <span class="label-value" id="marketRentLabel">₹45,000</span></label><button class="info-btn" aria-label="Help for Market Rent" onclick="showFieldHelp('marketRent')">ℹ</button></div>
+                        <div class="input-group"><input id="marketRent" type="text" value="45000"><input type="range" id="marketRentRange" aria-label="Market rent amount" aria-valuemin="5000" aria-valuemax="200000" aria-valuenow="45000" min="5000" max="200000" step="1000" value="45000"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Rent Deposit (₹) <span class="label-value" id="rentDepositLabel">₹0</span></label><button class="info-btn" onclick="showFieldHelp('rentDeposit')">ℹ️</button></div>
-                        <div class="input-group"><input id="rentDeposit" type="text" value="0"><input type="range" id="rentDepositRange" min="0" max="500000" step="10000" value="0"></div>
+                        <div class="field-label-row"><label>Rent Deposit (₹) <span class="label-value" id="rentDepositLabel">₹0</span></label><button class="info-btn" aria-label="Help for Rent Deposit" onclick="showFieldHelp('rentDeposit')">ℹ</button></div>
+                        <div class="input-group"><input id="rentDeposit" type="text" value="0"><input type="range" id="rentDepositRange" aria-label="Rent deposit amount" aria-valuemin="0" aria-valuemax="500000" aria-valuenow="0" min="0" max="500000" step="10000" value="0"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Refund Delay (Mo) <span class="label-value" id="depositRefundDelayLabel">0</span></label><button class="info-btn" onclick="showFieldHelp('depositRefundDelay')">ℹ️</button></div>
-                        <input id="depositRefundDelay" type="text" value="0">
+                        <div class="field-label-row"><label>Refund Delay (Mo) <span class="label-value" id="depositRefundDelayLabel">0</span></label><button class="info-btn" aria-label="Help for Deposit Refund Delay" onclick="showFieldHelp('depositRefundDelay')">ℹ</button></div>
+                        <div class="input-group"><input id="depositRefundDelay" type="text" value="0"><input type="range" id="depositRefundDelayRange" aria-label="Deposit refund delay in months" aria-valuemin="0" aria-valuemax="24" aria-valuenow="0" min="0" max="24" step="1" value="0"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Rent Growth (%) <span class="label-value" id="rentIncrementLabel">5%</span></label><button class="info-btn" onclick="showFieldHelp('rentIncrement')">ℹ️</button></div>
-                        <div class="input-group"><input id="rentIncrement" type="text" value="5"><input type="range" id="rentIncrementRange" min="0" max="10" step="0.5" value="5"></div>
+                        <div class="field-label-row"><label>Rent Growth (%) <span class="label-value" id="rentIncrementLabel">5%</span></label><button class="info-btn" aria-label="Help for Rent Growth" onclick="showFieldHelp('rentIncrement')">ℹ</button></div>
+                        <div class="input-group"><input id="rentIncrement" type="text" value="5"><input type="range" id="rentIncrementRange" aria-label="Annual rent growth percent" aria-valuemin="0" aria-valuemax="10" aria-valuenow="5" min="0" max="10" step="0.5" value="5"></div>
                     </div></div>
 
                     <div class="field"><div class="field-wrapper">
-                        <div class="field-label-row"><label>Flexibility Value (₹/mo) <span class="label-value" id="flexibilityPremiumLabel">₹0</span></label><button class="info-btn" onclick="showFieldHelp('flexibilityPremium')">ℹ️</button></div>
-                        <div class="input-group"><input id="flexibilityPremium" type="text" value="0"><input type="range" id="flexibilityPremiumRange" min="0" max="20000" step="500" value="0"></div>
+                        <div class="field-label-row"><label>Flexibility Value (₹/mo) <span class="label-value" id="flexibilityPremiumLabel">₹0</span></label><button class="info-btn" aria-label="Help for Flexibility Premium" onclick="showFieldHelp('flexibilityPremium')">ℹ</button></div>
+                        <div class="input-group"><input id="flexibilityPremium" type="text" value="0"><input type="range" id="flexibilityPremiumRange" aria-label="Monthly flexibility value" aria-valuemin="0" aria-valuemax="20000" aria-valuenow="0" min="0" max="20000" step="500" value="0"></div>
                     </div></div>
                 </div>
+                </div><!-- end rentBody -->
             </div>
 
         </div>
 
         <div class="divider"></div>
         <div>
-            <div class="section-header"><span>⚖️</span> Economic Assumptions</div>
+            <button class="section-toggle" onclick="toggleSection(this,'econBody')" aria-expanded="true" aria-controls="econBody">
+                <span><span>⚖️</span> Economic Assumptions</span>
+                <span class="toggle-arrow">▼</span>
+            </button>
+            <div class="collapsible-body" id="econBody" style="margin-top:14px;">
             <div class="grid">
                 <div class="field"><div class="field-wrapper">
-                    <div class="field-label-row"><label>Lease Tenure (Mo) <span class="label-value" id="leaseTenureLabel">24</span></label><button class="info-btn" onclick="showFieldHelp('leaseTenure')">ℹ️</button></div>
-                    <div class="input-group"><input id="leaseTenure" type="text" value="24"><input type="range" id="leaseTenureRange" min="12" max="360" step="12" value="24"></div>
+                    <div class="field-label-row"><label>Lease Tenure (Mo) <span class="label-value" id="leaseTenureLabel">24</span></label><button class="info-btn" aria-label="Help for Lease Tenure" onclick="showFieldHelp('leaseTenure')">ℹ</button></div>
+                    <div class="input-group"><input id="leaseTenure" type="text" value="24"><input type="range" id="leaseTenureRange" aria-label="Lease tenure in months" aria-valuemin="12" aria-valuemax="360" aria-valuenow="24" min="12" max="360" step="12" value="24"></div>
                 </div></div>
 
                 <div class="field"><div class="field-wrapper">
-                    <div class="field-label-row"><label>Loan Tenure (Mo) <span class="label-value" id="loanTenureLabel">24</span></label><button class="info-btn" onclick="showFieldHelp('loanTenure')">ℹ️</button></div>
-                    <div class="input-group"><input id="loanTenure" type="text" value="24"><input type="range" id="loanTenureRange" min="12" max="360" step="12" value="24"></div>
+                    <div class="field-label-row"><label>Loan Tenure (Mo) <span class="label-value" id="loanTenureLabel">24</span></label><button class="info-btn" aria-label="Help for Loan Tenure" onclick="showFieldHelp('loanTenure')">ℹ</button></div>
+                    <div class="input-group"><input id="loanTenure" type="text" value="24"><input type="range" id="loanTenureRange" aria-label="Loan tenure in months" aria-valuemin="12" aria-valuemax="360" aria-valuenow="24" min="12" max="360" step="12" value="24"></div>
                 </div></div>
 
                 <div class="field"><div class="field-wrapper">
-                    <div class="field-label-row"><label>Opportunity Cost (%) <span class="label-value" id="oppRateLabel">12%</span></label><button class="info-btn" onclick="showFieldHelp('oppRate')">ℹ️</button></div>
-                    <div class="input-group"><input id="oppRate" type="text" value="12"><input type="range" id="oppRateRange" min="1" max="20" step="0.1" value="12"></div>
+                    <div class="field-label-row"><label>Opportunity Cost (%) <span class="label-value" id="oppRateLabel">12%</span></label><button class="info-btn" aria-label="Help for Opportunity Cost" onclick="showFieldHelp('oppRate')">ℹ</button></div>
+                    <div class="input-group"><input id="oppRate" type="text" value="12"><input type="range" id="oppRateRange" aria-label="Opportunity cost rate percent" aria-valuemin="1" aria-valuemax="20" aria-valuenow="12" min="1" max="20" step="0.1" value="12"></div>
                 </div></div>
 
                 <div class="field"><div class="field-wrapper">
-                    <div class="field-label-row"><label>Net Lease Risk (%) <span class="label-value" id="riskPremiumLabel">1.5%</span></label><button class="info-btn" onclick="showFieldHelp('riskPremium')">ℹ️</button></div>
-                    <div class="input-group"><input id="riskPremium" type="text" value="1.5"><input type="range" id="riskPremiumRange" min="0" max="10" step="0.1" value="1.5"></div>
+                    <div class="field-label-row"><label>Net Lease Risk (%) <span class="label-value" id="riskPremiumLabel">1.5%</span></label><button class="info-btn" aria-label="Help for Net Lease Risk" onclick="showFieldHelp('riskPremium')">ℹ</button></div>
+                    <div class="input-group"><input id="riskPremium" type="text" value="1.5"><input type="range" id="riskPremiumRange" aria-label="Net lease risk premium percent" aria-valuemin="0" aria-valuemax="10" aria-valuenow="1.5" min="0" max="10" step="0.1" value="1.5"></div>
                 </div></div>
 
                 <div class="field"><div class="field-wrapper">
-                    <div class="field-label-row"><label>Inflation Rate (%) <span class="label-value" id="inflationRateLabel">6%</span></label><button class="info-btn" onclick="showFieldHelp('inflationRate')">ℹ️</button></div>
-                    <div class="input-group"><input id="inflationRate" type="text" value="6"><input type="range" id="inflationRateRange" min="0" max="15" step="0.5" value="6"></div>
+                    <div class="field-label-row"><label>Inflation Rate (%) <span class="label-value" id="inflationRateLabel">6%</span></label><button class="info-btn" aria-label="Help for Inflation Rate" onclick="showFieldHelp('inflationRate')">ℹ</button></div>
+                    <div class="input-group"><input id="inflationRate" type="text" value="6"><input type="range" id="inflationRateRange" aria-label="Inflation rate percent" aria-valuemin="0" aria-valuemax="15" aria-valuenow="6" min="0" max="15" step="0.5" value="6"></div>
                 </div></div>
 
                 <div class="field"><div class="field-wrapper">
-                    <div class="field-label-row"><label>Liquidity Premium (%) <span class="label-value" id="liquidityPremiumLabel">2%</span></label><button class="info-btn" onclick="showFieldHelp('liquidityPremium')">ℹ️</button></div>
-                    <div class="input-group"><input id="liquidityPremium" type="text" value="2"><input type="range" id="liquidityPremiumRange" min="0" max="10" step="0.5" value="2"></div>
+                    <div class="field-label-row"><label>Liquidity Premium (%) <span class="label-value" id="liquidityPremiumLabel">2%</span></label><button class="info-btn" aria-label="Help for Liquidity Premium" onclick="showFieldHelp('liquidityPremium')">ℹ</button></div>
+                    <div class="input-group"><input id="liquidityPremium" type="text" value="2"><input type="range" id="liquidityPremiumRange" aria-label="Liquidity premium percent" aria-valuemin="0" aria-valuemax="10" aria-valuenow="2" min="0" max="10" step="0.5" value="2"></div>
                 </div></div>
 
                 <div class="field"><div class="field-wrapper">
-                    <div class="field-label-row"><label>Return Volatility (%) <span class="label-value" id="returnVolLabel">15%</span></label><button class="info-btn" onclick="showFieldHelp('returnVol')">ℹ️</button></div>
-                    <div class="input-group"><input id="returnVol" type="text" value="15"><input type="range" id="returnVolRange" min="0" max="40" step="1" value="15"></div>
+                    <div class="field-label-row"><label>Return Volatility (%) <span class="label-value" id="returnVolLabel">15%</span></label><button class="info-btn" aria-label="Help for Return Volatility" onclick="showFieldHelp('returnVol')">ℹ</button></div>
+                    <div class="input-group"><input id="returnVol" type="text" value="15"><input type="range" id="returnVolRange" aria-label="Return volatility percent" aria-valuemin="0" aria-valuemax="40" aria-valuenow="15" min="0" max="40" step="1" value="15"></div>
                 </div></div>
             </div>
+            </div><!-- end econBody -->
         </div>
     </div>
 
     <!-- VERDICT BANNER -->
     <div class="card" id="verdictCard" style="padding:0;overflow:hidden;">
-        <div class="verdict-banner neutral" id="verdictBanner">
+        <div class="verdict-banner neutral" id="verdictBanner" role="status" aria-live="polite" aria-atomic="true">
             <div class="verdict-headline" id="verdictHeadline">⏳ Analyzing your inputs...</div>
             <div class="verdict-body" id="verdictBody">Enter your financial parameters above to receive a clear recommendation.</div>
             <div class="verdict-stats">
@@ -789,20 +943,20 @@
         <div class="card-title"><span class="card-icon">📊</span>Decision Intelligence Score</div>
         <div class="gauge-section">
             <div class="gaugeWrap">
-                <div id="gauge" class="gauge" role="img" aria-label="Decision score gauge">
+                <div id="gauge" class="gauge" role="meter" aria-label="Decision score gauge" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                     <div class="gaugeInner"><span id="dial">0</span><div class="gauge-label">Score</div></div>
                 </div>
             </div>
             <div class="gauge-interpretation" id="interpretation">Analyzing parameters...</div>
         </div>
-        <div class="metricsBox">
-            <div class="metric-card"><div class="metric-label">Monthly EMI</div><div id="mEMI" class="metric-value">₹0</div></div>
-            <div class="metric-card"><div class="metric-label">Maintenance</div><div id="mMaintenance" class="metric-value">₹0</div></div>
-            <div class="metric-card"><div class="metric-label">Monthly Gain</div><div id="mSave" class="metric-value">₹0</div></div>
-            <div class="metric-card"><div class="metric-label">Annual Gain</div><div id="ySave" class="metric-value">₹0</div></div>
-            <div class="metric-card"><div class="metric-label">Term Gain</div><div id="tSave" class="metric-value">₹0</div></div>
-            <div class="metric-card"><div class="metric-label">Effective Cost</div><div id="mEffective" class="metric-value">₹0</div></div>
-            <div class="metric-card"><div class="metric-label">Confidence</div><div id="confidence" class="metric-value">0%</div></div>
+        <div class="metricsBox" role="list" aria-label="Key financial metrics">
+            <div class="metric-card" role="listitem"><div class="metric-label">Monthly EMI</div><div id="mEMI" class="metric-value">₹0</div></div>
+            <div class="metric-card" role="listitem"><div class="metric-label">Maintenance</div><div id="mMaintenance" class="metric-value">₹0</div></div>
+            <div class="metric-card" role="listitem"><div class="metric-label">Monthly Gain <span id="mSaveDir" class="dir-indicator" aria-hidden="true"></span></div><div id="mSave" class="metric-value">₹0</div></div>
+            <div class="metric-card" role="listitem"><div class="metric-label">Annual Gain <span id="ySaveDir" class="dir-indicator" aria-hidden="true"></span></div><div id="ySave" class="metric-value">₹0</div></div>
+            <div class="metric-card" role="listitem"><div class="metric-label">Term Gain <span id="tSaveDir" class="dir-indicator" aria-hidden="true"></span></div><div id="tSave" class="metric-value">₹0</div></div>
+            <div class="metric-card" role="listitem"><div class="metric-label">Effective Cost</div><div id="mEffective" class="metric-value">₹0</div></div>
+            <div class="metric-card" role="listitem"><div class="metric-label">Confidence</div><div id="confidence" class="metric-value">0%</div></div>
         </div>
     </div>
 
@@ -1013,182 +1167,203 @@ function getChartColors() {
 const fieldHelp = {
     leaseAmount: {
         title: 'Lease Amount',
-        subtitle: 'The total market value of the property or asset — not the deposit, not the loan. The full price as if you were buying it outright.',
+        subtitle: 'The total market value of the property — not the deposit you paid, not the loan. The full price as if you were buying it outright.',
         sections: [
-            { title: 'What it is', text: 'This is the sticker price of what you are leasing. Every other cost in the model — interest, opportunity cost, withholding, risk — is calculated as a fraction of this. Getting it right matters.' },
-            { title: 'For residential users', text: 'If you are a salaried individual deciding whether to lease a flat in Bengaluru for ₹50L market value, enter ₹50,00,000. Self-employed? You might be leasing a shop-cum-residence worth ₹80L — enter the full property value, not just the deposit you paid.' },
-            { title: 'Examples by profile', example: 'Salaried, 2BHK flat (Bengaluru/Pune): ₹50L–₹1.2Cr | Self-employed, shop or studio apartment: ₹30L–₹80L | Commercial space (SME): ₹50L–₹5Cr' },
-            { title: 'Common mistake', text: 'People often enter the deposit amount here instead of the full value. If the lessor took ₹5L as deposit on a ₹50L property, that is only 10% of the asset. Entering ₹5L would understate all costs by 10×.' }
+            { title: 'What it is', text: 'This is the sticker price of the property you are leasing. Every other cost in the model — interest, opportunity cost, withholding, risk — is calculated as a fraction of this number. Getting it right matters.' },
+            { title: 'Residential property', text: 'Use the current market value of the unit — what a buyer would pay today. For a 2BHK flat in a metro where you are paying a large deposit, the flat is worth ₹50L–₹1.5Cr. Do not enter the deposit amount. If the lessor took ₹8L as deposit on a ₹80L flat, enter ₹80L.' },
+            { title: 'Retail / shop space', text: 'Enter the market value of the shop or ground-floor unit. High-street shops in metro areas are valued at ₹60L–₹5Cr depending on size and location. If the deposit is a fixed sum (e.g. ₹10L on a ₹1Cr shop), enter ₹1Cr here.' },
+            { title: 'Office / workspace', text: 'Use the market capital value of the office floor plate or unit. Grade-A office space in Bengaluru or Mumbai is valued at ₹8,000–₹20,000 per sq ft. A 1,000 sq ft office at ₹12,000/sq ft = ₹1.2Cr lease amount.' },
+            { title: 'Industrial / warehouse', text: 'Warehouses and industrial sheds trade at ₹2,000–₹6,000 per sq ft on the outskirts of metros. A 5,000 sq ft warehouse at ₹3,000/sq ft = ₹1.5Cr. For cold-storage or specialised facilities, values can be 2–3× higher.' }
         ]
     },
     loanAmount: {
         title: 'Loan Amount',
-        subtitle: 'The portion of the lease financed through a bank or lender — the rest is your own money bearing an opportunity cost.',
+        subtitle: 'The portion of the lease deposit financed through a bank or lender — the rest is your own capital bearing an opportunity cost.',
         sections: [
-            { title: 'What it is', text: 'Most people do not pay the full lease deposit from savings. They borrow part of it, or take a personal/LAP loan against the arrangement. This is the borrowed portion. The difference — what you bring yourself — is your own capital, and the model charges you opportunity cost for locking it up.' },
-            { title: 'For salaried individuals', text: 'If you took a personal loan of ₹5L to fund part of a ₹8L lease deposit, enter ₹5L here. The remaining ₹3L came from your savings — that ₹3L is what the model will charge opportunity cost on. No loan? Set this to zero and the entire lease amount bears opportunity cost.' },
-            { title: 'For self-employed', text: 'Business owners often use a working capital line, OD facility, or LAP to fund a lease. Enter the borrowed portion here. If you self-funded the entire deposit from business reserves, enter zero — and set your opportunity rate to your business return rate.' },
-            { title: 'Example', example: 'Lease Amount ₹20L, Loan ₹15L → Own funds = ₹5L tied up. Model charges opp cost on ₹5L for the full lease term. Loan ₹0 → Full ₹20L bears opp cost.' }
+            { title: 'What it is', text: 'Most lessees do not pay the full deposit from savings. They borrow part of it via a personal loan, LAP, or business credit line. This is the borrowed portion. Your own contribution — the difference — is locked and the model charges you opportunity cost on it for the full lease term.' },
+            { title: 'Residential property', text: 'If you are paying a ₹15L deposit on a ₹75L flat and borrowed ₹10L via a personal loan, enter ₹10L. The remaining ₹5L from your savings bears opportunity cost. No loan? Enter zero — the entire deposit amount bears opportunity cost at your set rate.' },
+            { title: 'Retail / shop space', text: 'Shop leases often require large deposits (₹5L–₹25L+). Business owners frequently fund these via a working capital overdraft or LAP. Enter only the borrowed portion. If you dipped into business reserves for the full amount, enter zero and set the opportunity rate to your business return rate.' },
+            { title: 'Office / workspace', text: 'Corporate office leases are sometimes funded via company treasury or business loans. Enter the external borrowing only. If it is a mix — say ₹20L from a bank and ₹5L from personal funds — enter ₹20L. The ₹5L personal contribution will bear opportunity cost automatically.' },
+            { title: 'Example', example: 'Lease amount ₹50L, Loan ₹35L → Own funds = ₹15L bearing opp cost. Loan ₹0 → Full ₹50L bears opp cost at your chosen rate.' }
         ]
     },
     loanRate: {
         title: 'Loan Interest Rate',
-        subtitle: 'The annual rate your lender charges on the borrowed portion — directly sets your monthly EMI.',
+        subtitle: 'The annual rate your lender charges on the borrowed portion — this directly determines your monthly EMI.',
         sections: [
-            { title: 'What it is', text: 'The APR on your loan, expressed annually. The model converts to monthly internally and uses a reducing-balance EMI formula. Even 1% difference significantly changes total interest over long tenures.' },
-            { title: 'For salaried individuals', text: 'Salaried borrowers with good CIBIL (750+) typically get the best rates on personal or home loans. If you are using a top-up home loan to fund a lease, the rate is close to your home loan rate. Personal loans for lease funding are more expensive.' },
-            { title: 'For self-employed', text: 'Self-employed borrowers often face higher rates due to income documentation complexity. A GST-filed, ITR-consistent business can get near-salaried rates; cash-heavy businesses may pay 2–4% more.' },
-            { title: 'Current India benchmarks (2024–25)', example: 'Home loan / top-up: 8.5–9.5% | Personal loan (salaried): 10–14% | LAP (self-employed): 9–13% | NBFC / business loan: 12–18%' }
+            { title: 'What it is', text: 'The APR on your loan, expressed as an annual percentage. The model converts it to monthly internally and uses a standard reducing-balance EMI formula. Even a 1% difference significantly changes total interest paid over multi-year tenures.' },
+            { title: 'Residential property', text: 'Residential lease deposits are often funded via personal loans or top-up home loans. Top-up home loans are cheapest (8.5–10%) if you already have a home loan. Personal loans for individuals with CIBIL 750+ range from 10–14%. If you are borrowing against an existing property (LAP), expect 9–12%.' },
+            { title: 'Retail / shop space', text: 'Shop lease funding often uses business loans or OD facilities. GST-registered, ITR-consistent businesses can access credit at 11–15% from PSU banks. NBFCs lend at 14–20%. Proprietors with strong collateral can use LAP at 9–13%.' },
+            { title: 'Office / workspace', text: 'Companies leasing office space typically use working capital credit lines or unsecured business loans at 10–16%. Larger corporates with banking relationships may access cheaper structured finance at 8.5–10%.' },
+            { title: 'Current India benchmarks (2024–25)', example: 'Top-up home loan: 8.5–9.5% | Personal loan (good CIBIL): 10–14% | LAP: 9–13% | Business / OD facility: 12–18% | NBFC unsecured: 15–24%' }
         ]
     },
     maintenance: {
         title: 'Monthly Maintenance',
-        subtitle: 'Ongoing costs to keep the property usable — separate from your EMI.',
+        subtitle: 'Ongoing costs to keep the property functional — separate from your EMI and not refundable.',
         sections: [
-            { title: 'What it is', text: 'Leases often put upkeep responsibility on the lessee. This is your monthly spend on top of EMI to keep the asset in working condition — repairs, society charges, minor fixes, servicing.' },
-            { title: 'For salaried individuals (residential)', text: 'In a residential lease, you typically pay society maintenance charges (₹2,000–₹8,000/month depending on the apartment). If the property needs minor repairs you bear — add those. Exclude utility bills (electricity, water) as those are not lease costs.' },
-            { title: 'For self-employed (shop/workspace)', text: 'Commercial leases usually assign all interior and equipment maintenance to the lessee. Budget AMC for AC and electrical, minor civil works, cleaning staff, and periodic painting. This can easily reach ₹5,000–₹20,000/month depending on size.' },
-            { title: 'Examples', example: 'Salaried, 2BHK apartment society charge: ₹3,000–₹8,000 | Self-employed, 500 sq ft shop: ₹4,000–₹10,000 | Industrial / large commercial: ₹10,000–₹30,000+' }
+            { title: 'What it is', text: 'Lease agreements typically require the lessee to maintain the property. This covers society charges, minor repairs, AMC contracts, cleaning — anything you pay monthly to keep the asset operational. Exclude utility bills (electricity, water) as those are usage costs, not lease costs.' },
+            { title: 'Residential property', text: 'Society maintenance charges are the primary item: ₹2,000–₹8,000/month depending on the complex and city. Premium gated communities can charge ₹12,000–₹25,000/month. Add a buffer for occasional minor repairs (plumbing, fixtures) if the property is older.' },
+            { title: 'Retail / shop space', text: 'Shops bear higher maintenance — AC servicing, electrical AMC, signage upkeep, periodic painting, and civil minor repairs. A 400–800 sq ft shop typically costs ₹4,000–₹12,000/month in maintenance. High-traffic food and beverage outlets can reach ₹15,000–₹25,000/month.' },
+            { title: 'Office / workspace', text: 'Office maintenance includes HVAC AMC, electrical, housekeeping, and network infrastructure upkeep. Budget ₹8–₹20 per sq ft per month. A 2,000 sq ft office might spend ₹16,000–₹40,000/month on maintenance alone.' },
+            { title: 'Industrial / warehouse', text: 'Warehouses have lower maintenance per sq ft but higher absolute costs due to size. Dock levellers, fire suppression systems, flooring, and roof maintenance add up. Budget ₹5–₹15 per sq ft per month for industrial properties.' }
         ]
     },
     withholding: {
         title: 'Lease Withholding %',
-        subtitle: 'The share of your deposit you realistically expect never to get back — deducted by the lessor for damages, restoration, or disputes.',
+        subtitle: 'The share of your deposit you realistically expect not to recover — deducted at exit for damages, restoration, or disputes.',
         sections: [
-            { title: 'What it is', text: 'Most leases allow deductions from the security deposit at exit. This is your honest estimate of what percentage you will lose. The model treats it as a permanent economic loss — money gone, not returned.' },
-            { title: 'For salaried individuals (residential)', text: 'Residential lessors frequently deduct for painting, cleaning, and minor fixtures. If you live neatly and document the condition on entry and exit, 2–5% is typical. If you made modifications (built-in furniture, drilling) or there is wear from children/pets, expect 5–10%.' },
-            { title: 'For self-employed (shop/office)', text: 'Commercial tenants who install equipment, modify interiors, or run heavy operations face larger deductions. Restoration clauses can be severe — a gut-fit shop may cost ₹2–5L to restore. Budget 5–15% or get a written waiver upfront.' },
-            { title: 'Examples', example: 'Careful residential tenant, clean exit: 0–3% | Typical residential with normal wear: 3–7% | Commercial with fit-outs or modifications: 7–20%' }
+            { title: 'What it is', text: 'Lease agreements allow the lessor to deduct from the security deposit for damages beyond normal wear and tear, restoration of modifications, cleaning, or disputes. This is your realistic estimate of those permanent losses. The model treats it as a sunk cost — money gone.' },
+            { title: 'Residential property', text: 'Exit deductions are common: painting, cleaning, minor fixture repair. A clean, careful tenant who documented the property on entry typically loses 2–5%. Tenants with children, pets, or custom modifications (wardrobes, TV mounts) often see 5–12% deducted. Get a written inventory on day one to protect yourself.' },
+            { title: 'Retail / shop space', text: 'Shops face restoration clauses — returning the space to original state after fit-outs, signage, and equipment. This can be expensive. A basic fit-out shop deducts 5–12%. A heavily modified F&B or salon space can lose 15–25%. Negotiate a written fit-out waiver at signing.' },
+            { title: 'Office / workspace', text: 'Open-plan offices with minimal modifications see 2–6% withheld. Offices with server rooms, raised flooring, partition walls, or custom cabling often face 8–15% deduction. Get restoration scope defined in writing before signing.' },
+            { title: 'Examples', example: 'Residential, careful exit with documentation: 0–3% | Residential, normal wear: 3–7% | Shop with light fit-out: 5–12% | Shop with heavy modifications: 12–25% | Office, plug-and-play: 2–6%' }
         ]
     },
     refundDelay: {
         title: 'Lease Refund Delay',
-        subtitle: 'Months after you vacate before the deposit actually lands in your account.',
+        subtitle: 'Months between vacating the property and the deposit actually arriving in your account.',
         sections: [
-            { title: 'What it is', text: 'Even a rightful refund takes time. While you wait, your capital sits idle. The model charges you opportunity cost for every month of delay — using your locked funds rate.' },
-            { title: 'For salaried individuals', text: 'Individual residential landlords are the slowest refunders — they often wait until they find a new tenant or complete inspection. 1–3 months is common. Institutional lessors (housing cos, REITs) are faster, often within 30 days. If you have had a bad experience before, set this to 3.' },
-            { title: 'For self-employed', text: 'Commercial deposits are larger, so disputes are more common and financially motivated. A ₹10L commercial deposit delayed 4 months at 12% opportunity cost = ₹40,000 in lost returns. Budget 2–4 months unless you have a strong written agreement.' },
-            { title: 'Real cost example', example: 'Deposit ₹5L, delay 3 months, opp rate 12% → ₹15,000 lost | Deposit ₹20L, delay 4 months → ₹80,000 lost' }
+            { title: 'What it is', text: 'Even when a refund is undisputed, it takes time. While you wait, your capital earns nothing. The model charges you opportunity cost on the refundable amount for every month of delay, using your locked funds rate.' },
+            { title: 'Residential property', text: 'Individual landlords are the slowest refunders — many wait until the next tenant moves in. Expect 1–3 months. Institutional lessors (housing platforms, builder-developer projects) are faster, typically 30–45 days. If your landlord has been slow before, assume 3.' },
+            { title: 'Retail / shop space', text: 'Shop deposit refunds are frequently delayed by disputes over restoration scope. A ₹10L shop deposit delayed 4 months at 12% opportunity rate costs ₹40,000 in lost returns. Budget 2–4 months. A registered lease agreement with a clear exit clause speeds this up significantly.' },
+            { title: 'Office / workspace', text: 'Corporate lessors (IT parks, Grade-A building managers) typically refund within 45–90 days. Individual commercial landlords take 2–5 months. If your office lease is with a small landlord and the deposit is large, set this to 3.' },
+            { title: 'Real cost example', example: 'Deposit ₹5L, delay 3 months, opp rate 12% → ₹15,000 lost | Deposit ₹20L, delay 4 months → ₹80,000 lost | Deposit ₹1Cr, delay 6 months → ₹6L lost' }
         ]
     },
     marketRent: {
         title: 'Market Rent',
-        subtitle: 'What you would pay monthly if you rented the same property instead of leasing — your true alternative.',
+        subtitle: 'What you would pay monthly if you rented an equivalent property instead of leasing — your true alternative cost.',
         sections: [
-            { title: 'What it is', text: 'The cornerstone of the comparison. Month 1 rent of an equivalent property. The model escalates this annually using your Rent Growth input and compares cumulative rent against total lease cost.' },
-            { title: 'For salaried individuals', text: 'Look at NoBroker, 99Acres, or MagicBricks for comparable 2/3BHK flats in the same locality and size range. Use recently transacted rents from broker conversations, not listed asking prices — transacted rents are typically 8–12% lower. Include any amenities premium.' },
-            { title: 'For self-employed', text: 'Compare like-for-like. If your lease is a 600 sq ft shop on MG Road, find what comparable shops rent for in the same stretch. Location, floor, and frontage matter enormously in commercial rent — get 2–3 broker quotes.' },
-            { title: 'Residential benchmarks (2024)', example: 'Bengaluru (Whitefield, 2BHK): ₹28,000–₹45,000 | Mumbai (Andheri, 2BHK): ₹55,000–₹85,000 | Delhi NCR (Gurgaon, 2BHK): ₹35,000–₹60,000 | Pune (Kothrud, 2BHK): ₹20,000–₹35,000' }
+            { title: 'What it is', text: 'The cornerstone of the comparison. Enter Month 1 rent for an equivalent property in the same location and size. The model escalates this annually using your Rent Growth input and compares cumulative rent to total lease cost over the full term.' },
+            { title: 'Residential property', text: 'Look at NoBroker, 99Acres, or MagicBricks for comparable apartments in the same locality, size, and floor tier. Use transacted rents — ask brokers what deals actually closed at, not listing prices. Listed rents are typically 8–12% higher than transacted. Include any amenities premium if your lease property has a pool, gym, etc.' },
+            { title: 'Retail / shop space', text: 'Monthly rent for shops is almost always quoted per sq ft. Get broker quotes for comparable ground-floor space in the same micro-market — same street or same mall tier. Frontage, corner position, and foot traffic significantly affect rent. Use 2–3 quotes and take the median.' },
+            { title: 'Office / workspace', text: 'Office rents are quoted per sq ft per month on carpet or super built-up area. Ensure you compare on the same basis. Co-working as an alternative is priced per seat — convert to sq ft equivalent (typically 60–80 sq ft per seat) for comparison. Grade-A buildings command a 20–40% premium over Grade-B.' },
+            { title: 'Benchmarks (2024)', example: 'Bengaluru 2BHK (Whitefield): ₹28–45K | Mumbai 2BHK (Andheri): ₹55–85K | Bengaluru office (Grade-A): ₹90–130/sq ft/month | Mumbai retail (high-street): ₹200–500/sq ft/month' }
         ]
     },
     rentDeposit: {
         title: 'Rent Deposit',
-        subtitle: 'Upfront security deposit you would pay to a landlord under a rental agreement — refundable but capital-locked.',
+        subtitle: 'Security deposit you would pay under a rental agreement — refundable but capital is locked for the term.',
         sections: [
-            { title: 'What it is', text: 'Landlords require a deposit before handing over keys. It earns nothing for you. The model charges you opportunity cost on this amount for the full comparison period.' },
-            { title: 'For salaried individuals', text: 'Residential deposits in India are typically 2–3 months rent in most cities, but can reach 10 months in some parts of Karnataka (old-style 11-month agreements with large deposits are still common). Know your local norm before entering.' },
-            { title: 'For self-employed', text: 'Commercial rental deposits are 3–6 months of rent, sometimes more for prime locations. Co-working spaces may ask only 1 month or zero. If you are comparing a lease against a co-working option, enter a much lower deposit here.' },
-            { title: 'City norms', example: 'Bengaluru residential: 5–10 months rent (higher end common) | Mumbai residential: 2–3 months | Delhi/NCR: 2–3 months | Pune: 2–4 months | Commercial pan-India: 3–6 months' }
+            { title: 'What it is', text: 'Rental agreements require an upfront security deposit. Unlike a lease deposit, rental deposits are smaller relative to property value. But the money still sits idle — the model charges opportunity cost on it for the full comparison period.' },
+            { title: 'Residential property', text: 'Residential rental deposits vary sharply by city. Bengaluru is an outlier — 5–10 months rent is common (a legacy of old KAR Rent Control norms). Mumbai, Delhi, Pune, Hyderabad are more standard at 2–3 months. Always enter the actual deposit you would pay, not a national average.' },
+            { title: 'Retail / shop space', text: 'Shop rental deposits are typically 3–6 months of rent, sometimes higher in prime high-street locations. A ₹60,000/month shop with 4 months deposit = ₹2.4L locked. For comparison, a co-working space might ask zero or just 1 month advance.' },
+            { title: 'Office / workspace', text: 'Standard office rental deposits are 3–6 months rent. Managed office / co-working spaces typically require just 1 month. If you are comparing a lease against a flexible office subscription, the rental deposit can be near zero — enter accordingly.' },
+            { title: 'City norms', example: 'Bengaluru residential: 5–10 months rent | Mumbai: 2–3 months | Delhi NCR: 2–3 months | Pune: 2–4 months | Commercial pan-India (rental): 3–6 months | Co-working: 0–1 month' }
         ]
     },
     depositRefundDelay: {
         title: 'Rent Deposit Refund Delay',
-        subtitle: 'Months after vacating before your rental deposit is returned.',
+        subtitle: 'Months after vacating before your rental deposit comes back to you.',
         sections: [
-            { title: 'What it is', text: 'Rental deposits also take time to return. The model prices this using your opportunity rate — money sitting with the landlord is not working for you.' },
-            { title: 'For salaried individuals', text: 'Most residential landlords return within 1–2 months after inspection and key handover. Disputes over painting and cleaning are common. If you leave a paper trail (condition photos, written communication), refunds are faster. Use 1–2 months as a realistic default.' },
-            { title: 'For self-employed', text: 'Commercial refunds depend heavily on the agreement and landlord type. High-street retail landlords can be difficult — disputes over restoration, signage removal, and fit-out damage are common. Use 2–3 months if the deposit is substantial.' },
-            { title: 'Tip', text: 'Since rent deposits are usually smaller than lease deposits, the financial impact of this delay is modest. But if you are in a high-deposit city (like Bengaluru with 8–10 months deposit), a 2-month delay on a large deposit genuinely costs money.' }
+            { title: 'What it is', text: 'Even rental deposits take time to return. The model charges opportunity cost on the rental deposit for the duration of this delay. For small deposits, the impact is minor — but in high-deposit cities like Bengaluru with 8–10 months deposit, a 2-month delay on a large sum genuinely costs money.' },
+            { title: 'Residential property', text: 'Most residential landlords return within 1–2 months after inspection and key handover. Clean exits with prior written communication and photo documentation speed this up. Disputed exits drag to 3–6 months. Use 1–2 as a standard default.' },
+            { title: 'Retail / shop space', text: 'Shop rental deposits face higher dispute rates — restoration of fit-outs, signage removal, damage claims. Budget 2–3 months. Prime high-street landlords with professionally managed properties are faster.' },
+            { title: 'Office / workspace', text: 'Corporate office rental deposits from professional landlords are typically returned in 30–60 days. Individual landlord offices take 1–3 months. Co-working spaces return deposits almost immediately on exit.' }
         ]
     },
     rentIncrement: {
         title: 'Annual Rent Growth',
-        subtitle: 'How much your rent escalates each year — a key reason leasing can beat renting over time.',
+        subtitle: 'How much rent escalates each year — the primary reason a fixed lease often beats renting over time.',
         sections: [
-            { title: 'What it is', text: 'Rent rarely stays flat. The model escalates your Month 1 rent by this percentage every 12 months. Higher growth makes renting progressively more expensive versus a fixed lease cost.' },
-            { title: 'For salaried individuals', text: 'Residential rents in Bengaluru, Hyderabad and Mumbai have been growing 8–12%/year in premium areas post-2022. If you are in a high-demand neighbourhood and your landlord historically raises rent steeply, use 7–10%. More stable areas: 4–6%. Check your last 2–3 renewal experiences.' },
-            { title: 'For self-employed', text: 'Commercial rents in high-street and business park locations follow market cycles more than inflation. In a supply-constrained market (e.g., lower Parel, Connaught Place), 6–10% is realistic. In oversupplied suburban commercial, 3–5% or even flat is common.' },
-            { title: 'Why this matters', example: 'Rent ₹40,000 at 8% growth → Year 5 rent = ₹58,773. Over 5 years you pay ₹26.5L in total rent. At 4% growth, only ₹23.5L. That ₹3L difference changes the lease vs rent verdict.' }
+            { title: 'What it is', text: 'Rent rarely stays flat. The model escalates your starting rent by this percentage every 12 months. Compounding rent growth is the most powerful lever in this calculation — even 1% more growth per year has a dramatic effect on 5-year totals.' },
+            { title: 'Residential property', text: 'Residential rent growth in Indian metros has been aggressive post-2022. Premium localities in Bengaluru, Hyderabad, and Mumbai saw 10–15% year-on-year increases at peak. Stabilised markets are now reverting to 5–8%. Use your landlord\'s history and local broker intelligence — not national averages.' },
+            { title: 'Retail / shop space', text: 'High-street shop rents follow demand cycles tightly. Supply-constrained markets (MG Road Bengaluru, SV Road Mumbai, Connaught Place Delhi) grow at 6–12%/year. Suburban malls and secondary streets see 3–6% or may stagnate. Check vacancy rates in the micro-market as a signal.' },
+            { title: 'Office / workspace', text: 'Grade-A office rents in India\'s top 6 cities grew 4–8% CAGR over 2019–2024. SEZ and tech park buildings in supply-constrained zones grow faster. Co-working rates are more volatile and can move 10–20% in either direction based on demand.' },
+            { title: 'Industrial / warehouse', text: 'Warehouse rents near major logistics corridors (NH48, NH8, JNPT catchment) are growing at 8–12%/year driven by e-commerce demand. Peripheral industrial zones see 3–6% growth. Cold-storage is tighter — 8–15% in key cities.' },
+            { title: 'Why this matters', example: 'Rent ₹50,000 at 8% growth → Year 5 rent ₹73,466. 5-year total: ₹35.1L. At 5% growth → Year 5 rent ₹60,775. 5-year total: ₹33.2L. That ₹1.9L difference changes the verdict.' }
         ]
     },
     flexibilityPremium: {
         title: 'Flexibility Value',
-        subtitle: 'The monthly ₹ value of renting\'s freedom to exit — something a long lease cannot offer.',
+        subtitle: 'The monthly ₹ value you place on renting\'s ability to exit without penalty — a lease cannot offer this.',
         sections: [
-            { title: 'What it is', text: 'Renting lets you exit with short notice. A lease locks you in — breaking it usually means deposit forfeiture or penalties. This field lets you put a price on that optionality. The model subtracts it from renting\'s monthly cost, making renting look cheaper on a like-for-like basis.' },
-            { title: 'For salaried individuals', text: 'Are you likely to change cities for work? Is your job stable? If you are in a transferable role (IT services, banking, defence, government) or early in your career, the ability to move without penalty is worth real money. A ₹3,000–₹8,000/month value is reasonable for salaried professionals with job mobility.' },
-            { title: 'For self-employed', text: 'If your business is in early stage — revenues not yet stable, location not proven — the ability to exit a shop or office without losing a large deposit has high value. If you have been at the same location for 10 years and plan 10 more, it is worth very little. Calibrate to your actual uncertainty.' },
-            { title: 'Calibration guide', example: 'Salaried, frequent relocations or unstable job: ₹5,000–₹10,000 | Salaried, stable, settled city: ₹1,000–₹3,000 | Self-employed, early stage: ₹5,000–₹12,000 | Self-employed, established, location-dependent: ₹0–₹2,000' }
+            { title: 'What it is', text: 'Renting gives you the right to leave with short notice and minimal penalty. A lease locks you in — early termination typically means deposit forfeiture or contractual penalties. This field quantifies that option value in monthly terms. The model subtracts it from rent\'s total cost, making renting appear cheaper on a risk-adjusted basis.' },
+            { title: 'Residential property', text: 'Location certainty matters here. Are you confident you will stay in this city for the full lease term? If you relocate frequently for work, change employers often, or have elderly parents in another city, exit optionality has real value — ₹3,000–₹8,000/month. If you are settled and confident, ₹0–₹2,000 is appropriate.' },
+            { title: 'Retail / shop space', text: 'A new business in an unproven location should value exit flexibility highly — ₹8,000–₹20,000/month. An established business with 5+ years at the same location and loyal foot traffic has very little reason to exit — use ₹0–₹3,000. The break-even clause or lock-in period in your lease also affects this.' },
+            { title: 'Office / workspace', text: 'Fast-growing startups that may need to double or halve headcount within 2 years should value flexibility at ₹5,000–₹15,000/month. A stable 50-person company with predictable headcount can use ₹1,000–₹3,000. Co-working is the ultimate flexible option — if you are comparing against co-working, flexibility value should be near zero for the renting side.' },
+            { title: 'Calibration guide', example: 'High certainty of staying (established business / settled household): ₹0–₹2,000 | Moderate uncertainty (growing team / mobile professional): ₹3,000–₹8,000 | High uncertainty (early-stage business / frequently relocated): ₹8,000–₹20,000' }
         ]
     },
     leaseTenure: {
         title: 'Lease Tenure',
-        subtitle: 'The total length of your lease in months — sets the time horizon for the entire comparison.',
+        subtitle: 'The total committed duration of your lease in months — sets the time horizon for the entire comparison.',
         sections: [
-            { title: 'What it is', text: 'How long you commit to the lease, in months. All costs and savings are computed across this period. Longer tenure generally favours leasing as rent escalation compounds, but also increases your total commitment risk.' },
-            { title: 'For salaried individuals', text: 'Residential leases in India are typically 11–24 months (11-month is standard to avoid registration). A long-term residential lease (36–60 months) is uncommon but exists, especially in corporate housing. If you are modelling an 11-month renewable agreement, enter 24 or 36 to model your likely total stay.' },
-            { title: 'For self-employed', text: 'Commercial leases run 36–60 months for standard retail/office, and 120–180 months for anchor tenants or industrial. Shorter tenures favour renting; longer tenures where rent growth is high strongly favour leasing because the escalating rent compounds significantly.' },
-            { title: 'Rule of thumb', text: 'Below 18 months, leasing rarely wins unless the deposit is very small. Beyond 36 months in a 6%+ rent growth market, leasing almost always wins if your lease deposit cost is reasonable. Use the Cumulative Impact chart to see exactly when the crossover happens for your inputs.' }
+            { title: 'What it is', text: 'How long you are contractually bound to the property, in months. All costs and savings compound over this period. Longer tenures generally favour leasing because rent escalation compounds — but they also increase your lock-in risk.' },
+            { title: 'Residential property', text: 'Residential leases in India are almost universally 11-month agreements (to avoid mandatory registration under the Registration Act). Most people renew 2–3 times. Model your likely total stay: if you expect to stay 3 years, enter 36 months even if the formal agreement is 11-month renewable. The model compares total economics over that horizon.' },
+            { title: 'Retail / shop space', text: 'Standard shop leases run 36–60 months with a 3-year lock-in (the lessee cannot exit before 3 years without penalty). Anchor tenant arrangements in malls can be 60–120 months. Shorter tenures typically favour renting; longer tenures in high-rent-growth markets strongly favour leasing.' },
+            { title: 'Office / workspace', text: 'Small office leases are typically 36 months. Large corporate floor plates go to 60–84 months. Co-working memberships are month-to-month to 12 months. If you are modelling a lease vs co-working comparison, use your planned office commitment horizon as the tenure.' },
+            { title: 'Industrial / warehouse', text: 'Warehouses are leased for 36–120 months. Long-term logistics contracts (3PL, e-commerce fulfilment) often anchor leases at 60–84 months. Shorter warehousing needs (seasonal, overflow) are better served by rental arrangements.' },
+            { title: 'Rule of thumb', text: 'Below 18 months, leasing rarely wins unless the deposit is very small. Beyond 36 months in a 6%+ rent growth market, leasing almost always wins if deposit costs are contained. Use the Cumulative Impact chart to see the exact crossover month.' }
         ]
     },
     loanTenure: {
         title: 'Loan Tenure',
-        subtitle: 'How long your loan repayment runs — shorter than the lease creates a rent-free EMI tail period.',
+        subtitle: 'Repayment period for your loan — must be ≤ lease tenure. A shorter loan creates an EMI-free tail that improves lease economics.',
         sections: [
-            { title: 'What it is', text: 'How many months you repay your loan. Longer = lower EMI but more total interest. The model caps this at the lease tenure — you cannot repay a loan longer than the lease. If loan tenure is shorter than lease, you get an EMI-free period at the end.' },
-            { title: 'For salaried individuals', text: 'If you used a personal loan to fund a lease deposit, the loan tenure is typically 12–36 months. On a 24-month lease with a 12-month loan, you get 12 months EMI-free. That significantly reduces your average monthly cost and often swings the decision.' },
-            { title: 'For self-employed', text: 'Business loans or OD facilities used to fund commercial leases often have shorter tenures (12–36 months). Matching a 3-year loan against a 5-year lease gives you 2 EMI-free years — a substantial benefit. Some business owners accelerate repayment using business cash flows, shortening the effective tenure further.' },
-            { title: 'Example', example: 'Salaried: 12-month personal loan, 24-month lease → 12 months EMI-free. Self-employed: 24-month business loan, 60-month lease → 36 months EMI-free — strongly improves lease economics.' }
+            { title: 'What it is', text: 'How many months you repay the loan. The model automatically caps this at your lease tenure — you cannot repay over a longer period than the lease runs. If your loan ends before the lease, you enjoy EMI-free months at a lower effective monthly cost. This "tail benefit" often makes the difference in borderline decisions.' },
+            { title: 'Residential property', text: 'Personal loans used to fund residential lease deposits typically run 12–36 months. On a 24-month lease with a 12-month loan: 12 months are EMI-free. That substantially lowers your average monthly cost. If you are using savings (no loan), set loan amount to zero and this field has no effect.' },
+            { title: 'Retail / shop space', text: 'Business loan tenures for shop lease funding are typically 12–36 months. A 5-year shop lease with a 2-year business loan gives you 3 EMI-free years — a significant boost. If you are pre-paying a loan from business cash flows, use the effective payoff month, not the contracted tenure.' },
+            { title: 'Office / workspace', text: 'Corporate office lease deposits funded via working capital OD or business credit lines are often cleared within 12–24 months. A 5-year office lease with a 2-year OD gives you 3 EMI-free years. If the credit line is revolving (not term), match the tenure to your actual payoff plan.' },
+            { title: 'Example', example: 'Loan tenure 12 mo, Lease 36 mo → 24 months EMI-free (strong lease benefit) | Loan tenure = Lease tenure → No EMI-free period | Loan ₹0 → No EMI at all, only opp cost on own funds' }
         ]
     },
     oppRate: {
         title: 'Opportunity Cost Rate',
-        subtitle: 'What your locked capital could have earned elsewhere — enter the nominal (pre-inflation) annual return.',
+        subtitle: 'What your locked capital could have earned in its next-best use — enter the nominal annual return, pre-inflation.',
         sections: [
-            { title: 'What it is', text: 'Capital tied up in a lease deposit cannot be invested. This is the return you give up. The model compounds this over the lease term and treats it as a cost of leasing. Higher rate = leasing looks more expensive.' },
-            { title: 'For salaried individuals', text: 'Think about where you would actually put the money. Most salaried investors spread across FDs, equity mutual funds, and PPF. A blended rate of 9–12% is realistic for a balanced investor. If you are conservative (mostly FDs and debt funds), use 7–8%. If you are aggressive (mostly equity), use 12–15%.' },
-            { title: 'For self-employed', text: 'This is where self-employed users often have a much higher rate — business capital earns 20–30%+ returns for profitable businesses. If you are taking money out of your business to fund a lease deposit, the opportunity cost is your business return rate, not an FD rate. This makes large lease deposits especially expensive for self-employed users.' },
-            { title: 'Benchmarks', example: 'Conservative salaried (FD + PPF): 7–8% | Balanced salaried (equity + debt mix): 10–12% | Aggressive investor: 13–16% | Self-employed, profitable business: 18–30%' }
+            { title: 'What it is', text: 'Money locked in a lease deposit cannot be invested. This rate represents the return you give up by locking it up. The model compounds this over the full lease term. Higher rate = leasing becomes more expensive because the trapped capital "costs" more.' },
+            { title: 'Residential property', text: 'Most individuals holding large residential deposits would otherwise invest in FDs, equity mutual funds, or PPF. A realistic blended return for a balanced investor is 9–12% nominal. Conservative (FD + debt): 7–8%. Equity-heavy investors: 12–16%. Use your actual portfolio return expectation, not an aspirational number.' },
+            { title: 'Retail / shop space', text: 'Shop owners tying up ₹10L–₹30L in a lease deposit should benchmark against their own business return. If that capital deployed in inventory or working capital earns 20–30% ROI, that is the true opportunity cost — not an FD rate. This dramatically changes the calculation for profitable retail businesses.' },
+            { title: 'Office / workspace', text: 'Companies with office lease deposits locked up should use their weighted cost of capital (WACC) or their next best investment return. For a profitable company deploying capital at 15–25% ROI internally, a large office deposit is expensive. For an early-stage startup with no profitable uses for capital yet, use a lower market rate (9–12%).' },
+            { title: 'Industrial / warehouse', text: 'Warehouse deposits are often large (₹20L–₹2Cr). For logistics businesses, that capital could fund trucks, inventory, or warehouse equipment — often earning 18–30% returns. Use your actual business return, not a passive investment rate.' },
+            { title: 'Benchmarks', example: 'FD / PPF (risk-free): 7–8% | Balanced mutual fund: 10–13% | Equity index fund: 13–16% | Profitable business capital: 18–30%' }
         ]
     },
     riskPremium: {
         title: 'Net Lease Risk Premium',
-        subtitle: 'Extra annual % to account for the risks of leasing that renting does not carry — counterparty, lock-in, and deposit recovery risk.',
+        subtitle: 'Extra annual % for risks unique to leasing — counterparty, lock-in, and deposit recovery risk beyond what renting carries.',
         sections: [
-            { title: 'What it is', text: 'Leasing ties up a large deposit with one person for years, with limited exit options. Renting is more flexible and deposits are smaller. This captures only the net excess risk of leasing over renting — not total risk.' },
-            { title: 'For salaried individuals (residential)', text: 'The main risks are: landlord refuses to refund, landlord sells property mid-lease forcing you out, or disputes at exit. An individual landlord with a verbal agreement is high risk. A corporate housing provider with escrow is low risk. Most residential scenarios fall in the 1–2% range.' },
-            { title: 'For self-employed (commercial)', text: 'Commercial lease risks are higher — deposits are larger, disputes are financially motivated, and court recovery is slow. If your deposit is ₹15L+ with an individual landlord and no bank guarantee, use 2–3%. REIT-owned buildings with legal departments and track records: 0.5–1%.' },
-            { title: 'Calibration', example: 'Institutional/REIT lessor, strong documentation: 0.5–1% | Reputed developer, standard agreement: 1–1.5% | Individual landlord, moderate documentation: 1.5–2.5% | Informal, weak agreement, large deposit: 3–5%' }
+            { title: 'What it is', text: 'Leasing exposes you to risks that renting does not: a large deposit with one party for years, limited exit options, and potential disputes at recovery. This premium captures only the net excess risk of leasing over renting. It is applied to the lease amount and annualised.' },
+            { title: 'Residential property', text: 'Key risks: landlord refuses full refund, sells the property mid-lease, or disputes condition at exit. A registered lease agreement with a reputed individual landlord in a stable building: 1–1.5%. An informal arrangement with an unregistered lessor: 2–3%. Corporate housing providers with escrow: 0.5–1%.' },
+            { title: 'Retail / shop space', text: 'Commercial risk is higher — deposits are larger, disputes are financially motivated, and court recovery takes years. If you are leasing from a builder or developer with a track record: 1–2%. Individual shop owner with no documentation: 3–5%. High-street prime shops where deposit forfeiture is a known lessor tactic: 4–6%.' },
+            { title: 'Office / workspace', text: 'Grade-A buildings managed by institutional landlords (REITs, large developers) carry very low risk — 0.5–1%. The documentation is strong, legal departments are professional, and refunds are reliable. Individual landlord office space: 2–3%. SEZ buildings have specific legal protections that reduce risk further.' },
+            { title: 'Industrial / warehouse', text: 'Industrial leases are generally better documented (registered, stamp-duty paid) and disputes are rarer. But the deposits are large, so risk is still real. Reputed industrial park lessors: 1–1.5%. Informal factory shed arrangements: 3–5%.' },
+            { title: 'Calibration', example: 'REIT / institutional lessor, registered agreement: 0.5–1% | Reputed developer, standard agreement: 1–1.5% | Individual lessor, moderate documentation: 1.5–2.5% | Informal, high-value deposit, weak paperwork: 3–6%' }
         ]
     },
     inflationRate: {
         title: 'Inflation Rate',
-        subtitle: 'Expected annual inflation — converts your nominal opportunity rate to a real, purchasing-power-adjusted rate. Does not escalate rent.',
+        subtitle: 'Expected annual consumer inflation — used to convert your nominal opportunity rate into a real, purchasing-power-adjusted rate. Does not escalate rent.',
         sections: [
-            { title: 'What it is', text: 'Inflation erodes the value of money. This field lets the model express opportunity costs in real terms. A 12% nominal return in a 6% inflation environment is only ~5.7% real — and that is what should price the cost of locking your capital.' },
-            { title: 'For salaried individuals', text: 'Use the inflation rate you believe will persist over your lease term. If you are conservative, use the RBI target of 4–5%. If you expect higher due to urban cost pressures (housing, food, services), use 5.5–6.5%. This mainly affects how much weight the model gives to opportunity cost.' },
-            { title: 'Important: this does NOT escalate rent', text: 'Rent growth is a separate input. Set Inflation here for opportunity cost adjustment only. Even if inflation is 6%, your landlord might raise rent 10% (high demand) or 2% (oversupply). Enter each independently.' },
+            { title: 'What it is', text: 'Inflation erodes the real value of returns. A 12% nominal investment return in a 6% inflation environment is only ~5.7% real. The model uses this to adjust your opportunity cost to real terms — ensuring the cost of locking up capital is not overstated in nominal terms.' },
+            { title: 'How it affects the model', text: 'Higher inflation → lower real opportunity cost → leasing becomes relatively more attractive. Lower inflation → higher real opportunity cost → locked deposit costs more. Set this to your expected CPI over the lease term, not just the current reading.' },
+            { title: 'Important: this does NOT escalate rent', text: 'Rent growth is controlled by the Rent Growth field. Inflation here only adjusts opportunity cost calculations. Enter both independently — they often diverge significantly (e.g. 6% CPI with 10% rent growth in metro residential markets).' },
+            { title: 'Property type notes', text: 'Inflation is not property-type specific — use the same macro rate regardless. The difference between property types shows up in Rent Growth, not here. Use RBI\'s medium-term target of 4–5% for conservative estimates, or 5.5–7% if you expect elevated urban inflation.' },
             { title: 'Reference', example: 'RBI inflation target: 4% | CPI average 2022–24: 5.5–6.5% | Conservative long-run forecast: 4.5–5% | Urban services inflation (anecdotal): 6–8%' }
         ]
     },
     liquidityPremium: {
         title: 'Liquidity Premium',
-        subtitle: 'Extra % added to the opportunity rate for lease deposit funds — because money locked for years is less accessible than money locked for months.',
+        subtitle: 'Extra % added on top of your opportunity rate for lease deposit capital — because years-long lock-in is worse than months-long lock-in.',
         sections: [
-            { title: 'What it is', text: 'A rent deposit (2–3 months, small amount) can be recovered quickly if needed. A lease deposit (large, locked for years) cannot be easily accessed, borrowed against, or redeployed. This premium compensates for that extra illiquidity — applied only to the lease deposit, not the rent deposit.' },
-            { title: 'For salaried individuals', text: 'If the lease deposit is a meaningful chunk of your savings (say, ₹10L out of ₹25L in savings), the liquidity premium should be higher — you genuinely cannot access that money in an emergency. If you are cash-rich and this deposit is minor relative to your net worth, lower it.' },
-            { title: 'For self-employed', text: 'Business owners with working capital needs feel illiquidity more acutely. ₹15L locked in a lease deposit could fund inventory, clear a supplier, or hire staff. Use 2.5–4% if this capital has clear business uses.' },
-            { title: 'How to set it', example: 'Deposit is <10% of liquid savings / net worth: 0.5–1% | Deposit is 10–25% of savings: 1.5–2.5% | Deposit is >25% of savings or has high business opportunity cost: 2.5–4%' }
+            { title: 'What it is', text: 'A rental deposit (2–3 months, small sum) can be recovered relatively quickly. A lease deposit (large, locked for years, often disputes-prone) is far less liquid. This premium compensates for that additional illiquidity — applied only to the own-funds portion of the lease deposit, not the rent deposit.' },
+            { title: 'Residential property', text: 'If the deposit represents more than 10–20% of your liquid savings, illiquidity is a real concern — you cannot access it in an emergency. Use 1.5–2.5%. If the deposit is a minor fraction of your overall wealth and you have ample liquidity elsewhere, 0.5–1% is sufficient.' },
+            { title: 'Retail / shop space', text: 'For businesses with working capital cycles, tying up ₹10–₹30L in a shop deposit has meaningful opportunity friction. The same capital could fund faster inventory turns. Use 2–3.5% if the deposit materially constrains your working capital. Lower if you are capital-rich.' },
+            { title: 'Office / workspace', text: 'For companies with active deployment of capital (hiring, product, marketing), an office deposit that could fund 2–3 months of runway is genuinely illiquid. Startups: 2.5–4%. Established companies with cash reserves: 1–2%.' },
+            { title: 'How to calibrate', example: 'Deposit < 10% of liquid wealth: 0.5–1% | Deposit is 10–25% of liquid wealth: 1.5–2.5% | Deposit > 25% of liquid wealth or constrains business working capital: 2.5–4%' }
         ]
     },
     returnVol: {
         title: 'Return Volatility',
-        subtitle: 'How unpredictable your investment returns are — higher uncertainty reduces how much you can rely on the opportunity cost argument.',
+        subtitle: 'How unpredictable your alternative investment returns are — higher volatility means you cannot fully rely on the quoted opportunity rate.',
         sections: [
-            { title: 'What it is', text: 'If you say "I could earn 14% in equity funds," but your actual returns swing from −15% to +35%, you cannot count on 14% reliably. This field applies a certainty-equivalent downward adjustment to your opportunity rate to reflect that. Higher volatility = lower reliable effective rate = leasing looks slightly more attractive.' },
-            { title: 'For salaried individuals', text: 'Most salaried investors are in a mix of equity and debt. Pure equity investors face real volatility — returns depend on when you invest and when you need the money. If your alternative is a pure FD or debt fund, use 5%. If it is ELSS or index funds, use 14–18%. If you are comparing against a specific SIP, use the volatility of that fund category.' },
-            { title: 'For self-employed', text: 'Business returns are highly volatile — a profitable year can be followed by a lean one. If your opportunity rate is your business return (say 25%), the volatility of that return is also high. Use 25–35% volatility in such cases. This will modestly reduce the effective opportunity rate, making the large lease deposit seem less costly.' },
-            { title: 'Quick reference', example: 'FD / liquid fund / PPF: 3–5% | Debt mutual funds: 5–8% | Balanced / hybrid funds: 10–14% | Nifty 50 index: 15–18% | Mid/small cap equity: 22–30% | Business returns: 25–40%' }
+            { title: 'What it is', text: 'If you claim "I could earn 14% in equity funds," but those returns swing from −20% to +40%, you cannot count on 14% with certainty. The model applies a certainty-equivalent downward adjustment (Kelly-style penalty) to your opportunity rate based on volatility. Higher volatility → lower reliable effective rate → leasing looks slightly more attractive.' },
+            { title: 'Residential property', text: 'Individual depositors most commonly compare against FDs, PPF, or mutual funds. FD and PPF have near-zero volatility (use 3–5%). Equity mutual funds have high volatility — Nifty 50 standard deviation is ~15–18% annually. A balanced investor in hybrid funds: 10–14%.' },
+            { title: 'Retail / shop space', text: 'If your alternative is to deploy the deposit money back into your business, business returns are highly volatile. A profitable year can follow a loss-making one. Use 25–40% to reflect real business return variability. This will modestly reduce the effective opportunity rate, making the large shop deposit seem less costly to justify.' },
+            { title: 'Office / workspace', text: 'For companies, the alternative deployment (hiring, product, sales) has high volatility especially at early stages. Use 20–35% for startups, 10–20% for established companies with predictable EBITDA. Large corporates with stable cash flows: 8–12%.' },
+            { title: 'Quick reference', example: 'FD / PPF / liquid fund: 3–5% | Debt / short-duration fund: 5–8% | Balanced / hybrid fund: 10–14% | Nifty 50 index fund: 15–18% | Mid/small cap equity: 22–30% | Business returns: 25–40%' }
         ]
     }
 };
@@ -1214,6 +1389,8 @@ function showGlobalHelp() {
         <div class="modal-section"><div class="modal-section-title">Step 1: Enter Your Numbers</div><div class="modal-text">Fill in asset price, loan terms, and market rent. Use ⓘ buttons for field explanations.</div></div>
         <div class="modal-section"><div class="modal-section-title">Step 2: Set Economic Assumptions</div><div class="modal-text">Define investment returns, inflation, and risk comfort. These affect long-term comparisons.</div></div>
         <div class="modal-section"><div class="modal-section-title">Step 3: Read the Score</div><div class="modal-text"><strong>0-35:</strong> Rent is better | <strong>35-50:</strong> Neutral | <strong>50-85:</strong> Lease is better | <strong>85-100:</strong> Strong lease advantage</div></div>
+        <div class="modal-section"><div class="modal-section-title">⚡ Quick Scenarios</div><div class="modal-text">Use the preset buttons at the top to instantly load typical scenarios: Salaried Residential, Self-Employed Commercial, Conservative, or Aggressive Investor profiles.</div></div>
+        <div class="modal-section"><div class="modal-section-title">⌨️ Keyboard Shortcuts</div><div class="modal-text"><code style="background:rgba(77,179,255,0.1);padding:2px 6px;border-radius:4px;">?</code> or <code style="background:rgba(77,179,255,0.1);padding:2px 6px;border-radius:4px;">H</code> — Open help &nbsp;&nbsp; <code style="background:rgba(77,179,255,0.1);padding:2px 6px;border-radius:4px;">R</code> — Reset to defaults &nbsp;&nbsp; <code style="background:rgba(77,179,255,0.1);padding:2px 6px;border-radius:4px;">Esc</code> — Close modal</div></div>
     `;
     $('helpModal').classList.add('active');
 }
@@ -1221,6 +1398,21 @@ function showGlobalHelp() {
 function closeHelpModal(event) {
     if (event && event.target !== $('helpModal')) return;
     $('helpModal').classList.remove('active');
+}
+
+/* ================= UPDATE ALL LABELS ================= */
+function updateAllLabels() {
+    syncInputs.forEach(({ id, label, format }) => {
+        const input = $(id);
+        const labelEl = label ? $(label) : null;
+        const range = $(id + 'Range');
+        if (!input || !labelEl) return;
+        const val = cleanNumber(input.value);
+        if (format === 'inr') labelEl.innerText = formatINR(val);
+        else if (format === 'percent') labelEl.innerText = formatPercent(val);
+        else labelEl.innerText = val;
+        if (range) range.value = val;
+    });
 }
 
 /* ================= INPUT SYNC ================= */
@@ -1258,7 +1450,19 @@ syncInputs.forEach(({ id, label, format }) => {
         else labelEl.innerText = val;
     };
 
-    if (range) { range.addEventListener('input', () => { input.value = range.value; updateLabel(); calculate(); }); }
+    if (range) { range.addEventListener('input', () => {
+        input.value = range.value; updateLabel();
+        // Live cap: if leaseTenure changes, clamp loanTenure
+        if (id === 'leaseTenure') {
+            const lt = cleanNumber(input.value);
+            const loanT = $('loanTenure'), loanR = $('loanTenureRange');
+            if (loanT && cleanNumber(loanT.value) > lt) {
+                loanT.value = lt; if (loanR) { loanR.value = lt; loanR.setAttribute('aria-valuenow', lt); }
+                const lbl = $('loanTenureLabel'); if (lbl) lbl.innerText = lt;
+            }
+        }
+        calculate();
+    }); }
     input.addEventListener('input', () => { const clean = cleanNumber(input.value); if (range) range.value = clean; updateLabel(); calculate(); });
 });
 
@@ -1616,6 +1820,52 @@ function updateVerdictBanner(monthlySavings, termSavings, score, tenure, confide
     tSavEl.textContent = (leaseBetter ? '+' : '-') + absTerm;
 }
 
+/* ================= VALIDATION ================= */
+function validateInputs(vals) {
+    const errors = [], warnings = [];
+    const { LEASE_AMOUNT, LOAN_AMOUNT, LOAN_TENURE, LEASE_TENURE, MARKET_RENT,
+            OPP_RATE_ANNUAL, RENT_INCREMENT, WITHHOLDING, VOLATILITY, LOAN_RATE_ANNUAL } = vals;
+
+    // Hard errors — block calculation
+    if (LOAN_AMOUNT > LEASE_AMOUNT)
+        errors.push(`Loan amount (${formatINR(LOAN_AMOUNT)}) exceeds lease amount (${formatINR(LEASE_AMOUNT)}). You cannot borrow more than the property value.`);
+    if (LOAN_TENURE > LEASE_TENURE)
+        errors.push(`Loan tenure (${LOAN_TENURE} mo) is longer than lease tenure (${LEASE_TENURE} mo). Loan has been capped to lease tenure automatically.`);
+    if (LEASE_TENURE < 6)
+        errors.push('Lease tenure must be at least 6 months for a meaningful comparison.');
+    if (MARKET_RENT <= 0)
+        errors.push('Market rent must be greater than zero.');
+
+    // Soft warnings — unusual but allowed
+    if (OPP_RATE_ANNUAL > 35)
+        warnings.push(`Opportunity cost rate of ${OPP_RATE_ANNUAL}% is very high. Verify this reflects your actual alternative return.`);
+    if (RENT_INCREMENT * 100 > 15)
+        warnings.push(`Rent growth of ${RENT_INCREMENT * 100}%/year is unusually high. Over long tenures this compounds dramatically — double-check your market assumption.`);
+    if (WITHHOLDING > 0.3)
+        warnings.push(`Withholding of ${Math.round(WITHHOLDING * 100)}% is very high. Verify this is realistic for your property type and agreement.`);
+    if (LOAN_RATE_ANNUAL > 20)
+        warnings.push(`Interest rate of ${LOAN_RATE_ANNUAL}% is above typical institutional lending. Consider if this is a formal loan or an informal arrangement.`);
+    if (VOLATILITY > 0.4)
+        warnings.push(`Return volatility of ${Math.round(VOLATILITY * 100)}% is extremely high. This significantly reduces your certainty-equivalent opportunity rate.`);
+    if (LEASE_AMOUNT > 0 && LOAN_AMOUNT / LEASE_AMOUNT > 0.95)
+        warnings.push('Loan covers more than 95% of lease amount — your own funds contribution is very small. Ensure this reflects your actual funding structure.');
+
+    return { errors, warnings };
+}
+
+function renderValidation(errors, warnings) {
+    const errEl = $('validationErrors'), warnEl = $('validationWarnings');
+    if (errors.length > 0) {
+        errEl.innerHTML = `⚠️ <strong>Please fix these inputs:</strong><ul>${errors.map(e => `<li>${e}</li>`).join('')}</ul>`;
+        errEl.classList.add('show');
+    } else { errEl.classList.remove('show'); errEl.innerHTML = ''; }
+
+    if (warnings.length > 0) {
+        warnEl.innerHTML = `💡 <strong>Unusual inputs — review before concluding:</strong><ul>${warnings.map(w => `<li>${w}</li>`).join('')}</ul>`;
+        warnEl.classList.add('show');
+    } else { warnEl.classList.remove('show'); warnEl.innerHTML = ''; }
+}
+
 /* ================= MAIN CALCULATION ================= */
 function calculate() {
     try {
@@ -1643,6 +1893,23 @@ function calculate() {
 
         if (LEASE_AMOUNT <= 0 || LEASE_TENURE <= 0 || LOAN_TENURE <= 0 || MARKET_RENT <= 0) return;
 
+        // ── LOAN TENURE CAP (enforce silently + warn) ──────────────────────────
+        const EFFECTIVE_LOAN_TENURE = Math.min(LOAN_TENURE, LEASE_TENURE);
+        if (LOAN_TENURE > LEASE_TENURE) {
+            const loanTenureInput = $('loanTenure');
+            const loanTenureRange = $('loanTenureRange');
+            if (loanTenureInput) loanTenureInput.value = LEASE_TENURE;
+            if (loanTenureRange) { loanTenureRange.value = LEASE_TENURE; loanTenureRange.setAttribute('aria-valuenow', LEASE_TENURE); }
+            const lbl = $('loanTenureLabel'); if (lbl) lbl.innerText = LEASE_TENURE;
+        }
+
+        // ── VALIDATION ─────────────────────────────────────────────────────────
+        const validationVals = { LEASE_AMOUNT, LOAN_AMOUNT, LOAN_TENURE, LEASE_TENURE,
+            MARKET_RENT, OPP_RATE_ANNUAL, RENT_INCREMENT, WITHHOLDING, VOLATILITY, LOAN_RATE_ANNUAL };
+        const { errors, warnings } = validateInputs(validationVals);
+        renderValidation(errors, warnings);
+        if (errors.some(e => e.includes('exceeds lease amount') || e.includes('at least 6 months') || e.includes('greater than zero'))) return;
+
         const LOAN_RATE_MONTHLY = (LOAN_RATE_ANNUAL / 100) / 12;
         const OPP_RATE_NOMINAL = (OPP_RATE_ANNUAL / 100) / 12;
         const INFLATION_MONTHLY = (INFLATION_ANNUAL / 100) / 12;
@@ -1660,7 +1927,7 @@ function calculate() {
 
         const LOCKED_FUNDS_RATE = CE_REAL_OPP_RATE + LIQUIDITY_MONTHLY;
         const WITHHOLDING_CLAMPED = Math.min(1, Math.max(0, WITHHOLDING));
-        const effectiveLoanMonths = Math.min(LOAN_TENURE, LEASE_TENURE);
+        const effectiveLoanMonths = EFFECTIVE_LOAN_TENURE;
 
         const EMI = emi(LOAN_AMOUNT, LOAN_RATE_MONTHLY, effectiveLoanMonths);
         const totalInterestPaid = (EMI * effectiveLoanMonths) - LOAN_AMOUNT;
@@ -1703,9 +1970,14 @@ function calculate() {
 
         const gaugeDegrees = score * 3.6;
         $('gauge').style.background = `conic-gradient(${color} ${gaugeDegrees}deg, #1a2a38 ${gaugeDegrees}deg)`;
+        $('gauge').setAttribute('aria-valuenow', Math.round(score));
+        $('gauge').setAttribute('aria-label', `Decision score: ${Math.round(score)} out of 100. ${interpretation}`);
         $('dial').style.color = color;
         $('dial').innerText = Math.round(score);
         $('interpretation').innerText = interpretation;
+
+        updateDirectionIndicators(monthlySavings);
+        updateAllSliderAria();
 
         const animateCounter = (el, start, end, dur = 800) => {
             const t0 = Date.now();
@@ -2046,6 +2318,157 @@ function updateInteractiveSensitivityChart(data) {
 /* ================= INIT ================= */
 loadFromURL();
 calculate();
+
+/* ================= SECTION TOGGLE ================= */
+function toggleSection(btn, bodyId) {
+    const body = document.getElementById(bodyId);
+    const collapsed = body.classList.toggle('collapsed');
+    btn.classList.toggle('collapsed', collapsed);
+    btn.setAttribute('aria-expanded', !collapsed);
+}
+
+/* ================= RESET DEFAULTS ================= */
+const DEFAULTS = {
+    leaseAmount: 2000000, loanAmount: 1500000, loanRate: 8.5, maintenance: 5000,
+    withholding: 0, refundDelay: 0,
+    marketRent: 45000, rentDeposit: 0, depositRefundDelay: 0, rentIncrement: 5, flexibilityPremium: 0,
+    leaseTenure: 24, loanTenure: 24, oppRate: 12, riskPremium: 1.5,
+    inflationRate: 6, liquidityPremium: 2, returnVol: 15
+};
+
+function resetDefaults() {
+    SHARE_PARAMS.forEach(id => {
+        const el = document.getElementById(id);
+        const rangeEl = document.getElementById(id + 'Range');
+        if (el && DEFAULTS[id] !== undefined) { el.value = DEFAULTS[id]; }
+        if (rangeEl && DEFAULTS[id] !== undefined) { rangeEl.value = DEFAULTS[id]; rangeEl.setAttribute('aria-valuenow', DEFAULTS[id]); }
+    });
+    updateAllLabels();
+    calculate();
+    const toast = document.getElementById('shareToast');
+    toast.textContent = '↺ Reset to defaults!';
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => { toast.textContent = '✅ Link copied to clipboard!'; }, 400); }, 2000);
+}
+
+/* ================= PRESET SCENARIOS ================= */
+const PRESETS = {
+    'metro-apartment': {
+        // 2BHK flat in a metro, 11-month renewable modelled over 3 years
+        // High deposit city (Bengaluru-style), moderate loan, active investor
+        leaseAmount: 8000000, loanAmount: 5000000, loanRate: 11, maintenance: 5000,
+        withholding: 5, refundDelay: 2,
+        marketRent: 40000, rentDeposit: 280000, depositRefundDelay: 2,
+        rentIncrement: 8, flexibilityPremium: 3000,
+        leaseTenure: 36, loanTenure: 24,
+        oppRate: 11, riskPremium: 1.5, inflationRate: 6, liquidityPremium: 2, returnVol: 14
+    },
+    'high-street-retail': {
+        // 500 sq ft shop on a prime high street, 5-year lock-in, high deposit, fit-out withholding
+        // Established business, high rent growth, capital tied up has high biz opportunity cost
+        leaseAmount: 15000000, loanAmount: 8000000, loanRate: 13, maintenance: 12000,
+        withholding: 12, refundDelay: 3,
+        marketRent: 120000, rentDeposit: 480000, depositRefundDelay: 3,
+        rentIncrement: 8, flexibilityPremium: 2000,
+        leaseTenure: 60, loanTenure: 36,
+        oppRate: 22, riskPremium: 2.5, inflationRate: 6, liquidityPremium: 3, returnVol: 30
+    },
+    'office-space': {
+        // 2,000 sq ft Grade-B office, 3-year lease, funded via business OD
+        // Growing company, moderate rent growth, weighing against co-working alternative
+        leaseAmount: 20000000, loanAmount: 12000000, loanRate: 12, maintenance: 25000,
+        withholding: 6, refundDelay: 2,
+        marketRent: 160000, rentDeposit: 480000, depositRefundDelay: 1,
+        rentIncrement: 6, flexibilityPremium: 8000,
+        leaseTenure: 36, loanTenure: 24,
+        oppRate: 18, riskPremium: 1.5, inflationRate: 6, liquidityPremium: 2.5, returnVol: 22
+    },
+    'warehouse': {
+        // 10,000 sq ft warehouse near a logistics corridor, 5-year lease
+        // Large deposit, low maintenance per sq ft, high rent growth on NH corridors
+        leaseAmount: 30000000, loanAmount: 20000000, loanRate: 11.5, maintenance: 35000,
+        withholding: 3, refundDelay: 2,
+        marketRent: 250000, rentDeposit: 750000, depositRefundDelay: 2,
+        rentIncrement: 9, flexibilityPremium: 0,
+        leaseTenure: 60, loanTenure: 36,
+        oppRate: 20, riskPremium: 1.5, inflationRate: 6, liquidityPremium: 2, returnVol: 25
+    }
+};
+
+function loadPreset(key) {
+    const p = PRESETS[key];
+    if (!p) return;
+    SHARE_PARAMS.forEach(id => {
+        const el = document.getElementById(id);
+        const rangeEl = document.getElementById(id + 'Range');
+        if (el && p[id] !== undefined) el.value = p[id];
+        if (rangeEl && p[id] !== undefined) { rangeEl.value = p[id]; rangeEl.setAttribute('aria-valuenow', p[id]); }
+    });
+    updateAllLabels();
+    calculate();
+    const names = { 'metro-apartment': 'Metro Apartment', 'high-street-retail': 'High-Street Retail', 'office-space': 'Office Space', 'warehouse': 'Warehouse / Industrial' };
+    const toast = document.getElementById('shareToast');
+    toast.textContent = `✅ Loaded: ${names[key]} scenario`;
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => { toast.textContent = '✅ Link copied to clipboard!'; }, 400); }, 2500);
+}
+
+/* ================= KEYBOARD SHORTCUTS ================= */
+document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === '?' || e.key === 'h') showGlobalHelp();
+    if (e.key === 'r' || e.key === 'R') resetDefaults();
+    if (e.key === 'Escape') closeHelpModal();
+});
+
+/* ================= UPDATE DIRECTION INDICATORS ================= */
+function updateDirectionIndicators(savings) {
+    const dirs = [
+        { id: 'mSaveDir', val: savings },
+        { id: 'ySaveDir', val: savings },
+        { id: 'tSaveDir', val: savings }
+    ];
+    dirs.forEach(({ id, val }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (val > 0) { el.textContent = '▲'; el.style.color = 'var(--green)'; }
+        else if (val < 0) { el.textContent = '▼'; el.style.color = 'var(--red)'; }
+        else { el.textContent = '●'; el.style.color = 'var(--amber)'; }
+    });
+}
+
+/* ================= BIND NEW SLIDERS ================= */
+function bindNewSliders() {
+    [['withholdingRange','withholding','withholdingLabel','%'],
+     ['refundDelayRange','refundDelay','refundDelayLabel',''],
+     ['depositRefundDelayRange','depositRefundDelay','depositRefundDelayLabel','']
+    ].forEach(([rangeId, inputId, labelId, suffix]) => {
+        const range = document.getElementById(rangeId);
+        const input = document.getElementById(inputId);
+        const lbl = document.getElementById(labelId);
+        if (!range || !input) return;
+        range.addEventListener('input', () => {
+            input.value = range.value;
+            range.setAttribute('aria-valuenow', range.value);
+            if (lbl) lbl.textContent = range.value + suffix;
+            calculate();
+        });
+        input.addEventListener('input', () => {
+            range.value = parseFloat(input.value) || 0;
+            range.setAttribute('aria-valuenow', range.value);
+            if (lbl) lbl.textContent = (parseFloat(input.value) || 0) + suffix;
+            calculate();
+        });
+    });
+}
+bindNewSliders();
+
+/* ================= UPDATE ARIA ON ALL SLIDERS ================= */
+function updateAllSliderAria() {
+    document.querySelectorAll('input[type="range"]').forEach(r => {
+        r.setAttribute('aria-valuenow', r.value);
+    });
+}
 </script>
 </body>
 </html>
